@@ -10,8 +10,13 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/home/home.vue")
   },
   {
+    path: "/404",
+    name: "notFound",
+    component: () => import("@/views/home/home.vue")
+  },
+  {
     path: "*",
-    redirect: { name: "home" }
+    redirect: { name: "notFound" }
   }
 ]
 
