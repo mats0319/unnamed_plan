@@ -7,7 +7,19 @@ const routes: Array<RouteConfig> = [
   {
     path: "/",
     name: "home",
-    component: () => import("@/views/home/home.vue")
+    component: () => import("@/views/home/home.vue"),
+    children: [
+      {
+        path: "",
+        name: "default",
+        component: () => import("@/views/home/content.vue")
+      },
+      {
+        path: "games",
+        name: "games",
+        component: () => import("@/views/games/games.vue")
+      }
+    ]
   },
   {
     path: "/404",
