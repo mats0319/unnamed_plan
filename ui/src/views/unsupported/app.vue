@@ -1,6 +1,9 @@
 <template>
   <div id="app" class="unsupported">
-    <span class="text">该网站暂不支持<br />移动端设备访问</span>
+    <span class="text">
+      该网站暂不支持<br />
+      移动端设备访问
+    </span>
   </div>
 </template>
 

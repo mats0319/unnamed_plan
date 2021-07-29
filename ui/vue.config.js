@@ -16,6 +16,9 @@ module.exports = {
       filename: "unsupported.html"
     }
   },
+  css: {
+    extract: false
+  },
   devServer: {
     open: true,
     port: 9693

@@ -1,0 +1,187 @@
+<template>
+  <div>
+    <div class="top-title" @click="routerLink('default')">上弦月</div>
+
+    <div class="top-links">
+      <div class="tl-item" @click="routerLink('games')">小游戏</div>
+      <div class="tl-item">
+        <span
+          rel="bookmark"
+          title="https://github.com/mats9693/unnamed_plan"
+        >
+          <a href="https://github.com/mats9693/unnamed_plan" target="_blank">本站代码</a>
+        </span>
+      </div>
+    </div>
+
+    <div class="top-login-entrance">
+      <div v-if="!isLogin" class="tle-text" @click="openLoginDialog">登录</div>
+      <div v-if="isLogin">{{ userID }}</div>
+    </div>
+
+    <el-dialog
+      class="top-login-dialog"
+      :visible.sync="loginDialogController"
+      append-to-body
+      :modal-append-to-body="false"
+    >
+      <div slot="title" class="tld-title">登录</div>
+
+      <div class="tld-content">
+        <div class="tldc-item">
+          <span class="tldci-label">账号&#58;</span>
+          <el-input v-model="userName" placeholder="请输入账号" />
+        </div>
+
+        <div class="tldc-item">
+          <span class="tldci-label">密码&#58;</span>
+          <el-input v-model="password" type="password" placeholder="请输入密码" clearable />
+        </div>
+      </div>
+
+      <div slot="footer">
+        <el-button @click="cancelLogin">取消</el-button>
+        <el-button type="info" @click="login">登录</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script lang="ts">
+import { Component, Vue } from "vue-property-decorator";
+import axios from "axios";
+
+@Component
+export default class Top extends Vue {
+  private isLogin = false;
+  private userID = "";
+
+  private userName = "";
+  private password = "";
+  private permission = 0;
+
+  private loginDialogController = false;
+
+  private mounted() {
+    // placeholder
+  }
+
+  private login(): void {
+    let data: FormData = new FormData();
+    data.append("userName", this.userName);
+    data.append("password", this.password);
+
+    axios.post(process.env.VUE_APP_login_url, data).then(
+      response => {
+        if (response.data.hasError) {
+          throw response.data;
+        }
+
+        this.isLogin = true;
+        this.userID = this.userName;
+        this.permission = JSON.parse(response.data.data as string).permission;
+
+        this.userName = "";
+        this.password = "";
+
+        this.loginDialogController = false;
+      }
+    ).catch(
+      err => {
+        console.log("login failed, error:", err);
+      }
+    );
+  }
+
+  private routerLink(name: string): void {
+    this.$router.push({ name: name });
+  }
+
+  private openLoginDialog(): void {
+    this.userName = "";
+    this.password = "";
+
+    this.loginDialogController = true;
+  }
+
+  private cancelLogin(): void {
+    this.loginDialogController = false;
+  }
+}
+</script>
+
+<style lang="scss">
+.top-title {
+  width: 10vw;
+  line-height: 10rem;
+
+  font-size: 4rem;
+  font-weight: 600;
+}
+.top-title:hover {
+  cursor: pointer;
+}
+
+.top-links {
+  width: 65vw;
+  display: flex;
+  justify-content: flex-end;
+
+  font-size: 2rem;
+
+  .tl-item {
+    width: 7vw;
+    margin: auto 0;
+
+    a {
+      color: black;
+      text-decoration: none;
+    }
+  }
+  .tl-item:hover {
+    color: darkgray;
+    cursor: pointer;
+    text-decoration-line: underline;
+  }
+}
+
+.top-login-entrance {
+  width: 10vw;
+  margin: auto 0;
+  padding: 0 2.5vw;
+
+  font-size: 2rem;
+
+  .tle-text:hover {
+    cursor: pointer;
+  }
+}
+
+.top-login-dialog {
+  text-align: left;
+
+  .tld-title {
+    font-size: 3rem;
+    font-weight: 600;
+  }
+
+  .tld-content {
+    padding: 3vh 20%;
+    font-size: 2.5rem;
+
+    .tldc-item {
+      display: flex;
+      padding: 2vh 0;
+
+      .tldci-label {
+        width: 20%;
+        align-self: center;
+      }
+
+      .el-input {
+        width: 80%;
+      }
+    }
+  }
+}
+</style>

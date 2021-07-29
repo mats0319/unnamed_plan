@@ -6,12 +6,12 @@ Vue.use(VueRouter)
 const routes: Array<RouteConfig> = [
   {
     path: "/",
-    name: "home",
+    name: "",
     component: () => import("@/views/home/home.vue"),
     children: [
       {
         path: "",
-        name: "default",
+        name: "home",
         component: () => import("@/views/home/content.vue")
       },
       {
@@ -24,7 +24,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/404",
     name: "notFound",
-    component: () => import("@/views/home/home.vue")
+    redirect: { name: "home" }
   },
   {
     path: "*",
