@@ -1,6 +1,8 @@
 <template>
   <div class="games">
-    [假装这里有很多好玩的小游戏]
+    <el-menu unique-opened>
+      <el-menu-item>翻牌游戏</el-menu-item>
+    </el-menu>
   </div>
 </template>
 

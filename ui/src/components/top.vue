@@ -3,7 +3,14 @@
     <div class="top-title" @click="routerLink('default')">上弦月</div>
 
     <div class="top-links">
-      <div class="tl-item" @click="routerLink('games')">小游戏</div>
+      <div
+        v-show="isLogin && permission > 0"
+        class="tl-item"
+        @click="routerLink('games')"
+      >
+        小游戏
+      </div>
+
       <div class="tl-item">
         <span
           rel="bookmark"
@@ -16,7 +23,13 @@
 
     <div class="top-login-entrance">
       <div v-if="!isLogin" class="tle-text" @click="openLoginDialog">登录</div>
-      <div v-if="isLogin">{{ userID }}</div>
+
+      <el-dropdown v-if="isLogin" class="tle-text">
+        <span>{{ userID }}<i class="el-icon-arrow-down el-icon--right"/></span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item @click.native="exit">退出登录</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
     </div>
 
     <el-dialog
@@ -30,12 +43,12 @@
       <div class="tld-content">
         <div class="tldc-item">
           <span class="tldci-label">账号&#58;</span>
-          <el-input v-model="userName" placeholder="请输入账号" />
+          <el-input v-model="userName" placeholder="请输入账号"/>
         </div>
 
         <div class="tldc-item">
           <span class="tldci-label">密码&#58;</span>
-          <el-input v-model="password" type="password" placeholder="请输入密码" clearable />
+          <el-input v-model="password" type="password" placeholder="请输入密码" clearable/>
         </div>
       </div>
 
@@ -48,7 +61,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import {Component, Vue} from "vue-property-decorator";
 import axios from "axios";
 
 @Component
@@ -77,9 +90,12 @@ export default class Top extends Vue {
           throw response.data;
         }
 
-        this.isLogin = true;
+        sessionStorage.setItem("auth", "passed");
+
         this.userID = this.userName;
         this.permission = JSON.parse(response.data.data as string).permission;
+
+        this.isLogin = true;
 
         this.userName = "";
         this.password = "";
@@ -93,8 +109,15 @@ export default class Top extends Vue {
     );
   }
 
+  private exit(): void {
+    this.userID = "";
+    this.permission = 0;
+
+    this.isLogin = false;
+  }
+
   private routerLink(name: string): void {
-    this.$router.push({ name: name });
+    this.$router.push({name: name});
   }
 
   private openLoginDialog(): void {
@@ -118,6 +141,7 @@ export default class Top extends Vue {
   font-size: 4rem;
   font-weight: 600;
 }
+
 .top-title:hover {
   cursor: pointer;
 }
@@ -138,6 +162,7 @@ export default class Top extends Vue {
       text-decoration: none;
     }
   }
+
   .tl-item:hover {
     color: darkgray;
     cursor: pointer;
@@ -150,8 +175,9 @@ export default class Top extends Vue {
   margin: auto 0;
   padding: 0 2.5vw;
 
-  font-size: 2rem;
-
+  .tle-text {
+    font-size: 2rem;
+  }
   .tle-text:hover {
     cursor: pointer;
   }

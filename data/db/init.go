@@ -30,8 +30,8 @@ func init() {
 	fmt.Println("> Database init finish.")
 }
 
-func GetDB() *pg.DB {
-	return db
+func getConn() *pg.Conn {
+	return db.Conn()
 }
 
 func WithTx(task func(conn orm.DB) error) error {
@@ -39,7 +39,7 @@ func WithTx(task func(conn orm.DB) error) error {
 		return nil // todo: return special error
 	}
 
-	conn := GetDB()
+	conn := getConn()
 	defer conn.Close()
 
 	tx, err := conn.Begin()
@@ -55,7 +55,9 @@ func WithTx(task func(conn orm.DB) error) error {
 		}
 	}()
 
-	return task(tx)
+	err = task(tx)
+
+	return err
 }
 
 func WithNoTx(task func(conn orm.DB) error) error {
@@ -63,10 +65,12 @@ func WithNoTx(task func(conn orm.DB) error) error {
 		return nil
 	}
 
-	conn := GetDB()
+	conn := getConn()
 	defer conn.Close()
 
-	return task(conn)
+	err := task(conn)
+
+	return err
 }
 
 func getDBConfig() *dbConfig {

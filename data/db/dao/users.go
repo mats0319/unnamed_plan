@@ -2,19 +2,21 @@ package dao
 
 import (
 	"errors"
-	"github.com/go-pg/pg/v10"
+	"github.com/go-pg/pg/v10/orm"
+	. "github.com/mats9693/unnamed_plan/db"
 	"github.com/mats9693/unnamed_plan/db/model"
 )
 
-func GetUser(db *pg.DB, name, pwd string) (*model.User, error) {
+func GetUser(name, pwd string) (*model.User, error) {
 	var (
 		users = make([]model.User, 0)
 		err   error
 	)
 
-	err = db.Model(&users).Where("is_locked = ?", false).Where("name = ?", name).Select()
+	err = WithNoTx(func(conn orm.DB) error {
+		return conn.Model(&users).Where("is_locked = ?", false).Where("name = ?", name).Select()
+	})
 	if err != nil {
-		// todo: write log
 		return nil, err
 	}
 

@@ -2,7 +2,6 @@ package http
 
 import (
 	"fmt"
-	"github.com/mats9693/unnamed_plan/db"
 	"github.com/mats9693/unnamed_plan/db/dao"
 	"net/http"
 )
@@ -13,7 +12,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	name := r.PostFormValue("userName")
 	pwd := r.PostFormValue("password")
 
-	user, err := dao.GetUser(db.GetDB(), name, pwd)
+	user, err := dao.GetUser(name, pwd)
 	if err != nil {
 		_, _ = fmt.Fprintln(w, responseWithError(err.Error()))
 		return
