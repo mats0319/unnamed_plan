@@ -1,8 +1,6 @@
 <template>
   <div class="files">
-    <el-menu unique-opened>
-      <el-menu-item>翻牌游戏</el-menu-item>
-    </el-menu>
+    [云文件]
   </div>
 </template>
 

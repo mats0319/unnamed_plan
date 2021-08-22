@@ -7,17 +7,15 @@ const routes: Array<RouteConfig> = [
   {
     path: "/",
     name: "",
-    meta: {needLogin: false},
     component: () => import("@/views/home/home.vue"),
     children: [
       {
         path: "",
         name: "home",
-        meta: {needLogin: false},
         component: () => import("@/views/home/content.vue")
       },
       {
-        path: "files",
+        path: "/files",
         name: "files",
         meta: {needLogin: true},
         component: () => import("@/views/files/files.vue")
@@ -42,7 +40,7 @@ const router = new VueRouter({
 export default router
 
 router.beforeEach((to, from, next) => {
-  if (!to.meta!.needLogin) {
+  if (!to.meta || !to.meta.needLogin) { // default keyword is false
     next();
     return;
   }

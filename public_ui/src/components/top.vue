@@ -4,11 +4,11 @@
 
     <div class="top-links">
       <div
-        v-show="isLogin && permission > 0"
+        v-show="isLogin"
         class="tl-item"
-        @click="routerLink('games')"
+        @click="routerLink('files')"
       >
-        小游戏
+        云文件
       </div>
 
       <div class="tl-item">
@@ -68,21 +68,32 @@ import axios from "axios";
 export default class Top extends Vue {
   private isLogin = false;
   private userID = "";
+  private permission = 0;
 
   private userName = "";
   private password = "";
-  private permission = 0;
 
   private loginDialogController = false;
 
   private mounted() {
-    // placeholder
+    let userName = this.$store.state.userName;
+    let permission = this.$store.state.permission;
+
+    if (userName.length > 0 && permission > 0) {
+      this.userID = userName;
+      this.permission = permission;
+
+      this.isLogin = true;
+    }
   }
 
   private login(): void {
+    let pwd = this.password;
+    this.password = "";
+
     let data: FormData = new FormData();
     data.append("userName", this.userName);
-    data.append("password", this.password);
+    data.append("password", pwd);
 
     axios.post(process.env.VUE_APP_login_url, data).then(
       response => {
@@ -93,13 +104,13 @@ export default class Top extends Vue {
         sessionStorage.setItem("auth", "passed");
 
         this.userID = this.userName;
-        this.permission = JSON.parse(response.data.data as string).permission;
 
-        this.isLogin = true;
+        this.$store.state.userName = this.userName;
+        this.$store.state.permission = JSON.parse(response.data.data as string).permission;
 
         this.userName = "";
-        this.password = "";
 
+        this.isLogin = true;
         this.loginDialogController = false;
       }
     ).catch(
@@ -111,7 +122,6 @@ export default class Top extends Vue {
 
   private exit(): void {
     this.userID = "";
-    this.permission = 0;
 
     this.isLogin = false;
   }

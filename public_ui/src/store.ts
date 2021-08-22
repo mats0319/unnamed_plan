@@ -5,5 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-  },
+    userName: "",
+    permission: 0,
+  }
 })

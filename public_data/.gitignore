@@ -1,3 +1,6 @@
-**/*.exe
-/main/main
 ./public_data
+
+!/main/build_linux.ps1
+!/main/config.json
+!/main/main.go
+/main/*
