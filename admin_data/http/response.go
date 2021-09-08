@@ -2,17 +2,17 @@ package http
 
 import "encoding/json"
 
-type Response struct {
+type ResponseData struct {
 	HasError bool   `json:"hasError"`
 	Data     string `json:"data"`
 }
 
-func response(data interface{}) string {
-	res := &Response{}
+func Response(data interface{}) string {
+	res := &ResponseData{}
 
 	jsonBytes, err := json.Marshal(data)
 	if err != nil {
-		return responseWithError(err.Error())
+		return ResponseWithError(err.Error())
 	}
 
 	res.Data = string(jsonBytes)
@@ -25,8 +25,8 @@ func response(data interface{}) string {
 	return string(jsonBytes)
 }
 
-func responseWithError(errMsg string) string {
-	res := &Response{
+func ResponseWithError(errMsg string) string {
+	res := &ResponseData{
 		HasError: true,
 		Data:     errMsg,
 	}

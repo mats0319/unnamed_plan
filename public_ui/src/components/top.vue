@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="top-title" @click="routerLink('default')">上弦月</div>
+    <div class="top-title" @click="routerLink('home')">上弦月</div>
 
     <div class="top-links">
       <div
@@ -42,8 +42,8 @@
 
       <div class="tld-content">
         <div class="tldc-item">
-          <span class="tldci-label">账号&#58;</span>
-          <el-input v-model="userName" placeholder="请输入账号"/>
+          <span class="tldci-label">用户名&#58;</span>
+          <el-input v-model="userName" placeholder="请输入用户名"/>
         </div>
 
         <div class="tldc-item">

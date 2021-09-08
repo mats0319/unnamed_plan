@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
-	"github.com/mats9693/unnamed_plan/public_data/db/model"
+	"github.com/mats9693/unnamed_plan/admin_data/db/model"
 	"log"
 	"reflect"
 )

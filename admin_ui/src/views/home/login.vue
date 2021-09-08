@@ -4,8 +4,8 @@
       <el-card class="lc-card">
         <div>
           <div class="lcc-item">
-            <span class="lcci-label">账号&#58;</span>
-            <el-input v-model="userName" placeholder="请输入账号" />
+            <span class="lcci-label">用户名&#58;</span>
+            <el-input v-model="userName" placeholder="请输入用户名" />
           </div>
 
           <div class="lcc-item">
@@ -37,7 +37,7 @@ export default class Login extends Vue {
 
   private login(): void {
     let pwd = this.password;
-    this.password = "";
+    // this.password = "";
 
     let data: FormData = new FormData();
     data.append("userName", this.userName);
@@ -52,7 +52,10 @@ export default class Login extends Vue {
         sessionStorage.setItem("auth", "passed");
 
         this.$store.state.userName = this.userName;
-        this.$store.state.permission = JSON.parse(response.data.data as string).permission;
+
+        const res = JSON.parse(response.data.data as string);
+        this.$store.state.userID = res.userID;
+        this.$store.state.permission = res.permission;
 
         this.$router.push({ name: "home" });
       }

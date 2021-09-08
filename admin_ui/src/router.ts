@@ -16,10 +16,22 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/home/home.vue"),
     children: [
       {
-        path: "/user",
-        name: "user",
+        path: "/user/modify",
+        name: "userModify",
         meta: {needLogin: true},
-        component: () => import("@/views/user/user.vue")
+        component: () => import("@/views/user/modify.vue")
+      },
+      {
+        path: "/user/create",
+        name: "userCreate",
+        meta: {needLogin: true},
+        component: () => import("@/views/user/modify.vue")
+      },
+      {
+        path: "/user/list",
+        name: "userList",
+        meta: {needLogin: true},
+        component: () => import("@/views/user/modify.vue")
       }
     ]
   },

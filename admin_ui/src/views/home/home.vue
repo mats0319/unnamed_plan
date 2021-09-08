@@ -2,13 +2,25 @@
   <div class="home">
     <div class="home-navigation">
       <div class="hn-user">
-        <div class="hnu-name">{{userName}}</div>
+        <div class="hnu-name">
+          <span class="hnu-link-home" @click="linkHome">{{userName}}</span>
+        </div>
+
+        <div class="hnu-permission">
+          <span class="hnu-link-home" @click="linkHome">权限等级：{{permission}}</span>
+        </div>
 
         <el-button type="info" size="mini" @click="exit" plain>退出登录</el-button>
       </div>
 
       <el-menu class="hn-items" router unique-opened>
-        <el-menu-item index="1" :route="{ name: 'user' }">用户管理</el-menu-item>
+        <el-submenu index="user">
+          <template slot="title">用户管理</template>
+
+          <el-menu-item index="modify" :route="{ name: 'userModify' }">修改当前用户信息</el-menu-item>
+          <el-menu-item index="create" :route="{ name: 'userCreate' }">创建新用户</el-menu-item>
+          <el-menu-item index="list" :route="{ name: 'userList' }">查看其它用户</el-menu-item>
+        </el-submenu>
       </el-menu>
     </div>
 
@@ -30,12 +42,21 @@ export default class Home extends Vue {
     this.userName = this.$store.state.userName;
     this.permission = this.$store.state.permission;
 
-    if (this.userName.length < 1 || !this.permission) {
+    if (this.$store.state.userID.lenth < 1 ||
+      this.userName.length < 1 ||
+      !this.permission) {
       this.$router.push({ name: "login" });
     }
   }
 
+  private linkHome(): void {
+    if (location.href.split("#/")[1] !== "") {
+      this.$router.push({ name: "home" });
+    }
+  }
+
   private exit(): void {
+    this.$store.state.userID = "";
     this.$store.state.userName = "";
     this.$store.state.permission = 0;
 
@@ -59,29 +80,43 @@ export default class Home extends Vue {
     .hn-user {
       height: 19.9rem;
 
-      font-size: 2rem;
-
       border-right: 1px solid rgba(230, 230, 230, 1);
       border-bottom: 1px solid rgba(230, 230, 230, 1);
 
       .hnu-name {
-        height: 10rem;
-        padding-top: 3rem;
+        height: 3rem;
+        padding-top: 5rem;
+        font-size: 2rem;
+      }
+
+      .hnu-permission {
+        height: 5rem;
+        font-size: 1.6rem;
+      }
+
+      .hnu-link-home:hover {
+        cursor: pointer;
       }
     }
 
     .hn-items {
       height: calc(100vh - 20rem);
+      text-align: left;
+
+      .el-submenu__title {
+        font-size: 1.8rem;
+      }
 
       .el-menu-item {
-        font-size: 2rem;
+        font-size: 1.6rem;
       }
     }
   }
 
   .home-content {
-    width: calc(100% - 20rem);
-    height: inherit;
+    width: calc(90% - 20rem);
+    height: 80vh;
+    padding: 10vh 5%;
   }
 }
 </style>

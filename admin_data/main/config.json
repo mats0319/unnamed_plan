@@ -2,6 +2,13 @@
   "level": "dev",
   "config": [
     {
+      "name": "config",
+      "uid": "eed7ef1e-45b0-440e-b924-80346f341008",
+      "jsonDev": {
+        "createUserPermission": 6
+      }
+    },
+    {
       "name": "db",
       "uid": "658e06f7-71d5-4ada-b715-8c1a4489e5d2",
       "jsonDev": {

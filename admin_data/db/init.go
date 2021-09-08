@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
-	"github.com/mats9693/unnamed_plan/public_data/config"
+	"github.com/mats9693/unnamed_plan/admin_data/config"
+	. "github.com/mats9693/unnamed_plan/admin_data/const"
 )
 
 type dbConfig struct {
@@ -74,12 +75,12 @@ func WithNoTx(task func(conn orm.DB) error) error {
 }
 
 func getDBConfig() *dbConfig {
-	byteSlice := config.GetConfig("658e06f7-71d5-4ada-b715-8c1a4489e5d2")
+	byteSlice := config.GetConfig(UID_DB)
 
 	conf := &dbConfig{}
 	err := json.Unmarshal(byteSlice, conf)
 	if err != nil {
-		fmt.Printf("json unmarshal failed, uid: %s, error: %v\n", "2", err)
+		fmt.Printf("json unmarshal failed, uid: %s, error: %v\n", UID_DB, err)
 		return nil
 	}
 

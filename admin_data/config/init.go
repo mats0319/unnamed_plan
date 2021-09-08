@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/json"
 	"fmt"
+	. "github.com/mats9693/unnamed_plan/admin_data/const"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -30,7 +31,7 @@ func init() {
 	}
 
 	dir := filepath.Dir(str)
-	configPath := dir + "/config.json"
+	configPath := dir + "/" + ConfigFileName
 
 	configBs, err := ioutil.ReadFile(configPath)
 	if err != nil {
@@ -44,13 +45,19 @@ func init() {
 		os.Exit(-1)
 	}
 
-	if conf.Level == "dev" {
+	if conf.Level == ConfigDevLevel {
 		for i := range conf.ConfigItems {
 			conf.ConfigItems[i].Json = conf.ConfigItems[i].JsonDev
 		}
 	}
 
+	initConfiguration()
+
 	fmt.Println("> Config init finish.")
+}
+
+func GetConfigLevel() string {
+	return conf.Level
 }
 
 func GetConfig(uid string) []byte {
