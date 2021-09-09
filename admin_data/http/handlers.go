@@ -17,7 +17,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	name := r.PostFormValue(UserName)
 	password := r.PostFormValue(Password)
 
-	users, err := dao.GetUser().Query("name = ?", name)
+	users, err := dao.GetUser().Query("name = ?", name) // todo: add unlock required
 	if err != nil {
 		_, _ = fmt.Fprintln(w, ResponseWithError(err.Error()))
 		return
@@ -53,21 +53,23 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID := r.PostFormValue(UserID)
-	permission, err := strconv.Atoi(r.PostFormValue(Permission))
+	permissionInt, err := strconv.Atoi(r.PostFormValue(Permission))
 	if err != nil {
 		_, _ = fmt.Fprintln(w, ResponseWithError(err.Error()))
 		return
 	}
 
+	permission := uint8(permissionInt)
+
 	users, err := dao.GetUser().Query("user_id = ?", userID)
 	if err != nil {
 		_, _ = fmt.Fprintln(w, ResponseWithError(err.Error()))
 		return
-	} else if len(users) < 1 {
+	} else if len(users) != 1 {
 		_, _ = fmt.Fprintln(w, ResponseWithError(fmt.Sprintf("invalid data, want %d, get %d.", 1, len(users))))
 		return
 	} else if users[0].Permission < config.GetConfiguration().CreateUserPermission ||
-		int(users[0].Permission) <= permission {
+		users[0].Permission <= permission {
 		_, _ = fmt.Fprintln(w, ResponseWithError(fmt.Sprintf("permission denied, you %d, want create %d.",
 			users[0].Permission, permission)))
 		return
@@ -76,7 +78,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	name := r.PostFormValue(UserName)
 	password := r.PostFormValue(Password)
 
-	err = dao.GetUser().Insert(name, password, uint8(permission))
+	err = dao.GetUser().Insert(name, password, permission)
 	if err != nil {
 		_, _ = fmt.Fprintln(w, ResponseWithError(err.Error()))
 		return
