@@ -11,6 +11,6 @@ var isDev bool
 func init() {
 	isDev = config.GetConfigLevel() == ConfigDevLevel
 
-	http.HandleFunc("/api/login", login)
+	http.HandleFunc("/api/login", Login)
 	http.HandleFunc("/api/user/create", createUser)
 }

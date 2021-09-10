@@ -8,11 +8,3 @@ const (
 	UID_DB = "658e06f7-71d5-4ada-b715-8c1a4489e5d2"
 	UID_HTTPPort = "3b839c1f-9f1e-474b-b3da-7b5e9bc792ec"
 )
-
-// http
-const (
-	UserID     = "userID"
-	UserName   = "userName"
-	Password   = "password"
-	Permission = "permission"
-)

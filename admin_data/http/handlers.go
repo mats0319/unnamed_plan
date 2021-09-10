@@ -3,19 +3,18 @@ package http
 import (
 	"fmt"
 	"github.com/mats9693/unnamed_plan/admin_data/config"
-	. "github.com/mats9693/unnamed_plan/admin_data/const"
 	"github.com/mats9693/unnamed_plan/admin_data/db/dao"
 	"net/http"
 	"strconv"
 )
 
-func login(w http.ResponseWriter, r *http.Request) {
+func Login(w http.ResponseWriter, r *http.Request) {
 	if isDev {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
 
-	name := r.PostFormValue(UserName)
-	password := r.PostFormValue(Password)
+	name := r.PostFormValue("userName")
+	password := r.PostFormValue("password")
 
 	users, err := dao.GetUser().Query("name = ?", name) // todo: add unlock required
 	if err != nil {
@@ -52,8 +51,8 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
 
-	userID := r.PostFormValue(UserID)
-	permissionInt, err := strconv.Atoi(r.PostFormValue(Permission))
+	userID := r.PostFormValue("userID")
+	permissionInt, err := strconv.Atoi(r.PostFormValue("permission"))
 	if err != nil {
 		_, _ = fmt.Fprintln(w, ResponseWithError(err.Error()))
 		return
@@ -75,8 +74,8 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	name := r.PostFormValue(UserName)
-	password := r.PostFormValue(Password)
+	name := r.PostFormValue("userName")
+	password := r.PostFormValue("password")
 
 	err = dao.GetUser().Insert(name, password, permission)
 	if err != nil {

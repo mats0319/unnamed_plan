@@ -1,7 +1,10 @@
 package http
 
-import "net/http"
+import (
+	ah "github.com/mats9693/unnamed_plan/admin_data/http"
+	"net/http"
+)
 
 func init() {
-	http.HandleFunc("/api/login", login)
+	http.HandleFunc("/api/login", ah.Login)
 }
