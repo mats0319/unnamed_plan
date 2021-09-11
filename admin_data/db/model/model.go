@@ -15,6 +15,7 @@ type Common struct {
 type User struct {
 	UserID     string `pg:",unique"`
 	Name       string `pg:",unique"`
+	Nickname   string
 	Password   string `pg:",notnull"`
 	IsLocked   bool   `pg:",use_zero"`
 	Permission uint8  `pg:",use_zero"`

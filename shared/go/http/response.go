@@ -1,4 +1,4 @@
-package http
+package shttp
 
 import "encoding/json"
 

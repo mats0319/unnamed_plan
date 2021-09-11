@@ -1,10 +1,10 @@
-package http
+package shttp
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mats9693/unnamed_plan/admin_data/config"
-	. "github.com/mats9693/unnamed_plan/admin_data/const"
+	"github.com/mats9693/unnamed_plan/shared/go/config"
+	. "github.com/mats9693/unnamed_plan/shared/go/const"
 	"net/http"
 )
 
@@ -12,11 +12,11 @@ type httpConfig struct {
 	Port string `json:"port"`
 }
 
-// StartServer is block
+// StartServer is blocked
 func StartServer() {
 	conf := getHttpConfig()
 
-	fmt.Printf("> Listening at : %s.", conf.Port)
+	fmt.Printf("> Listening at : %s.\n", conf.Port)
 	_ = http.ListenAndServe(":"+conf.Port, nil)
 }
 

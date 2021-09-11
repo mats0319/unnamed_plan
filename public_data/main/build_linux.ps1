@@ -11,6 +11,8 @@ if (Test-Path "../public_data") {
     Remove-Item "../public_data"
 }
 
+go mod download
+
 go build -o "public_data"
 
 Move-Item "public_data" -Destination "../public_data"

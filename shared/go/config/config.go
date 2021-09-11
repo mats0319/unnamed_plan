@@ -3,7 +3,7 @@ package config
 import (
     "encoding/json"
     "fmt"
-    . "github.com/mats9693/unnamed_plan/admin_data/const"
+    . "github.com/mats9693/unnamed_plan/shared/go/const"
 )
 
 type Configuration struct {

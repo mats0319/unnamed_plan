@@ -11,6 +11,7 @@ var users = []*model.User{
 	{
 		UserID:     uuid.New(),
 		Name:       "Mario",
+		Nickname:   "Mario",
 		Password:   "960319",
 		IsLocked:   false,
 		Permission: 10,
@@ -19,6 +20,7 @@ var users = []*model.User{
 	{
 		UserID:     uuid.New(),
 		Name:       "admin",
+		Nickname:   "admin",
 		Password:   "admin",
 		IsLocked:   false,
 		Permission: 6,

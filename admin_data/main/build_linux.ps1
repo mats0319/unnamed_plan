@@ -11,6 +11,8 @@ if (Test-Path "../admin_data") {
     Remove-Item "../admin_data"
 }
 
+go mod download
+
 go build -o "admin_data"
 
 Move-Item "admin_data" -Destination "../admin_data"

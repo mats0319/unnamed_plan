@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
-	"github.com/mats9693/unnamed_plan/admin_data/config"
-	. "github.com/mats9693/unnamed_plan/admin_data/const"
+	"github.com/mats9693/unnamed_plan/shared/go/config"
+	. "github.com/mats9693/unnamed_plan/shared/go/const"
 )
 
 type dbConfig struct {

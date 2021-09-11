@@ -1,10 +1,15 @@
 package http
 
 import (
-	ah "github.com/mats9693/unnamed_plan/admin_data/http"
+	"github.com/mats9693/unnamed_plan/shared/go/config"
+	. "github.com/mats9693/unnamed_plan/shared/go/const"
 	"net/http"
 )
 
+var isDev bool
+
 func init() {
-	http.HandleFunc("/api/login", ah.Login)
+	isDev = config.GetConfigLevel() == ConfigDevLevel
+
+	http.HandleFunc("/api/login", login)
 }
