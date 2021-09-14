@@ -47,7 +47,7 @@ func (u *User) QueryPage(
 ) (users []*model.User, count int, err error) {
 	err = WithNoTx(func(conn orm.DB) error {
 		count, err = conn.Model(&users).Where(condition, param).Order("permission DESC").
-			Offset((pageNum-1)*pageSize).Limit(pageSize).SelectAndCount()
+			Offset((pageNum - 1) * pageSize).Limit(pageSize).SelectAndCount()
 
 		return err
 	})
@@ -57,4 +57,27 @@ func (u *User) QueryPage(
 	}
 
 	return
+}
+
+func (u *User) Query(condition string, param interface{}) (users []*model.User, err error) {
+	err = WithNoTx(func(conn orm.DB) error {
+		return conn.Model(&users).Where(condition, param).Select()
+	})
+	if err != nil {
+		users = nil
+	}
+
+	return
+}
+
+func (u *User) UpdateColumnsByUserID(data *model.User, columns ...string) (err error) {
+	return WithTx(func(conn orm.DB) error {
+		query := conn.Model(data)
+		for i := range columns {
+			query.Column(columns[i])
+		}
+
+		_, err = query.Where("user_id = ?user_id").Update()
+		return err
+	})
 }
