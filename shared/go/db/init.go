@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/go-pg/pg/v10"
@@ -27,6 +28,8 @@ func init() {
 		Password: conf.Password,
 		Database: conf.Database,
 	})
+
+	db.AddQueryHook(&dbConfig{})
 
 	fmt.Println("> Database init finish.")
 }
@@ -85,4 +88,19 @@ func getDBConfig() *dbConfig {
 	}
 
 	return conf
+}
+
+func (d *dbConfig) BeforeQuery(c context.Context, q *pg.QueryEvent) (context.Context, error) {
+	sqlBytes, err := q.FormattedQuery()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(string(sqlBytes))
+	}
+
+	return c, nil
+}
+
+func (d *dbConfig) AfterQuery(c context.Context, _ *pg.QueryEvent) error {
+	return nil
 }
