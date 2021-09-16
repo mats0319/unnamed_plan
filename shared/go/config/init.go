@@ -51,8 +51,6 @@ func init() {
 		}
 	}
 
-	initConfiguration()
-
 	fmt.Println("> Config init finish.")
 }
 

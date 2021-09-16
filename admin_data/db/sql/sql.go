@@ -9,10 +9,12 @@ import (
 )
 
 var dbConf = &pg.Options{
-	Addr:     "106.75.174.54:5432",
-	User:     "mario_test",
-	Password: "123456",
-	Database: "unnamed_plan_test",
+	Addr:         "106.75.174.54:5432",
+	User:         "mario_test",
+	Password:     "123456",
+	Database:     "unnamed_plan_test",
+	ReadTimeout:  5,
+	WriteTimeout: 5,
 }
 
 func main() {

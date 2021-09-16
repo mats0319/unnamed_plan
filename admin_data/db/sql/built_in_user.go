@@ -10,7 +10,7 @@ import (
 var users = []*model.User{
 	{
 		UserID:     uuid.New(),
-		Name:       "Mario",
+		UserName:   "Mario",
 		Nickname:   "Mario",
 		Password:   "960319",
 		IsLocked:   false,
@@ -19,7 +19,7 @@ var users = []*model.User{
 	},
 	{
 		UserID:     uuid.New(),
-		Name:       "admin",
+		UserName:   "admin",
 		Nickname:   "admin",
 		Password:   "admin",
 		IsLocked:   false,

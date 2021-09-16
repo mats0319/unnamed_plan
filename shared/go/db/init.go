@@ -8,13 +8,16 @@ import (
 	"github.com/go-pg/pg/v10/orm"
 	"github.com/mats9693/unnamed_plan/shared/go/config"
 	. "github.com/mats9693/unnamed_plan/shared/go/const"
+	"time"
 )
 
 type dbConfig struct {
-	Addr     string `json:"addr"`
-	User     string `json:"user"`
-	Password string `json:"password"`
-	Database string `json:"dbName"`
+	Addr     string        `json:"addr"`
+	User     string        `json:"user"`
+	Password string        `json:"password"`
+	Database string        `json:"dbName"`
+	Timeout  time.Duration `json:"timeout"` // db read & write timeout
+	ShowSQL  bool          `json:"showSQL"` // show sql before query
 }
 
 var db *pg.DB
@@ -23,13 +26,17 @@ func init() {
 	conf := getDBConfig()
 
 	db = pg.Connect(&pg.Options{
-		Addr:     conf.Addr,
-		User:     conf.User,
-		Password: conf.Password,
-		Database: conf.Database,
+		Addr:         conf.Addr,
+		User:         conf.User,
+		Password:     conf.Password,
+		Database:     conf.Database,
+		ReadTimeout:  conf.Timeout, // default behavior is blocking
+		WriteTimeout: conf.Timeout, // default behavior is blocking
 	})
 
-	db.AddQueryHook(&dbConfig{})
+	if conf.ShowSQL {
+		db.AddQueryHook(&dbConfig{})
+	}
 
 	fmt.Println("> Database init finish.")
 }
@@ -101,6 +108,6 @@ func (d *dbConfig) BeforeQuery(c context.Context, q *pg.QueryEvent) (context.Con
 	return c, nil
 }
 
-func (d *dbConfig) AfterQuery(c context.Context, _ *pg.QueryEvent) error {
+func (d *dbConfig) AfterQuery(_ context.Context, _ *pg.QueryEvent) error {
 	return nil
 }

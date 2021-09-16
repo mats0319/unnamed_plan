@@ -8,7 +8,9 @@
         "addr": "106.75.174.54:5432",
         "user": "mario_test",
         "password": "123456",
-        "dbName": "unnamed_plan_test"
+        "dbName": "unnamed_plan_test",
+        "timeout": 5,
+        "showSQL": true
       }
     },
     {
