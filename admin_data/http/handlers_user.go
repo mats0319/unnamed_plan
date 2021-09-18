@@ -25,7 +25,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user.Password != password {
+	if verifyUserPassword(user.Password, password, user.Salt) {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid account or password"))
 		return
 	}
@@ -134,7 +134,7 @@ func modifyUserInfo(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
 		return
-	} else if user.Password != currPwd {
+	} else if !verifyUserPassword(user.Password, currPwd, user.Salt) {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid password"))
 		return
 	}
@@ -191,10 +191,12 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	salt := randomString(10)
 	err = dao.GetUser().Insert(&model.User{
 		UserName:   name,
 		Nickname:   name,
-		Password:   password,
+		Password:   calcPassword(password, salt),
+		Salt:       salt,
 		Permission: permission,
 	})
 	if err != nil {

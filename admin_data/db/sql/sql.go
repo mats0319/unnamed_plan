@@ -6,6 +6,7 @@ import (
 	"github.com/mats9693/unnamed_plan/admin_data/db/model"
 	"log"
 	"reflect"
+	"time"
 )
 
 var dbConf = &pg.Options{
@@ -13,8 +14,8 @@ var dbConf = &pg.Options{
 	User:         "mario_test",
 	Password:     "123456",
 	Database:     "unnamed_plan_test",
-	ReadTimeout:  5,
-	WriteTimeout: 5,
+	ReadTimeout:  5 * time.Second,
+	WriteTimeout: 5 * time.Second,
 }
 
 func main() {

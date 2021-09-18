@@ -15,8 +15,9 @@ type Common struct {
 type User struct {
 	UserID     string `pg:",unique"`
 	UserName   string `pg:",unique"`
-	Nickname   string
-	Password   string `pg:",notnull"`
+	Nickname   string `pg:",notnull"`
+	Password   string `pg:"type:varchar(64),notnull"`
+	Salt       string `pg:",notnull"`
 	IsLocked   bool   `pg:",use_zero"`
 	Permission uint8  `pg:",use_zero"`
 

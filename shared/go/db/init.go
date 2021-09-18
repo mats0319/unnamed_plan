@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/go-pg/pg/extra/pgdebug"
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
 	"github.com/mats9693/unnamed_plan/shared/go/config"
@@ -16,7 +17,7 @@ type dbConfig struct {
 	User     string        `json:"user"`
 	Password string        `json:"password"`
 	Database string        `json:"dbName"`
-	Timeout  time.Duration `json:"timeout"` // db read & write timeout
+	Timeout  time.Duration `json:"timeout"` // db read and write timeout, second
 	ShowSQL  bool          `json:"showSQL"` // show sql before query
 }
 
@@ -30,12 +31,15 @@ func init() {
 		User:         conf.User,
 		Password:     conf.Password,
 		Database:     conf.Database,
-		ReadTimeout:  conf.Timeout, // default behavior is blocking
-		WriteTimeout: conf.Timeout, // default behavior is blocking
+		ReadTimeout:  conf.Timeout * time.Second, // default behavior is blocking
+		WriteTimeout: conf.Timeout * time.Second, // default behavior is blocking
 	})
 
 	if conf.ShowSQL {
-		db.AddQueryHook(&dbConfig{})
+		//db.AddQueryHook(&dbConfig{}) // todo: try official method to print sql.
+		db.AddQueryHook(pgdebug.DebugHook{
+			Verbose: true,
+		})
 	}
 
 	fmt.Println("> Database init finish.")

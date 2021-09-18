@@ -1,9 +1,12 @@
 package http
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"github.com/mats9693/unnamed_plan/admin_data/db/model"
 	"github.com/pkg/errors"
+	"math/rand"
 )
 
 func sortUsersByUserID(users []*model.User, order []string) ([]*model.User, error) {
@@ -34,4 +37,29 @@ func sortUsersByUserID(users []*model.User, order []string) ([]*model.User, erro
 	}
 
 	return users, nil
+}
+
+const str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+func randomString(length int) string {
+	bytes := make([]byte, length)
+	for i := range bytes {
+		bytes[i] = str[rand.Intn(len(str))]
+	}
+
+	return string(bytes)
+}
+
+// verifyUserPassword calc sha256('input'+'salt'), and compare it with 'pwd' from db
+func verifyUserPassword(pwd string, input string, salt string) bool {
+	return pwd == calcPassword(input, salt)
+}
+
+func calcPassword(text string, salt string) string {
+	hash := sha256.New()
+	hash.Reset()
+	hash.Write([]byte(text + salt))
+	bytes := hash.Sum(nil)
+
+	return hex.EncodeToString(bytes)
 }
