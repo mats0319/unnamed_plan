@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div class="top-title" @click="routerLink('home')">上弦月</div>
+    <div class="top-title" @click="linkTo('', 'home')">上弦月</div>
 
     <div class="top-links">
       <div
-        v-show="isLogin"
+        v-show="$store.state.isLogin"
         class="tl-item"
-        @click="routerLink('files')"
+        @click="linkTo('files', 'files')"
       >
         云文件
       </div>
@@ -22,10 +22,10 @@
     </div>
 
     <div class="top-login-entrance">
-      <div v-if="!isLogin" class="tle-text" @click="openLoginDialog">登录</div>
+      <div v-if="!$store.state.isLogin" class="tle-text" @click="openLoginDialog">登录</div>
 
-      <el-dropdown v-if="isLogin" class="tle-text">
-        <span>{{ userID }}<i class="el-icon-arrow-down el-icon--right"/></span>
+      <el-dropdown v-if="$store.state.isLogin" class="tle-text">
+        <span>{{ $store.state.nickname }}<i class="el-icon-arrow-down el-icon--right"/></span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item @click.native="exit">退出登录</el-dropdown-item>
         </el-dropdown-menu>
@@ -63,32 +63,21 @@
 <script lang="ts">
 import {Component, Vue} from "vue-property-decorator";
 import axios from "axios";
+import { calcSHA256 } from "@/ts/sha256";
 
 @Component
 export default class Top extends Vue {
-  private isLogin = false;
-  private userID = "";
-  private permission = 0;
-
   private userName = "";
   private password = "";
 
   private loginDialogController = false;
 
   private mounted() {
-    let userName = this.$store.state.userName;
-    let permission = this.$store.state.permission;
-
-    if (userName.length > 0 && permission > 0) {
-      this.userID = userName;
-      this.permission = permission;
-
-      this.isLogin = true;
-    }
+    // placeholder
   }
 
   private login(): void {
-    let pwd = this.password;
+    let pwd = calcSHA256(this.password);
     this.password = "";
 
     let data: FormData = new FormData();
@@ -103,14 +92,14 @@ export default class Top extends Vue {
 
         sessionStorage.setItem("auth", "passed");
 
-        this.userID = this.userName;
-
-        this.$store.state.userName = this.userName;
-        this.$store.state.permission = JSON.parse(response.data.data as string).permission;
+        const payload = JSON.parse(response.data.data as string);
+        this.$store.state.userID = payload.userID;
+        this.$store.state.nickname = payload.nickname;
+        this.$store.state.permission = payload.permission;
 
         this.userName = "";
 
-        this.isLogin = true;
+        this.$store.state.isLogin = true;
         this.loginDialogController = false;
       }
     ).catch(
@@ -121,13 +110,17 @@ export default class Top extends Vue {
   }
 
   private exit(): void {
-    this.userID = "";
+    this.$store.state.isLogin = false;
 
-    this.isLogin = false;
+    sessionStorage.removeItem("auth");
+
+    this.linkTo("", "home")
   }
 
-  private routerLink(name: string): void {
-    this.$router.push({name: name});
+  private linkTo(path: string, name: string): void {
+    if (location.href.split("#/")[1] !== path) {
+      this.$router.push({ name: name });
+    }
   }
 
   private openLoginDialog(): void {

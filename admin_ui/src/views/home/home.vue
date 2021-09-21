@@ -3,11 +3,11 @@
     <div class="home-navigation">
       <div class="hn-user">
         <div class="hnu-name">
-          <span class="hnu-link-home" @click="linkHome">{{userName}}</span>
+          <span class="hnu-link-home" @click="linkHome">{{ $store.state.nickname }}</span>
         </div>
 
         <div class="hnu-permission">
-          <span class="hnu-link-home" @click="linkHome">权限等级：{{permission}}</span>
+          <span class="hnu-link-home" @click="linkHome">权限等级：{{ $store.state.permission }}</span>
         </div>
 
         <el-button type="info" size="mini" @click="exit" plain>退出登录</el-button>
@@ -35,30 +35,20 @@ import { Component, Vue } from "vue-property-decorator";
 
 @Component
 export default class Home extends Vue {
-  private userName = "";
-  private permission = 0;
-
   private mounted() {
-    this.userName = this.$store.state.userName;
-    this.permission = this.$store.state.permission;
-
-    if (this.$store.state.userID.lenth < 1 ||
-      this.userName.length < 1 ||
-      !this.permission) {
+    if (!this.$store.state.isLogin) {
       this.$router.push({ name: "login" });
     }
   }
 
   private linkHome(): void {
-    if (location.href.split("#/")[1] !== "") {
+    if (location.href.split("#/")[1].length > 0) {
       this.$router.push({ name: "home" });
     }
   }
 
   private exit(): void {
     this.$store.state.userID = "";
-    this.$store.state.userName = "";
-    this.$store.state.permission = 0;
 
     sessionStorage.removeItem("auth");
 

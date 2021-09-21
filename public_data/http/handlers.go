@@ -3,7 +3,9 @@ package http
 import (
 	"fmt"
 	"github.com/mats9693/unnamed_plan/admin_data/db/dao"
-	"github.com/mats9693/unnamed_plan/shared/go/http"
+	"github.com/mats9693/unnamed_plan/admin_data/db/model"
+	"github.com/mats9693/unnamed_plan/admin_data/kits"
+	"github.com/mats9693/utils/toy_server/http"
 	"net/http"
 )
 
@@ -15,13 +17,13 @@ func login(w http.ResponseWriter, r *http.Request) {
 	name := r.PostFormValue("userName")
 	password := r.PostFormValue("password")
 
-	user, err := dao.GetUser().QueryOne("name = ?", name)
+	user, err := dao.GetUser().QueryOne(model.User_UserName+" = ?", name)
 	if err != nil {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
 		return
 	}
 
-	if user.Password != password {
+	if kits.VerifyUserPassword(user.Password, password, user.Salt) {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid account or password"))
 		return
 	}

@@ -13,7 +13,8 @@
     "build": "vue-cli-service build",
     "build-report": "npm run build -- --report",
     "lint": "vue-cli-service lint",
-    "fix": "npm run lint -- --fix"
+    "fix": "npm run lint -- --fix",
+    "link": "npm link ../shared/ts"
   },
   "dependencies": {
     "core-js": "^3.6.5",
@@ -23,7 +24,8 @@
     "vue-router": "^3.2.0",
     "vuex": "^3.4.0",
     "element-ui": "^2.15.1",
-    "axios": "^0.21.1"
+    "axios": "^0.21.1",
+    "crypto-js": "^4.1.1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.19.0",

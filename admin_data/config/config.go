@@ -3,8 +3,8 @@ package system_config
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mats9693/unnamed_plan/shared/go/config"
-	. "github.com/mats9693/unnamed_plan/shared/go/const"
+	"github.com/mats9693/utils/toy_server/config"
+	. "github.com/mats9693/utils/toy_server/const"
 )
 
 type configuration struct {

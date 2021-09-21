@@ -25,6 +25,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import axios from "axios";
+import { calcSHA256 } from "@/ts/sha256";
 
 @Component
 export default class Login extends Vue {
@@ -36,8 +37,8 @@ export default class Login extends Vue {
   }
 
   private login(): void {
-    let pwd = this.password;
-    // this.password = "";
+    let pwd = calcSHA256(this.password);
+    this.password = "";
 
     let data: FormData = new FormData();
     data.append("userName", this.userName);
@@ -53,10 +54,12 @@ export default class Login extends Vue {
 
         this.$store.state.userName = this.userName;
 
-        const res = JSON.parse(response.data.data as string);
-        this.$store.state.userID = res.userID;
-        this.$store.state.permission = res.permission;
+        const payload = JSON.parse(response.data.data as string);
+        this.$store.state.userID = payload.userID;
+        this.$store.state.nickname = payload.nickname;
+        this.$store.state.permission = payload.permission;
 
+        this.$store.state.isLogin = true;
         this.$router.push({ name: "home" });
       }
     ).catch(

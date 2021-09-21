@@ -6,7 +6,8 @@ import (
 	"github.com/mats9693/unnamed_plan/admin_data/config"
 	"github.com/mats9693/unnamed_plan/admin_data/db/dao"
 	"github.com/mats9693/unnamed_plan/admin_data/db/model"
-	"github.com/mats9693/unnamed_plan/shared/go/http"
+	"github.com/mats9693/unnamed_plan/admin_data/kits"
+	"github.com/mats9693/utils/toy_server/http"
 	"net/http"
 	"strconv"
 )
@@ -25,7 +26,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if verifyUserPassword(user.Password, password, user.Salt) {
+	if kits.VerifyUserPassword(user.Password, password, user.Salt) {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid account or password"))
 		return
 	}
@@ -134,7 +135,7 @@ func modifyUserInfo(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
 		return
-	} else if !verifyUserPassword(user.Password, currPwd, user.Salt) {
+	} else if !kits.VerifyUserPassword(user.Password, currPwd, user.Salt) {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid password"))
 		return
 	}
@@ -191,11 +192,11 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	salt := randomString(10)
+	salt := kits.RandomString(10)
 	err = dao.GetUser().Insert(&model.User{
 		UserName:   name,
 		Nickname:   name,
-		Password:   calcPassword(password, salt),
+		Password:   kits.CalcPassword(password, salt),
 		Salt:       salt,
 		Permission: permission,
 	})
@@ -237,7 +238,7 @@ func lockUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	users, err = sortUsersByUserID(users, []string{operatorID, userID})
+	users, err = kits.SortUsersByUserID(users, []string{operatorID, userID})
 	if err != nil {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
 		return
@@ -294,7 +295,7 @@ func unlockUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	users, err = sortUsersByUserID(users, []string{operatorID, userID})
+	users, err = kits.SortUsersByUserID(users, []string{operatorID, userID})
 	if err != nil {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
 		return
@@ -357,7 +358,7 @@ func modifyUserPermission(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	users, err = sortUsersByUserID(users, []string{operatorID, userID})
+	users, err = kits.SortUsersByUserID(users, []string{operatorID, userID})
 	if err != nil {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
 		return
