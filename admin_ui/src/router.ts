@@ -25,13 +25,13 @@ const routes: Array<RouteConfig> = [
         path: "/user/create",
         name: "userCreate",
         meta: {needLogin: true},
-        component: () => import("@/views/user/modify.vue")
+        component: () => import("@/views/user/create.vue")
       },
       {
         path: "/user/list",
         name: "userList",
         meta: {needLogin: true},
-        component: () => import("@/views/user/modify.vue")
+        component: () => import("@/views/user/list.vue")
       }
     ]
   },

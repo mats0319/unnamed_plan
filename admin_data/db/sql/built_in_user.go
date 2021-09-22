@@ -33,6 +33,7 @@ var users = []*model.User{
 
 func insertUsers(db *pg.DB) {
 	for i := range users {
+		users[i].Password = kits.CalcPassword(users[i].Password, "")
 		users[i].Password = kits.CalcPassword(users[i].Password, users[i].Salt)
 
 		_, err := db.Model(users[i]).Insert()

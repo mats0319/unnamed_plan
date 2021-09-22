@@ -7,7 +7,12 @@ import (
 	"github.com/mats9693/unnamed_plan/admin_data/db/model"
 	"github.com/pkg/errors"
 	"math/rand"
+	"time"
 )
+
+func init() {
+	rand.Seed(time.Now().Unix())
+}
 
 func SortUsersByUserID(users []*model.User, order []string) ([]*model.User, error) {
 	if len(users) != len(order) {
@@ -50,11 +55,7 @@ func RandomString(length int) string {
 	return string(bytes)
 }
 
-// VerifyUserPassword calc sha256('input'+'salt'), and compare it with 'pwd' from db
-func VerifyUserPassword(pwd string, input string, salt string) bool {
-	return pwd == CalcPassword(input, salt)
-}
-
+// CalcPassword calc sha256('text'+'salt')
 func CalcPassword(text string, salt string) string {
 	hash := sha256.New()
 	hash.Reset()

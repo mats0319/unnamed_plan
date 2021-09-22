@@ -37,17 +37,17 @@ export default class Login extends Vue {
   }
 
   private login(): void {
-    let pwd = calcSHA256(this.password);
+    const pwd = calcSHA256(this.password);
     this.password = "";
 
     let data: FormData = new FormData();
     data.append("userName", this.userName);
     data.append("password", pwd);
 
-    axios.post(process.env.VUE_APP_login_url, data).then(
-      response => {
+    axios.post(process.env.VUE_APP_login_url, data)
+      .then(response => {
         if (response.data.hasError) {
-          throw response.data;
+          throw response.data.data;
         }
 
         sessionStorage.setItem("auth", "passed");
@@ -61,12 +61,10 @@ export default class Login extends Vue {
 
         this.$store.state.isLogin = true;
         this.$router.push({ name: "home" });
-      }
-    ).catch(
-      err => {
+      })
+      .catch(err => {
         console.log("login failed, error:", err);
-      }
-    );
+      });
   }
 }
 </script>

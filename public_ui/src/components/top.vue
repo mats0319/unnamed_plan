@@ -77,7 +77,7 @@ export default class Top extends Vue {
   }
 
   private login(): void {
-    let pwd = calcSHA256(this.password);
+    const pwd = calcSHA256(this.password);
     this.password = "";
 
     let data: FormData = new FormData();
@@ -87,7 +87,7 @@ export default class Top extends Vue {
     axios.post(process.env.VUE_APP_login_url, data).then(
       response => {
         if (response.data.hasError) {
-          throw response.data;
+          throw response.data.data;
         }
 
         sessionStorage.setItem("auth", "passed");

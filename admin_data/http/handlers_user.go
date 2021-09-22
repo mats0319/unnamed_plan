@@ -17,16 +17,16 @@ func login(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
 
-	name := r.PostFormValue("userName")
+	userName := r.PostFormValue("userName")
 	password := r.PostFormValue("password")
 
-	user, err := dao.GetUser().QueryOne(model.User_UserName+" = ?", name)
+	user, err := dao.GetUser().QueryOne(model.User_UserName+" = ?", userName)
 	if err != nil {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
 		return
 	}
 
-	if kits.VerifyUserPassword(user.Password, password, user.Salt) {
+	if user.Password != kits.CalcPassword(password, user.Salt) {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid account or password"))
 		return
 	}
@@ -126,7 +126,7 @@ func modifyUserInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(nickname) < 1 && len(password) < 1 {
+	if len(nickname) + len(password) < 1 {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid params, not any modification received"))
 		return
 	}
@@ -135,7 +135,7 @@ func modifyUserInfo(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
 		return
-	} else if !kits.VerifyUserPassword(user.Password, currPwd, user.Salt) {
+	} else if user.Password != kits.CalcPassword(currPwd, user.Salt) {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid password"))
 		return
 	}
@@ -144,7 +144,7 @@ func modifyUserInfo(w http.ResponseWriter, r *http.Request) {
 		user.Nickname = nickname
 	}
 	if len(password) > 0 {
-		user.Password = password
+		user.Password = kits.CalcPassword(password, user.Salt)
 	}
 
 	err = dao.GetUser().UpdateColumnsByUserID(user, model.User_Nickname, model.User_Password)

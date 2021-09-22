@@ -37,7 +37,7 @@ import { Component, Vue } from "vue-property-decorator";
 export default class Home extends Vue {
   private mounted() {
     if (!this.$store.state.isLogin) {
-      this.$router.push({ name: "login" });
+      this.exit();
     }
   }
 

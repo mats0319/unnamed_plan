@@ -14,16 +14,16 @@ func login(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
 
-	name := r.PostFormValue("userName")
+	userName := r.PostFormValue("userName")
 	password := r.PostFormValue("password")
 
-	user, err := dao.GetUser().QueryOne(model.User_UserName+" = ?", name)
+	user, err := dao.GetUser().QueryOne(model.User_UserName+" = ?", userName)
 	if err != nil {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
 		return
 	}
 
-	if kits.VerifyUserPassword(user.Password, password, user.Salt) {
+	if user.Password != kits.CalcPassword(password, user.Salt) {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid account or password"))
 		return
 	}
