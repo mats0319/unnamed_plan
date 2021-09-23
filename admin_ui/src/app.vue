@@ -33,7 +33,7 @@ export default class App extends Vue {
 
 <style lang="scss">
 html {
-  font-size: 62.5%; // now, 1 rem = 10 px
+  font-size: 62.5%; // 1 rem = 10 px
 }
 
 body {

@@ -20,6 +20,7 @@ type User struct {
 	Salt       string `pg:",notnull"`
 	IsLocked   bool   `pg:",use_zero"`
 	Permission uint8  `pg:",use_zero"`
+	CreatedBy  string
 
 	Common
 }

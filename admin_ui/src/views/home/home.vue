@@ -18,7 +18,13 @@
           <template slot="title">用户管理</template>
 
           <el-menu-item index="modify" :route="{ name: 'userModify' }">修改当前用户信息</el-menu-item>
-          <el-menu-item index="create" :route="{ name: 'userCreate' }">创建新用户</el-menu-item>
+          <el-menu-item
+            v-show="$store.state.permission >= 6"
+            index="create"
+            :route="{ name: 'userCreate' }"
+          >
+            创建新用户
+          </el-menu-item>
           <el-menu-item index="list" :route="{ name: 'userList' }">查看其它用户</el-menu-item>
         </el-submenu>
       </el-menu>

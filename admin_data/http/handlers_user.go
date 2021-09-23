@@ -51,7 +51,7 @@ func listUser(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
 
-	userID := r.PostFormValue("userID")
+	userID := r.PostFormValue("operatorID")
 	pageSize, pageSizeErr := strconv.Atoi(r.PostFormValue("pageSize"))
 	pageNum, pageNumErr := strconv.Atoi(r.PostFormValue("pageNum"))
 
@@ -126,7 +126,7 @@ func modifyUserInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(nickname) + len(password) < 1 {
+	if len(nickname)+len(password) < 1 {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid params, not any modification received"))
 		return
 	}
@@ -170,9 +170,9 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	operatorID := r.PostFormValue("operatorID")
-	permissionInt, err := strconv.Atoi(r.PostFormValue("permission"))
 	name := r.PostFormValue("userName")
 	password := r.PostFormValue("password")
+	permissionInt, err := strconv.Atoi(r.PostFormValue("permission"))
 
 	if err != nil {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
@@ -199,6 +199,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 		Password:   kits.CalcPassword(password, salt),
 		Salt:       salt,
 		Permission: permission,
+		CreatedBy:  operatorID,
 	})
 	if err != nil {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))

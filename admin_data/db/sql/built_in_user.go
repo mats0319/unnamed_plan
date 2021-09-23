@@ -17,6 +17,7 @@ var users = []*model.User{
 		Salt:       kits.RandomString(10),
 		IsLocked:   false,
 		Permission: 10,
+		CreatedBy:  "MaTongShuai",
 		Common:     model.NewCommon(),
 	},
 	{
@@ -27,6 +28,7 @@ var users = []*model.User{
 		Salt:       kits.RandomString(10),
 		IsLocked:   false,
 		Permission: 6,
+		CreatedBy:  "MaTongShuai",
 		Common:     model.NewCommon(),
 	},
 }

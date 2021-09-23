@@ -8,4 +8,5 @@ const (
 	User_Salt       = "salt"
 	User_IsLocked   = "is_locked"
 	User_Permission = "permission"
+	User_CreatedBy  = "created_by"
 )
