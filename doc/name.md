@@ -14,8 +14,13 @@
     1. 每页条数：pageSize
     2. 当前页码：pageNum （当前页码从1开始）
     3. 符合条件的数据总条数：total
-8. 请求的发起者ID：operatorID （一般用于需要区分调用者和被操作者的场景，例如锁定用户）
+8. 请求的发起者ID：operatorID
 9. 执行结果：isSuccess
+10. 文件名：fileName
+11. 扩展名：extensionName
+12. 是否公开：isPublic
+13. 文件流：fileStream
+14. 访问路径：fileURL
 
 ## 数据库
 

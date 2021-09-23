@@ -248,7 +248,7 @@ func lockUser(w http.ResponseWriter, r *http.Request) {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("user is already locked"))
 		return
 	} else if users[0].Permission <= users[1].Permission ||
-		users[0].Permission < system_config.GetConfiguration().SRankAdminPermission {
+		users[0].Permission < system_config.GetConfiguration().ARankAdminPermission {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("permission denied, operator: %d, user: %d, need: %d",
 			users[0].Permission, users[1].Permission, system_config.GetConfiguration().SRankAdminPermission)))
 		return
@@ -305,7 +305,7 @@ func unlockUser(w http.ResponseWriter, r *http.Request) {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("user is already unlocked"))
 		return
 	} else if users[0].Permission <= users[1].Permission ||
-		users[0].Permission < system_config.GetConfiguration().SRankAdminPermission {
+		users[0].Permission < system_config.GetConfiguration().ARankAdminPermission {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("permission denied, operator: %d, user: %d, need: %d",
 			users[0].Permission, users[1].Permission, system_config.GetConfiguration().SRankAdminPermission)))
 		return

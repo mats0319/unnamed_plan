@@ -24,6 +24,16 @@ type User struct {
 	Common
 }
 
+type CloudFile struct {
+	UserID        string
+	FileID        string `pg:",unique"` // without extension name, use sha256('user id' + timestamp)
+	FileName      string
+	ExtensionName string // only support pdf now
+	IsPublic      bool   `pg:",use_zero"`
+
+	Common
+}
+
 func NewCommon() Common {
 	return Common{
 		ID:          uuid.New(),

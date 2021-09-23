@@ -55,7 +55,7 @@ type ResponseData struct {
 
 输入：
 
-1. 查询者ID userID
+1. 查询者ID operatorID
 2. 分页信息
     1. 每页条数 pageSize
     2. 当前页码 pageNum
@@ -66,7 +66,7 @@ type ResponseData struct {
 
 返回：
 
-1. 符合条件的数据条数：total
+1. 符合条件的数据条数 total
 2. 用户列表 users
     1. 用户ID userID
     2. 昵称 nickname
@@ -131,7 +131,7 @@ type ResponseData struct {
 规则：
 
 1. 需要待锁定者当前是**未锁定**状态
-2. 需要锁定者权限等级达到**S级管理员权限等级**（见配置文件）
+2. 需要锁定者权限等级达到**A级管理员权限等级**（见配置文件）
 3. 只能锁定比自己权限等级**低**的用户（隐含：不允许用户锁定自己）
 
 返回：
@@ -152,7 +152,7 @@ type ResponseData struct {
 规则：
 
 1. 需要待解锁者当前是**已锁定**状态
-2. 需要解锁者的权限等级达到**S级管理员权限等级**（见配置文件）
+2. 需要解锁者的权限等级达到**A级管理员权限等级**（见配置文件）
 3. 只能解锁比自己权限等级**低**的用户（隐含：不允许用户解锁自己）
 
 返回：
@@ -179,3 +179,64 @@ type ResponseData struct {
 返回：
 
 1. 修改结果 isSuccess
+
+## 云文件
+
+### 前台
+
+#### 查询
+
+用户可查看自己上传的全部文件，以及其他权限等级**不高于**自身的用户上传的**公开文件**
+
+查询：
+
+1. 当前用户上传的全部文件 /api/cloudFile/listByUploaderID
+2. 当前用户可查看的公开文件 /api/cloudFile/listPublic
+
+输入：
+
+1. 查询者ID operatorID
+2. 分页信息
+    1. 每页条数 pageSize
+    2. 当前页码 pageNum
+
+返回：
+
+1. 符合条件的数据条数 total
+2. 文件列表 files
+    1. 文件名 fileName
+    2. 访问路径 fileURL
+    3. 是否公开 isPublic
+
+#### 预览和下载
+
+当前仅支持pdf文件，通过nginx转发请求，让浏览器直接与pdf文件对话，至于浏览器是预览还是下载，都由他去
+
+### 后台
+
+#### 上传
+
+/api/cloudFile/upload
+
+用户上传文件到云服务器
+
+输入：
+
+1. 上传者ID operatorID
+2. 文件名 fileName
+3. 扩展名 extensionName
+4. 是否公开 isPublic
+5. 文件流 fileStream
+
+规则：
+
+1. 云文件存储结构：
+    1. 云文件夹根目录 - 公开文件夹、非公开文件夹（每个用户一个文件夹）
+
+返回：
+
+1. 上传结果 isSuccess
+
+#### 查询
+
+> 仅提供当前用户上传的文件查询，规则与前台相同 /api/cloudFile/listByUploaderID
