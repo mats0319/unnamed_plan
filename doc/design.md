@@ -225,8 +225,8 @@ type ResponseData struct {
 1. 上传者ID operatorID
 2. 文件名 fileName
 3. 扩展名 extensionName
-4. 是否公开 isPublic
-5. 文件流 fileStream
+5. 是否公开 isPublic
+6. 文件 file
 
 规则：
 
@@ -240,3 +240,7 @@ type ResponseData struct {
 #### 查询
 
 > 仅提供当前用户上传的文件查询，规则与前台相同 /api/cloudFile/listByUploaderID
+
+#### 预览和下载
+
+> 与前台对应模块相同

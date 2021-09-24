@@ -36,7 +36,7 @@ func (u *User) QueryOne(condition string, param ...interface{}) (user *model.Use
 	user = &model.User{}
 
 	err = WithNoTx(func(conn orm.DB) error {
-		return conn.Model(user).Where("is_locked = ?", false).Where(condition, param...).First()
+		return conn.Model(user).Where(model.User_IsLocked + " = ?", false).Where(condition, param...).First()
 	})
 	if err != nil {
 		user = nil
@@ -45,14 +45,16 @@ func (u *User) QueryOne(condition string, param ...interface{}) (user *model.Use
 	return
 }
 
-func (u *User) QueryPage(
+// QueryPageByPermission 查询权限等级不高于指定用户（通过userID）的用户列表，分页，按照权限等级排序
+func (u *User) QueryPageByPermission(
 	pageSize int,
 	pageNum int,
-	condition string,
-	param ...interface{},
+	userID string,
 ) (users []*model.User, count int, err error) {
 	err = WithNoTx(func(conn orm.DB) error {
-		count, err = conn.Model(&users).Where(condition, param...).Order("permission DESC").
+		permission := conn.Model((*model.User)(nil)).Column(model.User_Permission).Where(model.User_UserID+" = ?", userID)
+
+		count, err = conn.Model(&users).Where(model.User_Permission+" <= ?", permission).Order(model.User_Permission + " DESC").
 			Offset((pageNum - 1) * pageSize).Limit(pageSize).SelectAndCount()
 
 		return err
@@ -80,12 +82,12 @@ func (u *User) UpdateColumnsByUserID(data *model.User, columns ...string) (err e
 	data.UpdateTime = time.Duration(time.Now().Unix())
 
 	return WithTx(func(conn orm.DB) error {
-		query := conn.Model(data).Column("update_time")
+		query := conn.Model(data).Column(model.Common_UpdateTime)
 		for i := range columns {
 			query.Column(columns[i])
 		}
 
-		_, err = query.Where("user_id = ?user_id").Update()
+		_, err = query.Where(model.User_UserID + " = ?" + model.User_UserID).Update()
 		return err
 	})
 }

@@ -18,20 +18,21 @@
 9. 执行结果：isSuccess
 10. 文件名：fileName
 11. 扩展名：extensionName
-12. 是否公开：isPublic
-13. 文件流：fileStream
-14. 访问路径：fileURL
+12. 文件大小：fileSize
+13. 是否公开：isPublic
+14. 文件：file
+15. 访问路径：fileURL
 
-## 数据库
+## CRUD
 
-### dao
+### 数据库
 
 1. 插入：insert
 2. 更新：update
 3. 查询：query
 4. 删除：delete
 
-### 前、后端
+### 前、后端程序
 
 1. 新增：create
 2. 修改：modify

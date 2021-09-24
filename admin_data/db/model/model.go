@@ -26,10 +26,11 @@ type User struct {
 }
 
 type CloudFile struct {
-	UserID        string
-	FileID        string `pg:",unique"` // without extension name, use sha256('user id' + timestamp)
+	UploadedBy    string // user id
+	FileID        string `pg:",unique"` // sha256('user id' + timestamp)
 	FileName      string
 	ExtensionName string // only support pdf now
+	FileSize      string
 	IsPublic      bool   `pg:",use_zero"`
 
 	Common

@@ -60,19 +60,12 @@ func listUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if pageSize <= 0 || pageNum <= 0 {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid param, page size: %d, page num: %d.",
-			pageSize, pageNum)))
+	if len(userID) < 1 || pageSize < 1 || pageNum < 1 {
+		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid param, userID: %s, page size: %d, page num: %d.", userID, pageSize, pageNum)))
 		return
 	}
 
-	caller, err := dao.GetUser().QueryOne(model.User_UserID+" = ?", userID)
-	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
-		return
-	}
-
-	users, count, err := dao.GetUser().QueryPage(pageSize, pageNum, model.User_Permission+" <= ?", caller.Permission)
+	users, count, err := dao.GetUser().QueryPageByPermission(pageSize, pageNum, userID)
 	if err != nil {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
 		return
@@ -140,14 +133,17 @@ func modifyUserInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	updateColumns := make([]string, 0, 2)
 	if len(nickname) > 0 {
 		user.Nickname = nickname
+		updateColumns = append(updateColumns, model.User_Nickname)
 	}
 	if len(password) > 0 {
 		user.Password = kits.CalcPassword(password, user.Salt)
+		updateColumns = append(updateColumns, model.User_Password)
 	}
 
-	err = dao.GetUser().UpdateColumnsByUserID(user, model.User_Nickname, model.User_Password)
+	err = dao.GetUser().UpdateColumnsByUserID(user, updateColumns...)
 	if err != nil {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
 		return
@@ -170,12 +166,17 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	operatorID := r.PostFormValue("operatorID")
-	name := r.PostFormValue("userName")
+	userName := r.PostFormValue("userName")
 	password := r.PostFormValue("password")
 	permissionInt, err := strconv.Atoi(r.PostFormValue("permission"))
 
 	if err != nil {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		return
+	}
+
+	if len(operatorID) < 1 || len(userName) < 1 || len(password) < 1 {
+		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user name: %s, password: %s", operatorID, userName, password)))
 		return
 	}
 
@@ -194,8 +195,8 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 
 	salt := kits.RandomString(10)
 	err = dao.GetUser().Insert(&model.User{
-		UserName:   name,
-		Nickname:   name,
+		UserName:   userName,
+		Nickname:   userName,
 		Password:   kits.CalcPassword(password, salt),
 		Salt:       salt,
 		Permission: permission,
@@ -225,8 +226,8 @@ func lockUser(w http.ResponseWriter, r *http.Request) {
 	operatorID := r.PostFormValue("operatorID")
 	userID := r.PostFormValue("userID")
 
-	if operatorID == userID {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid params, operator id is equal to user id"))
+	if len(operatorID) < 1 || len(userID) < 1 || operatorID == userID {
+		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user id: %s", operatorID, userID)))
 		return
 	}
 
@@ -282,8 +283,8 @@ func unlockUser(w http.ResponseWriter, r *http.Request) {
 	operatorID := r.PostFormValue("operatorID")
 	userID := r.PostFormValue("userID")
 
-	if operatorID == userID {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid params, operator id is equal to user id"))
+	if len(operatorID) < 1 || len(userID) < 1 || operatorID == userID {
+		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user id: %s", operatorID, userID)))
 		return
 	}
 
@@ -345,8 +346,8 @@ func modifyUserPermission(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if operatorID == userID {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid params, operator id is equal to user id"))
+	if len(operatorID) < 1 || len(userID) < 1 || operatorID == userID {
+		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user id: %s", operatorID, userID)))
 		return
 	}
 
@@ -371,7 +372,7 @@ func modifyUserPermission(w http.ResponseWriter, r *http.Request) {
 		users[1].Permission >= system_config.GetConfiguration().SRankAdminPermission ||
 		permission >= system_config.GetConfiguration().SRankAdminPermission {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("permission denied, operator: %d, user: %d, user new: %d",
-			users[0].Permission, users[1].Permission, system_config.GetConfiguration().SRankAdminPermission)))
+			users[0].Permission, users[1].Permission, permission)))
 		return
 	}
 
