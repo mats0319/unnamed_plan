@@ -6,7 +6,9 @@
       "uid": "eed7ef1e-45b0-440e-b924-80346f341008",
       "jsonDev": {
         "ARankAdminPermission": 6,
-        "SRankAdminPermission": 8
+        "SRankAdminPermission": 8,
+        "cloudFileRootPath": "D:\\GoPath\\src\\github.com\\mats9693\\unnamed_plan\\admin_data\\main\\a\\b\\c\\",
+        "cloudFilePublicDir": "public"
       }
     },
     {

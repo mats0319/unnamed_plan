@@ -8,14 +8,15 @@ import (
 )
 
 type configuration struct {
-	ARankAdminPermission uint8 `json:"ARankAdminPermission"`
-	SRankAdminPermission uint8 `json:"SRankAdminPermission"`
+	ARankAdminPermission uint8  `json:"ARankAdminPermission"`
+	SRankAdminPermission uint8  `json:"SRankAdminPermission"`
+	CloudFileRootPath    string `json:"cloudFileRootPath"`  // absolute path
+	CloudFilePublicDir   string `json:"cloudFilePublicDir"` // public folder name
 }
 
 var systemConfig = &configuration{}
 
 func GetConfiguration() *configuration {
-	// todo: consider if use singleton pattern
 	return systemConfig
 }
 

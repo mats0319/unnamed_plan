@@ -51,7 +51,7 @@ func listUser(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
 
-	userID := r.PostFormValue("operatorID")
+	operatorID := r.PostFormValue("operatorID")
 	pageSize, pageSizeErr := strconv.Atoi(r.PostFormValue("pageSize"))
 	pageNum, pageNumErr := strconv.Atoi(r.PostFormValue("pageNum"))
 
@@ -60,12 +60,12 @@ func listUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(userID) < 1 || pageSize < 1 || pageNum < 1 {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid param, userID: %s, page size: %d, page num: %d.", userID, pageSize, pageNum)))
+	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
+		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid param, operatorID: %s, page size: %d, page num: %d.", operatorID, pageSize, pageNum)))
 		return
 	}
 
-	users, count, err := dao.GetUser().QueryPageByPermission(pageSize, pageNum, userID)
+	users, count, err := dao.GetUser().QueryPageByPermission(pageSize, pageNum, operatorID)
 	if err != nil {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
 		return
@@ -80,7 +80,7 @@ func listUser(w http.ResponseWriter, r *http.Request) {
 
 	var usersRes []*HttpResUser
 	for i := range users {
-		if users[i].UserID != userID {
+		if users[i].UserID != operatorID {
 			usersRes = append(usersRes, &HttpResUser{
 				UserID:     users[i].UserID,
 				Nickname:   users[i].Nickname,
@@ -114,8 +114,8 @@ func modifyUserInfo(w http.ResponseWriter, r *http.Request) {
 	nickname := r.PostFormValue("nickname")
 	password := r.PostFormValue("password")
 
-	if operatorID != userID {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid params, operator id is not equal to user id"))
+	if len(operatorID) < 1 || len(userID) < 1 || operatorID != userID {
+		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user id: %s", operatorID, userID)))
 		return
 	}
 
@@ -128,8 +128,9 @@ func modifyUserInfo(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
 		return
-	} else if user.Password != kits.CalcPassword(currPwd, user.Salt) {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid password"))
+	}
+	if user.Password != kits.CalcPassword(currPwd, user.Salt) {
+		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid account or password"))
 		return
 	}
 
@@ -186,7 +187,8 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
 		return
-	} else if operator.Permission < system_config.GetConfiguration().ARankAdminPermission ||
+	}
+	if operator.Permission < system_config.GetConfiguration().ARankAdminPermission ||
 		operator.Permission <= permission {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("permission denied, operator: %d, want create: %d.",
 			operator.Permission, permission)))
@@ -235,7 +237,8 @@ func lockUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
 		return
-	} else if len(users) != 2 {
+	}
+	if len(users) != 2 {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("unmatched user amount, want: 2, get: %d", len(users))))
 		return
 	}
@@ -249,7 +252,8 @@ func lockUser(w http.ResponseWriter, r *http.Request) {
 	if users[1].IsLocked {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("user is already locked"))
 		return
-	} else if users[0].Permission <= users[1].Permission ||
+	}
+	if users[0].Permission <= users[1].Permission ||
 		users[0].Permission < system_config.GetConfiguration().ARankAdminPermission {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("permission denied, operator: %d, user: %d, need: %d",
 			users[0].Permission, users[1].Permission, system_config.GetConfiguration().SRankAdminPermission)))
@@ -292,7 +296,8 @@ func unlockUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
 		return
-	} else if len(users) != 2 {
+	}
+	if len(users) != 2 {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("unmatched user amount, want 2, get: %d", len(users))))
 		return
 	}
@@ -306,7 +311,8 @@ func unlockUser(w http.ResponseWriter, r *http.Request) {
 	if !users[1].IsLocked {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("user is already unlocked"))
 		return
-	} else if users[0].Permission <= users[1].Permission ||
+	}
+	if users[0].Permission <= users[1].Permission ||
 		users[0].Permission < system_config.GetConfiguration().ARankAdminPermission {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("permission denied, operator: %d, user: %d, need: %d",
 			users[0].Permission, users[1].Permission, system_config.GetConfiguration().SRankAdminPermission)))
@@ -355,7 +361,8 @@ func modifyUserPermission(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
 		return
-	} else if len(users) != 2 {
+	}
+	if len(users) != 2 {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("unmatched user amount, want: 2, get: %d", len(users))))
 		return
 	}

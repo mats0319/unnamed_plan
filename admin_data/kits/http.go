@@ -64,3 +64,16 @@ func CalcPassword(text string, salt string) string {
 
 	return hex.EncodeToString(bytes)
 }
+
+func StringToBool(str string) (res bool, err error) {
+	switch str {
+	case "true":
+		res = true
+	case "false":
+		res = false
+	default:
+		err = errors.New("unknown str:" + str)
+	}
+
+	return
+}
