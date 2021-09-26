@@ -29,17 +29,19 @@ type CloudFile struct {
 	UploadedBy    string // user id
 	FileID        string `pg:",unique"` // sha256('user id' + timestamp)
 	FileName      string
-	ExtensionName string // only support pdf now
+	ExtensionName string
 	FileSize      string
-	IsPublic      bool   `pg:",use_zero"`
+	IsPublic      bool `pg:",use_zero"`
 
 	Common
 }
 
 func NewCommon() Common {
+	currTime := time.Duration(time.Now().Unix())
+
 	return Common{
 		ID:          uuid.New(),
-		CreatedTime: time.Duration(time.Now().Unix()),
-		UpdateTime:  time.Duration(time.Now().Unix()),
+		CreatedTime: currTime,
+		UpdateTime:  currTime,
 	}
 }

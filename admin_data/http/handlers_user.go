@@ -26,7 +26,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user.Password != kits.CalcPassword(password, user.Salt) {
+	if user.Password != kits.CalcSHA256(password, user.Salt) {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid account or password"))
 		return
 	}
@@ -61,7 +61,7 @@ func listUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid param, operatorID: %s, page size: %d, page num: %d.", operatorID, pageSize, pageNum)))
+		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid param, operator id: %s, page size: %d, page num: %d.", operatorID, pageSize, pageNum)))
 		return
 	}
 
@@ -76,9 +76,10 @@ func listUser(w http.ResponseWriter, r *http.Request) {
 		Nickname   string `json:"nickname"`
 		IsLocked   bool   `json:"isLocked"`
 		Permission uint8  `json:"permission"`
+		CreatedBy  string `json:"createdBy"`
 	}
 
-	var usersRes []*HttpResUser
+	usersRes := make([]*HttpResUser, 0, len(users))
 	for i := range users {
 		if users[i].UserID != operatorID {
 			usersRes = append(usersRes, &HttpResUser{
@@ -86,6 +87,7 @@ func listUser(w http.ResponseWriter, r *http.Request) {
 				Nickname:   users[i].Nickname,
 				IsLocked:   users[i].IsLocked,
 				Permission: users[i].Permission,
+				CreatedBy:  users[i].CreatedBy,
 			})
 		}
 	}
@@ -129,7 +131,7 @@ func modifyUserInfo(w http.ResponseWriter, r *http.Request) {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
 		return
 	}
-	if user.Password != kits.CalcPassword(currPwd, user.Salt) {
+	if user.Password != kits.CalcSHA256(currPwd, user.Salt) {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid account or password"))
 		return
 	}
@@ -140,7 +142,7 @@ func modifyUserInfo(w http.ResponseWriter, r *http.Request) {
 		updateColumns = append(updateColumns, model.User_Nickname)
 	}
 	if len(password) > 0 {
-		user.Password = kits.CalcPassword(password, user.Salt)
+		user.Password = kits.CalcSHA256(password, user.Salt)
 		updateColumns = append(updateColumns, model.User_Password)
 	}
 
@@ -199,7 +201,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	err = dao.GetUser().Insert(&model.User{
 		UserName:   userName,
 		Nickname:   userName,
-		Password:   kits.CalcPassword(password, salt),
+		Password:   kits.CalcSHA256(password, salt),
 		Salt:       salt,
 		Permission: permission,
 		CreatedBy:  operatorID,

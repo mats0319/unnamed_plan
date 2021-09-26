@@ -23,7 +23,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user.Password != kits.CalcPassword(password, user.Salt) {
+	if user.Password != kits.CalcSHA256(password, user.Salt) {
 		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid account or password"))
 		return
 	}

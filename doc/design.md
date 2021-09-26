@@ -72,6 +72,7 @@ type ResponseData struct {
     2. 昵称 nickname
     3. 锁定状态 isLocked
     4. 用户权限等级 permission
+    5. 创建人 createdBy
 
 #### 修改用户信息（昵称和密码）
 
@@ -190,7 +191,7 @@ type ResponseData struct {
 
 查询：
 
-1. 当前用户上传的全部文件 /api/cloudFile/listByUploaderID
+1. 当前用户上传的全部文件 /api/cloudFile/listByUploader
 2. 当前用户可查看的公开文件 /api/cloudFile/listPublic
 
 输入：
@@ -206,7 +207,18 @@ type ResponseData struct {
 2. 文件列表 files
     1. 文件名 fileName
     2. 访问路径 fileURL
+        1. 与nginx配合，前端根据url直接定位到服务器文件：
+            1. 后端返回的url举例：```/public/ffff.pdf```，
+            2. 前端拼上源和云文件标识：```https://mats9693.cn/cloud-file/public/ffff.pdf```
+            3. nginx识别云文件标识：
+               ```text 
+               location /cloud-file/ {
+                 alias /home/xxx/cloud_file/;
+               }
+               ```
     3. 是否公开 isPublic
+    4. 更新时间 updateTime
+    5. 创建时间 createdTime
 
 #### 预览和下载
 
@@ -236,6 +248,12 @@ type ResponseData struct {
 返回：
 
 1. 上传结果 isSuccess
+
+#### 更新
+
+/api/cloudFile/update
+
+用户更新上传的文件
 
 #### 查询
 

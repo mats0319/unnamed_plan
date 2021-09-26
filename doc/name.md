@@ -10,18 +10,21 @@
 4. 锁定状态：isLocked
 5. 密码：password
 6. 权限等级：permission
-7. 分页信息
+7. 创建人：createdBy
+8. 分页信息
     1. 每页条数：pageSize
     2. 当前页码：pageNum （当前页码从1开始）
     3. 符合条件的数据总条数：total
-8. 请求的发起者ID：operatorID
-9. 执行结果：isSuccess
-10. 文件名：fileName
-11. 扩展名：extensionName
-12. 文件大小：fileSize
-13. 是否公开：isPublic
-14. 文件：file
-15. 访问路径：fileURL
+9. 请求的发起者ID：operatorID
+10. 执行结果：isSuccess
+11. 文件名：fileName
+12. 扩展名：extensionName
+13. 文件大小：fileSize
+14. 是否公开：isPublic
+15. 文件：file
+16. 访问路径：fileURL
+17. 创建时间：createdTime
+18. 更新时间：updateTime
 
 ## CRUD
 

@@ -7,6 +7,7 @@ import (
 	"github.com/mats9693/unnamed_plan/admin_data/db/model"
 	"github.com/pkg/errors"
 	"math/rand"
+	"strings"
 	"time"
 )
 
@@ -55,11 +56,11 @@ func RandomString(length int) string {
 	return string(bytes)
 }
 
-// CalcPassword calc sha256('text'+'salt')
-func CalcPassword(text string, salt string) string {
+// CalcSHA256 calc sha256('text'[+'extension'])
+func CalcSHA256(text string, append ...string) string {
 	hash := sha256.New()
 	hash.Reset()
-	hash.Write([]byte(text + salt))
+	hash.Write([]byte(text + strings.Join(append, "")))
 	bytes := hash.Sum(nil)
 
 	return hex.EncodeToString(bytes)
@@ -76,4 +77,13 @@ func StringToBool(str string) (res bool, err error) {
 	}
 
 	return
+}
+
+// AppendDirSuffix make sure path is directory(end with '/')
+func AppendDirSuffix(path string) string {
+	if !strings.HasSuffix(path, "/") {
+		path += "/"
+	}
+
+	return path
 }

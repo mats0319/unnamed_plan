@@ -36,7 +36,7 @@ func (u *User) QueryOne(condition string, param ...interface{}) (user *model.Use
 	user = &model.User{}
 
 	err = WithNoTx(func(conn orm.DB) error {
-		return conn.Model(user).Where(model.User_IsLocked + " = ?", false).Where(condition, param...).First()
+		return conn.Model(user).Where(model.User_IsLocked+" = ?", false).Where(condition, param...).First()
 	})
 	if err != nil {
 		user = nil
@@ -45,7 +45,17 @@ func (u *User) QueryOne(condition string, param ...interface{}) (user *model.Use
 	return
 }
 
-// QueryPageByPermission 查询权限等级不高于指定用户（通过userID）的用户列表，分页，按照权限等级排序
+// QueryPageByPermission 获取用户列表，要求目标用户权限等级不高于指定用户（通过userID指定），分页，按照权限等级降序
+/**
+Design: sub-query
+	select *
+	from users u
+	where u."permission" <= (
+		select "permission"
+		from users u
+		where user_id = [user id]
+	);
+ */
 func (u *User) QueryPageByPermission(
 	pageSize int,
 	pageNum int,

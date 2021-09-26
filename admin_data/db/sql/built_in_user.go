@@ -35,12 +35,12 @@ var users = []*model.User{
 
 func insertUsers(db *pg.DB) {
 	for i := range users {
-		users[i].Password = kits.CalcPassword(users[i].Password, "")
-		users[i].Password = kits.CalcPassword(users[i].Password, users[i].Salt)
+		users[i].Password = kits.CalcSHA256(users[i].Password)
+		users[i].Password = kits.CalcSHA256(users[i].Password, users[i].Salt)
 
 		_, err := db.Model(users[i]).Insert()
 		if err != nil {
-			log.Fatalf("insert users failed, index: %d, error: %v\n", i, err)
+			log.Printf("insert users failed, index: %d, error: %v\n", i, err)
 		}
 	}
 }
