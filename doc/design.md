@@ -16,15 +16,15 @@ type ResponseData struct {
 
 ## 用户系统
 
-用户系统涉及的密码操作：
+系统中全部密码均使用hash、不使用明文  
+前端：用户输入明文密码，确认后（例如点击登录按钮），程序执行```sha256```，清空输入框  
+后端：从前端接收到hash后的密码，与该用户的salt再次执行hash，保存到数据库（创建）或与数据库记录对比（验证）  
+数据库：密码字段实际保存的值为```sha256(sha256('明文')+'salt')```
 
-1. 用户在前端界面输入密码明文```text```
-    1. 用户确定后，立刻清空密码框
-2. 前端对明文执行```sha256 hash```，将结果转为16进制字符串```input pwd```
-3. 后端对前端传过来的```input pwd```加盐```salt```，执行```sha256 hash```，得到```password```
-4. ```password```即视作用户输入的密码，保存到数据库或与数据库中的记录进行比较
+这样一来，只有前端发起的请求被拦截并从中解析出hash后的密码，才会导致密码泄露  
+即使数据库字段被获取，因为hash不可逆，理论上无法反推出前端传过来的hash后的密码，所以无法正确执行我们后端的登录函数
 
-### 前台
+### 前台(1)
 
 #### 登录
 
@@ -41,7 +41,7 @@ type ResponseData struct {
 2. 昵称 nickname
 3. 权限等级 permission
 
-### 后台
+### 后台(7)
 
 #### 登录
 
@@ -181,9 +181,15 @@ type ResponseData struct {
 
 1. 修改结果 isSuccess
 
-## 云文件
+## 云文件系统
 
-### 前台
+用户在后台上传文件到云服务器，可以在前台查看  
+文件一经上传，不可更改  
+允许用户删除自己上传的文件，采用软删除，保留数据库记录与云文件
+
+编写后台程序移动端界面，拟仅开放云文件系统，且仅支持查询自己上传的文件
+
+### 前台(2)
 
 #### 查询
 
@@ -193,6 +199,9 @@ type ResponseData struct {
 
 1. 当前用户上传的全部文件 /api/cloudFile/listByUploader
 2. 当前用户可查看的公开文件 /api/cloudFile/listPublic
+3. 查询已删除的文件（仅后台） /api/cloudFile/listDelete
+   1. 规则1：需要**S级管理员权限**
+   2. 规则2：仅可查询权限等级**不高于**自身的上传者上传的文件
 
 输入：
 
@@ -205,26 +214,28 @@ type ResponseData struct {
 
 1. 符合条件的数据条数 total
 2. 文件列表 files
-    1. 文件名 fileName
-    2. 访问路径 fileURL
-        1. 与nginx配合，前端根据url直接定位到服务器文件：
-            1. 后端返回的url举例：```/public/ffff.pdf```，
-            2. 前端拼上源和云文件标识：```https://mats9693.cn/cloud-file/public/ffff.pdf```
-            3. nginx识别云文件标识：
-               ```text 
-               location /cloud-file/ {
-                 alias /home/xxx/cloud_file/;
-               }
-               ```
-    3. 是否公开 isPublic
-    4. 更新时间 updateTime
-    5. 创建时间 createdTime
+    1. 文件ID fileID
+    2. 文件名 fileName
+    3. 访问路径 fileURL ```/public/ffff.pdf```
+    4. 是否公开 isPublic
+    5. 更新时间 updateTime
+    6. 创建时间 createdTime
 
-#### 预览和下载
+#### 预览
 
-当前仅支持pdf文件，通过nginx转发请求，让浏览器直接与pdf文件对话，至于浏览器是预览还是下载，都由他去
+暂时使用浏览器默认解析方式，前端限制只接收pdf类型的文件，文件大小是否要限制、限制多少**待定**
 
-### 后台
+与nginx配合，前端根据url直接定位到服务器文件：
+1. 后端返回的```fileURL```举例：```/public/ffff.pdf```，
+2. 前端拼上**源**和**云文件标识**：```https://mats9693.cn/cloud-file/public/ffff.pdf```
+3. nginx识别**云文件标识**：
+```text 
+location /cloud-file/ {
+    alias /home/xxx/cloud_file/;
+}
+```
+
+### 后台(5)
 
 #### 上传
 
@@ -249,16 +260,33 @@ type ResponseData struct {
 
 1. 上传结果 isSuccess
 
-#### 更新
+#### 删除
 
-/api/cloudFile/update
+/api/cloudFile/delete
 
-用户更新上传的文件
+用户删除自己上传的文件
+
+输入：
+
+1. 操作员 operatorID
+2. 密码 password
+3. 文件ID fileID
+
+规则：
+
+1. 仅允许删除自己上传的文件
+2. 软删除，保留数据库记录与服务器文件，修改数据库记录**更新时间**与**是否已删除**字段
+3. 需要指定文件当前状态为**未删除**
+
+输出：
+
+1. 删除结果 isSuccess
 
 #### 查询
 
-> 仅提供当前用户上传的文件查询，规则与前台相同 /api/cloudFile/listByUploaderID
+> 允许根据上传者查询 /api/cloudFile/listByUploader  
+> 允许S级管理员查询已删除的文件 /api/cloudFile/listDelete
 
-#### 预览和下载
+#### 预览
 
 > 与前台对应模块相同

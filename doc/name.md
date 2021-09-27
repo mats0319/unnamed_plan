@@ -17,14 +17,15 @@
     3. 符合条件的数据总条数：total
 9. 请求的发起者ID：operatorID
 10. 执行结果：isSuccess
-11. 文件名：fileName
-12. 扩展名：extensionName
-13. 文件大小：fileSize
-14. 是否公开：isPublic
-15. 文件：file
-16. 访问路径：fileURL
-17. 创建时间：createdTime
-18. 更新时间：updateTime
+11. 文件ID：fileID
+12. 文件名：fileName
+13. 扩展名：extensionName
+14. 文件大小：fileSize
+15. 是否公开：isPublic
+16. 文件：file
+17. 访问路径：fileURL
+18. 创建时间：createdTime
+19. 更新时间：updateTime
 
 ## CRUD
 

@@ -47,15 +47,15 @@ func (u *User) QueryOne(condition string, param ...interface{}) (user *model.Use
 
 // QueryPageByPermission 获取用户列表，要求目标用户权限等级不高于指定用户（通过userID指定），分页，按照权限等级降序
 /**
-Design: sub-query
+Core: sub-query
 	select *
 	from users u
-	where u."permission" <= (
+	where "permission" <= (
 		select "permission"
 		from users u
-		where user_id = [user id]
+		where user_id = 'user id'
 	);
- */
+*/
 func (u *User) QueryPageByPermission(
 	pageSize int,
 	pageNum int,
@@ -64,7 +64,8 @@ func (u *User) QueryPageByPermission(
 	err = WithNoTx(func(conn orm.DB) error {
 		permission := conn.Model((*model.User)(nil)).Column(model.User_Permission).Where(model.User_UserID+" = ?", userID)
 
-		count, err = conn.Model(&users).Where(model.User_Permission+" <= ?", permission).Order(model.User_Permission + " DESC").
+		count, err = conn.Model(&users).Where(model.User_Permission+" <= ?", permission).
+			Order(model.User_Permission + " DESC").
 			Offset((pageNum - 1) * pageSize).Limit(pageSize).SelectAndCount()
 
 		return err

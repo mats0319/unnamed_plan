@@ -14,8 +14,8 @@ type Common struct {
 
 type User struct {
 	UserID     string `pg:",unique"`
-	UserName   string `pg:",unique"`
-	Nickname   string `pg:",notnull"`
+	UserName   string `pg:",unique"`  // login name
+	Nickname   string `pg:",notnull"` // show name
 	Password   string `pg:"type:varchar(64),notnull"`
 	Salt       string `pg:",notnull"`
 	IsLocked   bool   `pg:",use_zero"`
@@ -26,12 +26,13 @@ type User struct {
 }
 
 type CloudFile struct {
+	FileID        string `pg:",unique"` // sha256('user id' + timestamp), storage name
 	UploadedBy    string // user id
-	FileID        string `pg:",unique"` // sha256('user id' + timestamp)
-	FileName      string
+	FileName      string // show name, for display
 	ExtensionName string
 	FileSize      string
 	IsPublic      bool `pg:",use_zero"`
+	IsDeleted     bool `pg:",use_zero"`
 
 	Common
 }
@@ -41,7 +42,7 @@ func NewCommon() Common {
 
 	return Common{
 		ID:          uuid.New(),
-		CreatedTime: currTime,
 		UpdateTime:  currTime,
+		CreatedTime: currTime,
 	}
 }

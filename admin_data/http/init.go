@@ -25,4 +25,6 @@ func init() {
 	http.HandleFunc("/api/cloudFile/upload", uploadFile)
 	http.HandleFunc("/api/cloudFile/listByUploader", listCloudFileByUploader)
 	http.HandleFunc("/api/cloudFile/listPublic", listPublicCloudFile)
+	http.HandleFunc("/api/cloudFile/listDelete", listDeleted)
+	http.HandleFunc("/api/cloudFile/delete", deleteFile)
 }
