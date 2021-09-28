@@ -1,8 +1,9 @@
 package model
 
 import (
-	"github.com/mats9693/utils/uuid"
 	"time"
+
+	"github.com/mats9693/utils/uuid"
 )
 
 type Common struct {

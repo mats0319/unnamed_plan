@@ -4,11 +4,12 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"github.com/mats9693/unnamed_plan/admin_data/db/model"
 	"github.com/pkg/errors"
 	"math/rand"
 	"strings"
 	"time"
+
+	"github.com/mats9693/unnamed_plan/admin_data/db/model"
 )
 
 func init() {

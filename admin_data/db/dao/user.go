@@ -1,11 +1,13 @@
 package dao
 
 import (
-	"github.com/go-pg/pg/v10/orm"
-	"github.com/mats9693/unnamed_plan/admin_data/db/model"
-	. "github.com/mats9693/utils/toy_server/db"
-	"github.com/mats9693/utils/uuid"
 	"time"
+
+	"github.com/go-pg/pg/v10/orm"
+
+	"github.com/mats9693/unnamed_plan/admin_data/db/model"
+	mdb "github.com/mats9693/utils/toy_server/db"
+	"github.com/mats9693/utils/uuid"
 )
 
 type User model.User
@@ -25,7 +27,7 @@ func (u *User) Insert(user *model.User) (err error) {
 		user.UserID = uuid.New()
 	}
 
-	return WithTx(func(conn orm.DB) error {
+	return mdb.WithTx(func(conn orm.DB) error {
 		_, err = conn.Model(user).Insert()
 		return err
 	})
@@ -35,7 +37,7 @@ func (u *User) Insert(user *model.User) (err error) {
 func (u *User) QueryOne(condition string, param ...interface{}) (user *model.User, err error) {
 	user = &model.User{}
 
-	err = WithNoTx(func(conn orm.DB) error {
+	err = mdb.WithNoTx(func(conn orm.DB) error {
 		return conn.Model(user).Where(model.User_IsLocked+" = ?", false).Where(condition, param...).First()
 	})
 	if err != nil {
@@ -61,10 +63,10 @@ func (u *User) QueryPageByPermission(
 	pageNum int,
 	userID string,
 ) (users []*model.User, count int, err error) {
-	err = WithNoTx(func(conn orm.DB) error {
+	err = mdb.WithNoTx(func(conn orm.DB) error {
 		permission := conn.Model((*model.User)(nil)).Column(model.User_Permission).Where(model.User_UserID+" = ?", userID)
 
-		count, err = conn.Model(&users).Where(model.User_Permission+" <= ?", permission).
+		count, err = conn.Model(&users).Where(model.User_Permission+" <= (?)", permission).
 			Order(model.User_Permission + " DESC").
 			Offset((pageNum - 1) * pageSize).Limit(pageSize).SelectAndCount()
 
@@ -79,7 +81,7 @@ func (u *User) QueryPageByPermission(
 }
 
 func (u *User) Query(condition string, param ...interface{}) (users []*model.User, err error) {
-	err = WithNoTx(func(conn orm.DB) error {
+	err = mdb.WithNoTx(func(conn orm.DB) error {
 		return conn.Model(&users).Where(condition, param...).Select()
 	})
 	if err != nil {
@@ -92,7 +94,7 @@ func (u *User) Query(condition string, param ...interface{}) (users []*model.Use
 func (u *User) UpdateColumnsByUserID(data *model.User, columns ...string) (err error) {
 	data.UpdateTime = time.Duration(time.Now().Unix())
 
-	return WithTx(func(conn orm.DB) error {
+	return mdb.WithTx(func(conn orm.DB) error {
 		query := conn.Model(data).Column(model.Common_UpdateTime)
 		for i := range columns {
 			query.Column(columns[i])

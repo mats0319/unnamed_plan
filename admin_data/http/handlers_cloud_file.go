@@ -2,16 +2,31 @@ package http
 
 import (
 	"fmt"
-	system_config "github.com/mats9693/unnamed_plan/admin_data/config"
-	"github.com/mats9693/unnamed_plan/admin_data/db/dao"
-	"github.com/mats9693/unnamed_plan/admin_data/db/model"
-	"github.com/mats9693/unnamed_plan/admin_data/kits"
-	shttp "github.com/mats9693/utils/toy_server/http"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/mats9693/unnamed_plan/admin_data/config"
+	"github.com/mats9693/unnamed_plan/admin_data/db/dao"
+	"github.com/mats9693/unnamed_plan/admin_data/db/model"
+	"github.com/mats9693/unnamed_plan/admin_data/http/response_type"
+	"github.com/mats9693/unnamed_plan/admin_data/kits"
+	mhttp "github.com/mats9693/utils/toy_server/http"
 )
+
+func init() {
+	root := system_config.GetConfiguration().CloudFileRootPath
+	path := kits.AppendDirSuffix(root) + system_config.GetConfiguration().CloudFilePublicDir
+
+	err := os.MkdirAll(path, 0755)
+	if err != nil {
+		fmt.Println("os.MkdirAll failed, error:", err.Error())
+		os.Exit(-1)
+	}
+
+	fmt.Println("> Cloud file directory init finish.")
+}
 
 func uploadFile(w http.ResponseWriter, r *http.Request) {
 	if isDev {
@@ -25,13 +40,13 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 	file, fileHeader, err2 := r.FormFile("file")
 
 	if err != nil || err2 != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()+err2.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()+err2.Error()))
 		return
 	}
 	defer file.Close()
 
 	if len(operatorID) < 1 || len(fileName) < 1 || len(extensionName) < 1 {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, file name: %s, extension name: %s", operatorID, fileName, extensionName)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, file name: %s, extension name: %s", operatorID, fileName, extensionName)))
 		return
 	}
 
@@ -45,7 +60,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 
 	err = os.MkdirAll(dir, 0755)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
@@ -53,7 +68,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 	fileContent := make([]byte, fileHeader.Size) // require enough length before read
 	_, err = file.Read(fileContent)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
@@ -61,7 +76,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 	absolutePath := dir + fileID + "." + extensionName
 	err = os.WriteFile(absolutePath, fileContent, 0755)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
@@ -76,7 +91,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		err2 = os.Remove(absolutePath)
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()+err2.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()+err2.Error()))
 		return
 	}
 
@@ -86,7 +101,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 		IsSuccess: true,
 	}
 
-	_, _ = fmt.Fprintln(w, shttp.Response(resData))
+	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
 
 	return
 }
@@ -101,30 +116,21 @@ func listCloudFileByUploader(w http.ResponseWriter, r *http.Request) {
 	pageNum, err2 := strconv.Atoi(r.PostFormValue("pageNum"))
 
 	if err != nil || err2 != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()+err2.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()+err2.Error()))
 		return
 	}
 	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
 		return
 	}
 
 	files, count, err := dao.GetCloudFile().QueryPageByUploader(pageSize, pageNum, operatorID)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
-	type HTTPResFiles struct {
-		FileID      string        `json:"fileID"`
-		FileName    string        `json:"fileName"`
-		FileURL     string        `json:"fileURL"`
-		IsPublic    bool          `json:"isPublic"`
-		UpdateTime  time.Duration `json:"updateTime"`
-		CreatedTime time.Duration `json:"createdTime"`
-	}
-
-	filesRes := make([]*HTTPResFiles, 0, len(files))
+	filesRes := make([]*http_res_type.HTTPResFiles, 0, len(files))
 	for i := range files {
 		url := ""
 		if files[i].IsPublic {
@@ -134,7 +140,7 @@ func listCloudFileByUploader(w http.ResponseWriter, r *http.Request) {
 		}
 		url = kits.AppendDirSuffix(url) + files[i].FileID + "." + files[i].ExtensionName
 
-		filesRes = append(filesRes, &HTTPResFiles{
+		filesRes = append(filesRes, &http_res_type.HTTPResFiles{
 			FileID:      files[i].FileID,
 			FileName:    files[i].FileName,
 			FileURL:     url,
@@ -145,14 +151,14 @@ func listCloudFileByUploader(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resData := &struct {
-		Total int             `json:"total"`
-		Files []*HTTPResFiles `json:"files"`
+		Total int                           `json:"total"`
+		Files []*http_res_type.HTTPResFiles `json:"files"`
 	}{
 		Total: count,
 		Files: filesRes,
 	}
 
-	_, _ = fmt.Fprintln(w, shttp.Response(resData))
+	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
 
 	return
 }
@@ -167,30 +173,21 @@ func listPublicCloudFile(w http.ResponseWriter, r *http.Request) {
 	pageNum, err2 := strconv.Atoi(r.PostFormValue("pageNum"))
 
 	if err != nil || err2 != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()+err2.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()+err2.Error()))
 		return
 	}
 	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
 		return
 	}
 
 	files, count, err := dao.GetCloudFile().QueryPageInPublic(pageSize, pageNum, operatorID)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
-	type HTTPResFiles struct {
-		FileID      string        `json:"fileID"`
-		FileName    string        `json:"fileName"`
-		FileURL     string        `json:"fileURL"`
-		IsPublic    bool          `json:"isPublic"`
-		UpdateTime  time.Duration `json:"updateTime"`
-		CreatedTime time.Duration `json:"createdTime"`
-	}
-
-	filesRes := make([]*HTTPResFiles, 0, len(files))
+	filesRes := make([]*http_res_type.HTTPResFiles, 0, len(files))
 	for i := range files {
 		url := ""
 		if files[i].IsPublic {
@@ -200,7 +197,7 @@ func listPublicCloudFile(w http.ResponseWriter, r *http.Request) {
 		}
 		url = kits.AppendDirSuffix(url) + files[i].FileID + "." + files[i].ExtensionName
 
-		filesRes = append(filesRes, &HTTPResFiles{
+		filesRes = append(filesRes, &http_res_type.HTTPResFiles{
 			FileID:      files[i].FileID,
 			FileName:    files[i].FileName,
 			FileURL:     url,
@@ -211,14 +208,14 @@ func listPublicCloudFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resData := &struct {
-		Total int             `json:"total"`
-		Files []*HTTPResFiles `json:"files"`
+		Total int                           `json:"total"`
+		Files []*http_res_type.HTTPResFiles `json:"files"`
 	}{
 		Total: count,
 		Files: filesRes,
 	}
 
-	_, _ = fmt.Fprintln(w, shttp.Response(resData))
+	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
 
 	return
 }
@@ -233,41 +230,32 @@ func listDeleted(w http.ResponseWriter, r *http.Request) {
 	pageNum, err2 := strconv.Atoi(r.PostFormValue("pageNum"))
 
 	if err != nil || err2 != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()+err2.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()+err2.Error()))
 		return
 	}
 	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
 		return
 	}
 
 	operator, err := dao.GetUser().QueryOne(model.User_UserID+" = ?", operatorID)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 	if operator.Permission < system_config.GetConfiguration().SRankAdminPermission {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("permission denied, operator: %d, required: %d",
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("permission denied, operator: %d, required: %d",
 			operator.Permission, system_config.GetConfiguration().SRankAdminPermission)))
 		return
 	}
 
 	files, count, err := dao.GetCloudFile().QueryPageInDeleted(pageSize, pageNum, operatorID)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
-	type HTTPResFiles struct {
-		FileID      string        `json:"fileID"`
-		FileName    string        `json:"fileName"`
-		FileURL     string        `json:"fileURL"`
-		IsPublic    bool          `json:"isPublic"`
-		UpdateTime  time.Duration `json:"updateTime"`
-		CreatedTime time.Duration `json:"createdTime"`
-	}
-
-	filesRes := make([]*HTTPResFiles, 0, len(files))
+	filesRes := make([]*http_res_type.HTTPResFiles, 0, len(files))
 	for i := range files {
 		url := ""
 		if files[i].IsPublic {
@@ -277,7 +265,7 @@ func listDeleted(w http.ResponseWriter, r *http.Request) {
 		}
 		url = kits.AppendDirSuffix(url) + files[i].FileID + "." + files[i].ExtensionName
 
-		filesRes = append(filesRes, &HTTPResFiles{
+		filesRes = append(filesRes, &http_res_type.HTTPResFiles{
 			FileID:      files[i].FileID,
 			FileName:    files[i].FileName,
 			FileURL:     url,
@@ -288,14 +276,14 @@ func listDeleted(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resData := &struct {
-		Total int             `json:"total"`
-		Files []*HTTPResFiles `json:"files"`
+		Total int                           `json:"total"`
+		Files []*http_res_type.HTTPResFiles `json:"files"`
 	}{
 		Total: count,
 		Files: filesRes,
 	}
 
-	_, _ = fmt.Fprintln(w, shttp.Response(resData))
+	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
 
 	return
 }
@@ -310,17 +298,17 @@ func deleteFile(w http.ResponseWriter, r *http.Request) {
 	fileID := r.PostFormValue("fileID")
 
 	if len(operatorID) < 1 || len(password) < 1 || len(fileID) < 1 {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, password: %s, file id: %s", operatorID, password, fileID)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, password: %s, file id: %s", operatorID, password, fileID)))
 		return
 	}
 
 	operator, err := dao.GetUser().QueryOne(model.User_UserID+" = ?", operatorID)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 	if operator.Password != kits.CalcSHA256(password, operator.Salt) {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid account or password"))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError("invalid account or password"))
 		return
 	}
 
@@ -329,7 +317,7 @@ func deleteFile(w http.ResponseWriter, r *http.Request) {
 		IsDeleted: true,
 	}, model.CloudFile_IsDeleted)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
@@ -339,7 +327,7 @@ func deleteFile(w http.ResponseWriter, r *http.Request) {
 		IsSuccess: true,
 	}
 
-	_, _ = fmt.Fprintln(w, shttp.Response(resData))
+	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
 
 	return
 }

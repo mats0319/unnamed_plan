@@ -5,9 +5,9 @@ import (
 	_ "github.com/mats9693/utils/toy_server/config"
 	_ "github.com/mats9693/utils/toy_server/db"
 
-	"github.com/mats9693/utils/toy_server/http"
+	mhttp "github.com/mats9693/utils/toy_server/http"
 )
 
 func main() {
-	shttp.StartServer()
+	mhttp.StartServer()
 }

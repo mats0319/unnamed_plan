@@ -3,8 +3,10 @@ package system_config
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mats9693/utils/toy_server/config"
-	. "github.com/mats9693/utils/toy_server/const"
+	"os"
+
+	mconfig "github.com/mats9693/utils/toy_server/config"
+	mconst "github.com/mats9693/utils/toy_server/const"
 )
 
 type configuration struct {
@@ -16,20 +18,18 @@ type configuration struct {
 
 var systemConfig = &configuration{}
 
-func GetConfiguration() *configuration {
-	return systemConfig
-}
+func init() {
+	byteSlice := mconfig.GetConfig(mconst.UID_Config)
 
-func InitConfiguration() (err error) {
-	byteSlice := config.GetConfig(UID_Config)
-
-	err = json.Unmarshal(byteSlice, systemConfig)
+	err := json.Unmarshal(byteSlice, systemConfig)
 	if err != nil {
-		fmt.Printf("json unmarshal failed, uid: %s, error: %v\n", UID_Config, err)
-		return
+		fmt.Printf("json unmarshal failed, uid: %s, error: %v\n", mconst.UID_Config, err)
+		os.Exit(-1)
 	}
 
 	fmt.Println("> System config init finish.")
+}
 
-	return
+func GetConfiguration() *configuration {
+	return systemConfig
 }

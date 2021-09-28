@@ -2,11 +2,12 @@ package http
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/mats9693/unnamed_plan/admin_data/db/dao"
 	"github.com/mats9693/unnamed_plan/admin_data/db/model"
 	"github.com/mats9693/unnamed_plan/admin_data/kits"
-	"github.com/mats9693/utils/toy_server/http"
-	"net/http"
+	mhttp "github.com/mats9693/utils/toy_server/http"
 )
 
 func login(w http.ResponseWriter, r *http.Request) {
@@ -19,12 +20,12 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 	user, err := dao.GetUser().QueryOne(model.User_UserName+" = ?", userName)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
 	if user.Password != kits.CalcSHA256(password, user.Salt) {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid account or password"))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError("invalid account or password"))
 		return
 	}
 
@@ -38,7 +39,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		Permission: user.Permission,
 	}
 
-	_, _ = fmt.Fprintln(w, shttp.Response(resData))
+	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
 
 	return
 }

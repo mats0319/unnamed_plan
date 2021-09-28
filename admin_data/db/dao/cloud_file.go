@@ -1,10 +1,12 @@
 package dao
 
 import (
-	"github.com/go-pg/pg/v10/orm"
-	"github.com/mats9693/unnamed_plan/admin_data/db/model"
-	. "github.com/mats9693/utils/toy_server/db"
 	"time"
+
+	"github.com/go-pg/pg/v10/orm"
+
+	"github.com/mats9693/unnamed_plan/admin_data/db/model"
+	mdb "github.com/mats9693/utils/toy_server/db"
 )
 
 type CloudFile model.CloudFile
@@ -20,7 +22,7 @@ func (cf *CloudFile) Insert(cloudFile *model.CloudFile) error {
 		cloudFile.Common = model.NewCommon()
 	}
 
-	return WithTx(func(conn orm.DB) error {
+	return mdb.WithTx(func(conn orm.DB) error {
 		_, err := conn.Model(cloudFile).Insert()
 		return err
 	})
@@ -32,7 +34,7 @@ func (cf *CloudFile) QueryPageByUploader(
 	pageNum int,
 	userID string,
 ) (files []*model.CloudFile, count int, err error) {
-	err = WithNoTx(func(conn orm.DB) error {
+	err = mdb.WithNoTx(func(conn orm.DB) error {
 		count, err = conn.Model(&files).Where(model.CloudFile_IsDeleted+" = ?", false).
 			Where(model.CloudFile_UploadedBy+" = ?", userID).
 			Order(model.Common_UpdateTime + " DESC").
@@ -68,9 +70,9 @@ func (cf *CloudFile) QueryPageInPublic(
 	pageNum int,
 	userID string,
 ) (files []*model.CloudFile, count int, err error) {
-	err = WithNoTx(func(conn orm.DB) error {
+	err = mdb.WithNoTx(func(conn orm.DB) error {
 		permission := conn.Model((*model.User)(nil)).Column(model.User_Permission).Where(model.User_UserID+" = ?", userID)
-		userIDs := conn.Model((*model.User)(nil)).Column(model.User_UserID).Where(model.User_Permission+" <= ?", permission)
+		userIDs := conn.Model((*model.User)(nil)).Column(model.User_UserID).Where(model.User_Permission+" <= (?)", permission)
 
 		count, err = conn.Model(&files).Where(model.CloudFile_IsDeleted+" = ?", false).
 			Where(model.CloudFile_IsPublic+" = ?", true).
@@ -95,9 +97,9 @@ func (cf *CloudFile) QueryPageInDeleted(
 	pageNum int,
 	userID string,
 ) (files []*model.CloudFile, count int, err error) {
-	err = WithNoTx(func(conn orm.DB) error {
+	err = mdb.WithNoTx(func(conn orm.DB) error {
 		permission := conn.Model((*model.User)(nil)).Column(model.User_Permission).Where(model.User_UserID+" = ?", userID)
-		userIDs := conn.Model((*model.User)(nil)).Column(model.User_UserID).Where(model.User_Permission+" <= ?", permission)
+		userIDs := conn.Model((*model.User)(nil)).Column(model.User_UserID).Where(model.User_Permission+" <= (?)", permission)
 
 		count, err = conn.Model(&files).Where(model.CloudFile_IsDeleted+" = ?", true).
 			Where(model.CloudFile_UploadedBy+" in (?)", userIDs).
@@ -118,7 +120,7 @@ func (cf *CloudFile) QueryPageInDeleted(
 func (cf *CloudFile) UpdateColumnsByFileID(data *model.CloudFile, columns ...string) (err error) {
 	data.UpdateTime = time.Duration(time.Now().Unix())
 
-	return WithTx(func(conn orm.DB) error {
+	return mdb.WithTx(func(conn orm.DB) error {
 		query := conn.Model(data).Column(model.Common_UpdateTime)
 		for i := range columns {
 			query.Column(columns[i])

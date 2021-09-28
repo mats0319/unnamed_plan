@@ -1,15 +1,16 @@
 package http
 
 import (
-	"github.com/mats9693/utils/toy_server/config"
-	. "github.com/mats9693/utils/toy_server/const"
 	"net/http"
+
+	mconfig "github.com/mats9693/utils/toy_server/config"
+	mconst "github.com/mats9693/utils/toy_server/const"
 )
 
 var isDev bool
 
 func init() {
-	isDev = config.GetConfigLevel() == ConfigDevLevel
+	isDev = mconfig.GetConfigLevel() == mconst.ConfigDevLevel
 
 	// todo: 在http请求拦截器中，为所有的处理函数添加一些公共处理，例如开发模式允许跨域、http请求参数反序列化等
 	// user

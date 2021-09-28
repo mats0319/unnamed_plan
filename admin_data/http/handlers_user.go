@@ -2,14 +2,17 @@ package http
 
 import (
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/go-pg/pg/v10"
+
 	"github.com/mats9693/unnamed_plan/admin_data/config"
 	"github.com/mats9693/unnamed_plan/admin_data/db/dao"
 	"github.com/mats9693/unnamed_plan/admin_data/db/model"
+	"github.com/mats9693/unnamed_plan/admin_data/http/response_type"
 	"github.com/mats9693/unnamed_plan/admin_data/kits"
-	"github.com/mats9693/utils/toy_server/http"
-	"net/http"
-	"strconv"
+	mhttp "github.com/mats9693/utils/toy_server/http"
 )
 
 func login(w http.ResponseWriter, r *http.Request) {
@@ -22,12 +25,12 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 	user, err := dao.GetUser().QueryOne(model.User_UserName+" = ?", userName)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
 	if user.Password != kits.CalcSHA256(password, user.Salt) {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid account or password"))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError("invalid account or password"))
 		return
 	}
 
@@ -41,7 +44,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		Permission: user.Permission,
 	}
 
-	_, _ = fmt.Fprintln(w, shttp.Response(resData))
+	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
 
 	return
 }
@@ -56,33 +59,25 @@ func listUser(w http.ResponseWriter, r *http.Request) {
 	pageNum, pageNumErr := strconv.Atoi(r.PostFormValue("pageNum"))
 
 	if pageSizeErr != nil || pageNumErr != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(pageSizeErr.Error()+pageNumErr.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(pageSizeErr.Error()+pageNumErr.Error()))
 		return
 	}
 
 	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid param, operator id: %s, page size: %d, page num: %d.", operatorID, pageSize, pageNum)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid param, operator id: %s, page size: %d, page num: %d.", operatorID, pageSize, pageNum)))
 		return
 	}
 
 	users, count, err := dao.GetUser().QueryPageByPermission(pageSize, pageNum, operatorID)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
-	type HttpResUser struct {
-		UserID     string `json:"userID"`
-		Nickname   string `json:"nickname"`
-		IsLocked   bool   `json:"isLocked"`
-		Permission uint8  `json:"permission"`
-		CreatedBy  string `json:"createdBy"`
-	}
-
-	usersRes := make([]*HttpResUser, 0, len(users))
+	usersRes := make([]*http_res_type.HttpResUser, 0, len(users))
 	for i := range users {
 		if users[i].UserID != operatorID {
-			usersRes = append(usersRes, &HttpResUser{
+			usersRes = append(usersRes, &http_res_type.HttpResUser{
 				UserID:     users[i].UserID,
 				Nickname:   users[i].Nickname,
 				IsLocked:   users[i].IsLocked,
@@ -93,14 +88,14 @@ func listUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resData := &struct {
-		Total int            `json:"total"`
-		Users []*HttpResUser `json:"users"`
+		Total int                          `json:"total"`
+		Users []*http_res_type.HttpResUser `json:"users"`
 	}{
 		Total: count,
 		Users: usersRes,
 	}
 
-	_, _ = fmt.Fprintln(w, shttp.Response(resData))
+	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
 
 	return
 }
@@ -117,22 +112,22 @@ func modifyUserInfo(w http.ResponseWriter, r *http.Request) {
 	password := r.PostFormValue("password")
 
 	if len(operatorID) < 1 || len(userID) < 1 || operatorID != userID {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user id: %s", operatorID, userID)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user id: %s", operatorID, userID)))
 		return
 	}
 
 	if len(nickname)+len(password) < 1 {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid params, not any modification received"))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError("invalid params, not any modification received"))
 		return
 	}
 
 	user, err := dao.GetUser().QueryOne(model.User_UserID+" = ?", userID)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 	if user.Password != kits.CalcSHA256(currPwd, user.Salt) {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("invalid account or password"))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError("invalid account or password"))
 		return
 	}
 
@@ -148,7 +143,7 @@ func modifyUserInfo(w http.ResponseWriter, r *http.Request) {
 
 	err = dao.GetUser().UpdateColumnsByUserID(user, updateColumns...)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
@@ -158,7 +153,7 @@ func modifyUserInfo(w http.ResponseWriter, r *http.Request) {
 		IsSuccess: true,
 	}
 
-	_, _ = fmt.Fprintln(w, shttp.Response(resData))
+	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
 
 	return
 }
@@ -174,12 +169,12 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	permissionInt, err := strconv.Atoi(r.PostFormValue("permission"))
 
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
 	if len(operatorID) < 1 || len(userName) < 1 || len(password) < 1 {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user name: %s, password: %s", operatorID, userName, password)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user name: %s, password: %s", operatorID, userName, password)))
 		return
 	}
 
@@ -187,12 +182,12 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 
 	operator, err := dao.GetUser().QueryOne(model.User_UserID+" = ?", operatorID)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 	if operator.Permission < system_config.GetConfiguration().ARankAdminPermission ||
 		operator.Permission <= permission {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("permission denied, operator: %d, want create: %d.",
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("permission denied, operator: %d, want create: %d.",
 			operator.Permission, permission)))
 		return
 	}
@@ -207,7 +202,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 		CreatedBy:  operatorID,
 	})
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
@@ -217,7 +212,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 		IsSuccess: true,
 	}
 
-	_, _ = fmt.Fprintln(w, shttp.Response(resData))
+	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
 
 	return
 }
@@ -231,33 +226,33 @@ func lockUser(w http.ResponseWriter, r *http.Request) {
 	userID := r.PostFormValue("userID")
 
 	if len(operatorID) < 1 || len(userID) < 1 || operatorID == userID {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user id: %s", operatorID, userID)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user id: %s", operatorID, userID)))
 		return
 	}
 
 	users, err := dao.GetUser().Query(model.User_UserID+" in (?)", pg.In([]string{operatorID, userID}))
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 	if len(users) != 2 {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("unmatched user amount, want: 2, get: %d", len(users))))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("unmatched user amount, want: 2, get: %d", len(users))))
 		return
 	}
 
 	users, err = kits.SortUsersByUserID(users, []string{operatorID, userID})
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
 	if users[1].IsLocked {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("user is already locked"))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError("user is already locked"))
 		return
 	}
 	if users[0].Permission <= users[1].Permission ||
 		users[0].Permission < system_config.GetConfiguration().ARankAdminPermission {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("permission denied, operator: %d, user: %d, need: %d",
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("permission denied, operator: %d, user: %d, need: %d",
 			users[0].Permission, users[1].Permission, system_config.GetConfiguration().SRankAdminPermission)))
 		return
 	}
@@ -266,7 +261,7 @@ func lockUser(w http.ResponseWriter, r *http.Request) {
 
 	err = dao.GetUser().UpdateColumnsByUserID(users[1], model.User_IsLocked)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
@@ -276,7 +271,7 @@ func lockUser(w http.ResponseWriter, r *http.Request) {
 		IsSuccess: true,
 	}
 
-	_, _ = fmt.Fprintln(w, shttp.Response(resData))
+	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
 
 	return
 }
@@ -290,33 +285,33 @@ func unlockUser(w http.ResponseWriter, r *http.Request) {
 	userID := r.PostFormValue("userID")
 
 	if len(operatorID) < 1 || len(userID) < 1 || operatorID == userID {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user id: %s", operatorID, userID)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user id: %s", operatorID, userID)))
 		return
 	}
 
 	users, err := dao.GetUser().Query(model.User_UserID+" in (?)", pg.In([]string{operatorID, userID}))
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 	if len(users) != 2 {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("unmatched user amount, want 2, get: %d", len(users))))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("unmatched user amount, want 2, get: %d", len(users))))
 		return
 	}
 
 	users, err = kits.SortUsersByUserID(users, []string{operatorID, userID})
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
 	if !users[1].IsLocked {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError("user is already unlocked"))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError("user is already unlocked"))
 		return
 	}
 	if users[0].Permission <= users[1].Permission ||
 		users[0].Permission < system_config.GetConfiguration().ARankAdminPermission {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("permission denied, operator: %d, user: %d, need: %d",
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("permission denied, operator: %d, user: %d, need: %d",
 			users[0].Permission, users[1].Permission, system_config.GetConfiguration().SRankAdminPermission)))
 		return
 	}
@@ -325,7 +320,7 @@ func unlockUser(w http.ResponseWriter, r *http.Request) {
 
 	err = dao.GetUser().UpdateColumnsByUserID(users[1], model.User_IsLocked)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
@@ -335,7 +330,7 @@ func unlockUser(w http.ResponseWriter, r *http.Request) {
 		IsSuccess: true,
 	}
 
-	_, _ = fmt.Fprintln(w, shttp.Response(resData))
+	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
 
 	return
 }
@@ -350,28 +345,28 @@ func modifyUserPermission(w http.ResponseWriter, r *http.Request) {
 	permissionInt, err := strconv.Atoi(r.PostFormValue("permission"))
 
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
 	if len(operatorID) < 1 || len(userID) < 1 || operatorID == userID {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user id: %s", operatorID, userID)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user id: %s", operatorID, userID)))
 		return
 	}
 
 	users, err := dao.GetUser().Query(model.User_UserID+" in (?)", pg.In([]string{operatorID, userID}))
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 	if len(users) != 2 {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("unmatched user amount, want: 2, get: %d", len(users))))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("unmatched user amount, want: 2, get: %d", len(users))))
 		return
 	}
 
 	users, err = kits.SortUsersByUserID(users, []string{operatorID, userID})
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
@@ -380,7 +375,7 @@ func modifyUserPermission(w http.ResponseWriter, r *http.Request) {
 	if users[0].Permission < system_config.GetConfiguration().SRankAdminPermission ||
 		users[1].Permission >= system_config.GetConfiguration().SRankAdminPermission ||
 		permission >= system_config.GetConfiguration().SRankAdminPermission {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(fmt.Sprintf("permission denied, operator: %d, user: %d, user new: %d",
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("permission denied, operator: %d, user: %d, user new: %d",
 			users[0].Permission, users[1].Permission, permission)))
 		return
 	}
@@ -389,7 +384,7 @@ func modifyUserPermission(w http.ResponseWriter, r *http.Request) {
 
 	err = dao.GetUser().UpdateColumnsByUserID(users[1], model.User_Permission)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, shttp.ResponseWithError(err.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
@@ -399,7 +394,7 @@ func modifyUserPermission(w http.ResponseWriter, r *http.Request) {
 		IsSuccess: true,
 	}
 
-	_, _ = fmt.Fprintln(w, shttp.Response(resData))
+	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
 
 	return
 }
