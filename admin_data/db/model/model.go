@@ -38,6 +38,17 @@ type CloudFile struct {
 	Common
 }
 
+type ThinkingNote struct {
+	NoteID    string `pg:",unique"`
+	WriteBy   string // user id
+	Topic     string // main topic
+	Content   string `pg:",notnull"` // note content
+	IsPublic  bool   `pg:",use_zero"`
+	IsDeleted bool   `pg:",use_zero"`
+
+	Common
+}
+
 func NewCommon() Common {
 	currTime := time.Duration(time.Now().Unix())
 

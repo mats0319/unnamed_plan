@@ -3,19 +3,18 @@ package http
 import (
 	"net/http"
 
-	mconfig "github.com/mats9693/utils/toy_server/config"
-	mconst "github.com/mats9693/utils/toy_server/const"
+	"github.com/mats9693/unnamed_plan/admin_data/http/handlers"
 )
 
-var isDev bool
-
 func init() {
-	isDev = mconfig.GetConfigLevel() == mconst.ConfigDevLevel
-
 	// user
-	http.HandleFunc("/api/login", login)
+	http.HandleFunc("/api/login", handlers.Login)
 
 	// cloud file
-	http.HandleFunc("/api/cloudFile/listByUploader", listCloudFileByUploader)
-	http.HandleFunc("/api/cloudFile/listPublic", listPublicCloudFile)
+	http.HandleFunc("/api/cloudFile/listByUploader", handlers.ListCloudFileByUploader)
+	http.HandleFunc("/api/cloudFile/listPublic", handlers.ListPublicCloudFile)
+
+	// thinking note
+	http.HandleFunc("/api/thinkingNote/listByWriter", handlers.ListThinkingNoteByWriter)
+	http.HandleFunc("/api/thinkingNote/listPublic", handlers.ListPublicThinkingNote)
 }

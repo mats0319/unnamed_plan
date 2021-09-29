@@ -26,3 +26,12 @@ const (
 	CloudFile_IsPublic      = "is_public"
 	CloudFile_IsDeleted     = "is_deleted"
 )
+
+const (
+	ThinkingNote_NoteID    = "note_id"
+	ThinkingNote_WriteBy   = "write_by"
+	ThinkingNote_Topic     = "topic"
+	ThinkingNote_Content   = "content"
+	ThinkingNote_IsPublic  = "is_public"
+	ThinkingNote_IsDeleted = "is_deleted"
+)

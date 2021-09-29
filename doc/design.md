@@ -187,7 +187,7 @@ type ResponseData struct {
 文件一经上传，不可更改  
 允许用户删除自己上传的文件，采用软删除，保留数据库记录与云文件，只是查询时不显示
 
-编写后台程序移动端界面，拟仅开放云文件系统，且仅支持查询自己上传的文件
+编写**前台程序移动端界面**，开放查询模块，支持查询自己上传的文件
 
 ### 前台(2)
 
@@ -199,9 +199,13 @@ type ResponseData struct {
 
 1. 当前用户上传的全部文件 /api/cloudFile/listByUploader
 2. 当前用户可查看的公开文件 /api/cloudFile/listPublic
-3. 查询已删除的文件（仅后台） /api/cloudFile/listDelete
-   1. 规则1：需要**S级管理员权限**
-   2. 规则2：仅可查询权限等级**不高于**自身的上传者上传的文件
+3. 查询已删除的文件（仅后台） /api/cloudFile/listDeleted
+    1. 规则1：需要**S级管理员权限**
+    2. 规则2：仅可查询权限等级**不高于**自身的上传者上传的文件
+
+规则：
+
+1. 默认不查询已删除的文件
 
 输入：
 
@@ -226,14 +230,15 @@ type ResponseData struct {
 暂时使用浏览器默认解析方式，前端限制只接收pdf类型的文件，文件大小是否要限制、限制多少**待定**
 
 与nginx配合，前端根据url直接定位到服务器文件：
+
 1. 后端返回的```fileURL```举例：```/public/ffff.pdf```，
 2. 前端拼上**源**和**云文件标识**：```https://mats9693.cn/cloud-file/public/ffff.pdf```
 3. nginx识别**云文件标识**：
-```text 
-location /cloud-file/ {
-    alias /home/xxx/cloud_file/;
-}
-```
+   ```text 
+   location /cloud-file/ {
+       alias /home/xxx/cloud_file/;
+   }
+   ```
 
 ### 后台(5)
 
@@ -253,7 +258,7 @@ location /cloud-file/ {
 
 规则：
 
-1. 云文件存储结构：
+1. 云文件存储结构
     1. 云文件夹根目录 - 公开文件夹、非公开文件夹（每个用户一个文件夹）
 
 返回：
@@ -284,9 +289,90 @@ location /cloud-file/ {
 
 #### 查询
 
-> 允许根据上传者查询 /api/cloudFile/listByUploader  
-> 允许S级管理员查询已删除的文件 /api/cloudFile/listDelete
+> 见前台对应模块
 
 #### 预览
 
-> 与前台对应模块相同
+> 见前台对应模块
+
+## 随想系统
+
+记录一些自己的想法（空想）与体会（经一事，长一智）
+
+编写**后台程序移动端界面**，开放编辑模块、查询模块（无样式）  
+编写**前台程序移动端界面**，开放查询模块（有样式）
+
+### 前台(2)
+
+#### 查询
+
+查询：
+
+1. 当前用户编辑的笔记 /api/thinkingNote/listByWriter
+2. 当前用户可查看的公开笔记 /api/thinkingNote/listPublic
+3. 查看已删除的笔记（仅后台） /api/thinkingNote/listDeleted
+    1. 规则1：需要**S级管理员权限**
+    2. 规则2：仅可查询权限等级**不高于**自身的用户编辑的笔记
+
+规则：
+
+1. 默认不查询已删除的笔记
+
+输入：
+
+1. 查询者ID operatorID
+2. 分页信息
+    1. 每页条数：pageSize
+    2. 当前页码：pageNum
+
+返回：
+
+1. 符合条件的数据条数 total
+2. 笔记 notes
+    1. 笔记ID noteID
+    2. 编辑者 writeBy
+    3. 主题 topic
+    4. 内容 content
+    5. 是否公开 isPublic
+    6. 更新时间 updateTime
+    7. 创建时间 createdTime
+
+### 后台(5)
+
+#### 编辑
+
+/api/thinkingNote/create
+
+输入：
+
+1. 编辑者ID operatorID
+2. 主题 topic
+3. 内容 content
+4. 是否公开 isPublic
+
+返回：
+
+1. 编辑结果 isSuccess
+
+#### 删除
+
+/api/thinkingNote/delete
+
+输入：
+
+1. 删除者ID operatorID
+2. 笔记ID noteID
+
+规则：
+
+1. 仅允许删除自己上传的文件
+2. 软删除，保留数据库记录，修改数据库记录**更新时间**与**是否已删除**字段
+3. 需要指定笔记当前状态为**未删除**
+
+返回：
+
+1. 删除结果 isSuccess
+
+#### 查询
+
+> 见前台对应模块

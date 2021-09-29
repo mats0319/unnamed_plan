@@ -27,6 +27,7 @@ func main() {
 	models := []interface{}{
 		(*model.User)(nil),
 		(*model.CloudFile)(nil),
+		(*model.ThinkingNote)(nil),
 	}
 
 	for i, m := range models {

@@ -1,4 +1,4 @@
-package http
+package handlers
 
 import (
 	"fmt"
@@ -15,20 +15,7 @@ import (
 	mhttp "github.com/mats9693/utils/toy_server/http"
 )
 
-func init() {
-	root := system_config.GetConfiguration().CloudFileRootPath
-	path := kits.AppendDirSuffix(root) + system_config.GetConfiguration().CloudFilePublicDir
-
-	err := os.MkdirAll(path, 0755)
-	if err != nil {
-		fmt.Println("os.MkdirAll failed, error:", err.Error())
-		os.Exit(-1)
-	}
-
-	fmt.Println("> Cloud file directory init finish.")
-}
-
-func uploadFile(w http.ResponseWriter, r *http.Request) {
+func UploadCloudFile(w http.ResponseWriter, r *http.Request) {
 	if isDev {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
@@ -106,7 +93,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func listCloudFileByUploader(w http.ResponseWriter, r *http.Request) {
+func ListCloudFileByUploader(w http.ResponseWriter, r *http.Request) {
 	if isDev {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
@@ -163,7 +150,7 @@ func listCloudFileByUploader(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func listPublicCloudFile(w http.ResponseWriter, r *http.Request) {
+func ListPublicCloudFile(w http.ResponseWriter, r *http.Request) {
 	if isDev {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
@@ -220,7 +207,7 @@ func listPublicCloudFile(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func listDeleted(w http.ResponseWriter, r *http.Request) {
+func ListDeletedCloudFile(w http.ResponseWriter, r *http.Request) {
 	if isDev {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
@@ -288,7 +275,7 @@ func listDeleted(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func deleteFile(w http.ResponseWriter, r *http.Request) {
+func DeleteCloudFile(w http.ResponseWriter, r *http.Request) {
 	if isDev {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}

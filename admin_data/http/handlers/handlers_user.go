@@ -1,4 +1,4 @@
-package http
+package handlers
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ import (
 	mhttp "github.com/mats9693/utils/toy_server/http"
 )
 
-func login(w http.ResponseWriter, r *http.Request) {
+func Login(w http.ResponseWriter, r *http.Request) {
 	if isDev {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
@@ -49,7 +49,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func listUser(w http.ResponseWriter, r *http.Request) {
+func ListUser(w http.ResponseWriter, r *http.Request) {
 	if isDev {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
@@ -100,7 +100,7 @@ func listUser(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func modifyUserInfo(w http.ResponseWriter, r *http.Request) {
+func ModifyUserInfo(w http.ResponseWriter, r *http.Request) {
 	if isDev {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
@@ -158,7 +158,7 @@ func modifyUserInfo(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func createUser(w http.ResponseWriter, r *http.Request) {
+func CreateUser(w http.ResponseWriter, r *http.Request) {
 	if isDev {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
@@ -217,7 +217,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func lockUser(w http.ResponseWriter, r *http.Request) {
+func LockUser(w http.ResponseWriter, r *http.Request) {
 	if isDev {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
@@ -276,7 +276,7 @@ func lockUser(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func unlockUser(w http.ResponseWriter, r *http.Request) {
+func UnlockUser(w http.ResponseWriter, r *http.Request) {
 	if isDev {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
@@ -335,7 +335,7 @@ func unlockUser(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func modifyUserPermission(w http.ResponseWriter, r *http.Request) {
+func ModifyUserPermission(w http.ResponseWriter, r *http.Request) {
 	if isDev {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}

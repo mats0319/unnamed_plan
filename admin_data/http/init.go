@@ -1,31 +1,51 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
+	"os"
 
-	mconfig "github.com/mats9693/utils/toy_server/config"
-	mconst "github.com/mats9693/utils/toy_server/const"
+	system_config "github.com/mats9693/unnamed_plan/admin_data/config"
+	"github.com/mats9693/unnamed_plan/admin_data/http/handlers"
+	"github.com/mats9693/unnamed_plan/admin_data/kits"
 )
 
-var isDev bool
-
 func init() {
-	isDev = mconfig.GetConfigLevel() == mconst.ConfigDevLevel
-
 	// todo: 在http请求拦截器中，为所有的处理函数添加一些公共处理，例如开发模式允许跨域、http请求参数反序列化等
 	// user
-	http.HandleFunc("/api/login", login)
-	http.HandleFunc("/api/user/list", listUser)
-	http.HandleFunc("/api/user/create", createUser)
-	http.HandleFunc("/api/user/lock", lockUser)
-	http.HandleFunc("/api/user/unlock", unlockUser)
-	http.HandleFunc("/api/user/modifyPermission", modifyUserPermission)
-	http.HandleFunc("/api/user/modifyInfo", modifyUserInfo)
+	http.HandleFunc("/api/login", handlers.Login)
+	http.HandleFunc("/api/user/list", handlers.ListUser)
+	http.HandleFunc("/api/user/modifyInfo", handlers.ModifyUserInfo)
+	http.HandleFunc("/api/user/create", handlers.CreateUser)
+	http.HandleFunc("/api/user/lock", handlers.LockUser)
+	http.HandleFunc("/api/user/unlock", handlers.UnlockUser)
+	http.HandleFunc("/api/user/modifyPermission", handlers.ModifyUserPermission)
 
 	// cloud file
-	http.HandleFunc("/api/cloudFile/upload", uploadFile)
-	http.HandleFunc("/api/cloudFile/listByUploader", listCloudFileByUploader)
-	http.HandleFunc("/api/cloudFile/listPublic", listPublicCloudFile)
-	http.HandleFunc("/api/cloudFile/listDelete", listDeleted)
-	http.HandleFunc("/api/cloudFile/delete", deleteFile)
+	initCloudFileDir()
+	http.HandleFunc("/api/cloudFile/upload", handlers.UploadCloudFile)
+	http.HandleFunc("/api/cloudFile/listByUploader", handlers.ListCloudFileByUploader)
+	http.HandleFunc("/api/cloudFile/listPublic", handlers.ListPublicCloudFile)
+	http.HandleFunc("/api/cloudFile/listDeleted", handlers.ListDeletedCloudFile)
+	http.HandleFunc("/api/cloudFile/delete", handlers.DeleteCloudFile)
+
+	// thinking note
+	http.HandleFunc("/api/thinkingNote/create", handlers.CreateThinkingNote)
+	http.HandleFunc("/api/thinkingNote/listByWriter", handlers.ListThinkingNoteByWriter)
+	http.HandleFunc("/api/thinkingNote/listPublic", handlers.ListPublicThinkingNote)
+	http.HandleFunc("/api/thinkingNote/listDeleted", handlers.ListDeletedThinkingNote)
+	http.HandleFunc("/api/thinkingNote/delete", handlers.DeleteThinkingNote)
+}
+
+func initCloudFileDir() {
+	root := system_config.GetConfiguration().CloudFileRootPath
+	path := kits.AppendDirSuffix(root) + system_config.GetConfiguration().CloudFilePublicDir
+
+	err := os.MkdirAll(path, 0755)
+	if err != nil {
+		fmt.Println("os.MkdirAll failed, error:", err.Error())
+		os.Exit(-1)
+	}
+
+	fmt.Println("> Cloud file directory init finish.")
 }
