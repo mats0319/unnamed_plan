@@ -12,37 +12,55 @@ const routes: Array<RouteConfig> = [
   {
     path: "/",
     name: "home",
-    meta: {needLogin: true},
+    meta: { needLogin: true },
     component: () => import("@/views/home/home.vue"),
     children: [
       {
         path: "/user/modify",
         name: "userModify",
-        meta: {needLogin: true},
+        meta: { needLogin: true },
         component: () => import("@/views/user/modify.vue")
       },
       {
         path: "/user/create",
         name: "userCreate",
-        meta: {needLogin: true},
+        meta: { needLogin: true },
         component: () => import("@/views/user/create.vue")
       },
       {
         path: "/user/list",
         name: "userList",
-        meta: {needLogin: true},
+        meta: { needLogin: true },
         component: () => import("@/views/user/list.vue")
+      },
+      {
+        path: "/cloudFile/upload",
+        name: "cloudFileUpload",
+        meta: { needLogin: true },
+        component: () => import("@/views/cloud_file/upload.vue")
+      },
+      {
+        path: "/cloudFile/listByUploader",
+        name: "cloudFileListByUploader",
+        meta: { needLogin: true },
+        component: () => import("@/views/cloud_file/list_by_uploader.vue")
+      },
+      {
+        path: "/cloudFile/listPublic",
+        name: "cloudFileListPublic",
+        meta: { needLogin: true },
+        component: () => import("@/views/cloud_file/list_public.vue")
       }
     ]
   },
   {
     path: "/404",
     name: "notFound",
-    redirect: {name: "login"}
+    redirect: { name: "login" }
   },
   {
     path: "*",
-    redirect: {name: "notFound"}
+    redirect: { name: "notFound" }
   }
 ]
 
@@ -62,7 +80,7 @@ router.beforeEach((to, from, next) => {
     next();
     return;
   } else {
-    next({path: "/login"});
+    next({ path: "/login" });
     return;
   }
 })

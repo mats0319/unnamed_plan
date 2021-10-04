@@ -26,14 +26,12 @@ func init() {
 	http.HandleFunc("/api/cloudFile/upload", handlers.UploadCloudFile)
 	http.HandleFunc("/api/cloudFile/listByUploader", handlers.ListCloudFileByUploader)
 	http.HandleFunc("/api/cloudFile/listPublic", handlers.ListPublicCloudFile)
-	http.HandleFunc("/api/cloudFile/listDeleted", handlers.ListDeletedCloudFile)
 	http.HandleFunc("/api/cloudFile/delete", handlers.DeleteCloudFile)
 
 	// thinking note
 	http.HandleFunc("/api/thinkingNote/create", handlers.CreateThinkingNote)
 	http.HandleFunc("/api/thinkingNote/listByWriter", handlers.ListThinkingNoteByWriter)
 	http.HandleFunc("/api/thinkingNote/listPublic", handlers.ListPublicThinkingNote)
-	http.HandleFunc("/api/thinkingNote/listDeleted", handlers.ListDeletedThinkingNote)
 	http.HandleFunc("/api/thinkingNote/delete", handlers.DeleteThinkingNote)
 }
 

@@ -1,11 +1,11 @@
 <template>
   <div class="user-list">
     <el-table :data="users" height="calc(80vh - 32px)" stripe highlight-current-row>
-      <el-table-column label="用户ID" prop="userID" min-width="2" show-overflow-tooltip />
-      <el-table-column label="昵称" prop="nickname" min-width="1" show-overflow-tooltip />
-      <el-table-column label="锁定状态" prop="isLockedDisplay" min-width="1" show-overflow-tooltip />
-      <el-table-column label="权限等级" prop="permission" min-width="1" show-overflow-tooltip />
-      <el-table-column label="操作" min-width="2">
+      <el-table-column label="用户名" prop="userName" min-width="2" show-overflow-tooltip />
+      <el-table-column label="昵称" prop="nickname" min-width="2" show-overflow-tooltip />
+      <el-table-column label="锁定状态" prop="isLockedDisplay" min-width="2" show-overflow-tooltip />
+      <el-table-column label="权限等级" prop="permission" min-width="2" show-overflow-tooltip />
+      <el-table-column label="操作" min-width="3">
         <template slot-scope="scope">
           <div class="ul-operate">
             <div v-show="$store.state.permission >= 6" class="ulo-item">
@@ -50,6 +50,7 @@
       :page-size="pageSize"
       :current-page="pageNum"
       layout="prev, pager, next, ->, total"
+      @current-change="listUser"
     />
 
     <el-dialog
@@ -104,16 +105,23 @@ export default class UserList extends Vue {
     this.listUser();
   }
 
-  private listUser(): void {
+  private listUser(currPage?: number): void {
+    this.total = 0;
+    this.users = [];
+
     let data: FormData = new FormData();
     data.append("operatorID", this.$store.state.userID);
     data.append("pageSize", this.pageSize.toString());
-    data.append("pageNum", this.pageNum.toString());
+    data.append("pageNum", currPage ? currPage.toString() : "1");
 
     axios.post(process.env.VUE_APP_user_list_url, data)
       .then(response => {
         if (response.data.hasError) {
           throw response.data.data;
+        }
+
+        if (currPage) {
+          this.pageNum = currPage;
         }
 
         const payload = JSON.parse(response.data.data as string);
@@ -123,10 +131,12 @@ export default class UserList extends Vue {
 
           this.users.push({
             userID: item.userID,
+            userName: item.userName,
             nickname: item.nickname,
             isLocked: item.isLocked,
             isLockedDisplay: displayUserIsLocked(item.isLocked),
-            permission: item.permission
+            permission: item.permission,
+            createdBy: item.createdBy
           });
         }
       })
@@ -208,7 +218,7 @@ export default class UserList extends Vue {
     .ulo-item {
       margin: auto 1vw;
 
-      .el-button+.el-button {
+      .el-button + .el-button {
         margin-left: 0;
       }
     }

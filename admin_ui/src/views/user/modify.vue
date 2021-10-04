@@ -1,5 +1,5 @@
 <template>
-  <div class="user">
+  <div class="user-modify">
     <el-form label-position="left" label-width="15%">
       <el-form-item label="当前密码">
         <el-input
@@ -117,7 +117,7 @@ export default class UserModify extends Vue {
 </script>
 
 <style lang="scss">
-.user {
+.user-modify {
   padding: 7vh 15vw;
   text-align: left;
 

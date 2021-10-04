@@ -62,12 +62,6 @@ func ListPublicThinkingNote(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func ListDeletedThinkingNote(w http.ResponseWriter, r *http.Request) {
-	if isDev {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-	}
-}
-
 func DeleteThinkingNote(w http.ResponseWriter, r *http.Request) {
 	if isDev {
 		w.Header().Set("Access-Control-Allow-Origin", "*")

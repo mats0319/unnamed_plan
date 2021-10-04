@@ -76,15 +76,14 @@ func ListUser(w http.ResponseWriter, r *http.Request) {
 
 	usersRes := make([]*http_res_type.HttpResUser, 0, len(users))
 	for i := range users {
-		if users[i].UserID != operatorID {
-			usersRes = append(usersRes, &http_res_type.HttpResUser{
-				UserID:     users[i].UserID,
-				Nickname:   users[i].Nickname,
-				IsLocked:   users[i].IsLocked,
-				Permission: users[i].Permission,
-				CreatedBy:  users[i].CreatedBy,
-			})
-		}
+		usersRes = append(usersRes, &http_res_type.HttpResUser{
+			UserID:     users[i].UserID,
+			UserName:   users[i].UserName,
+			Nickname:   users[i].Nickname,
+			IsLocked:   users[i].IsLocked,
+			Permission: users[i].Permission,
+			CreatedBy:  users[i].CreatedBy,
+		})
 	}
 
 	resData := &struct {

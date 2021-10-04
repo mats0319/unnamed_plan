@@ -27,6 +27,14 @@
           </el-menu-item>
           <el-menu-item index="list" :route="{ name: 'userList' }">查看其它用户</el-menu-item>
         </el-submenu>
+
+        <el-submenu index="cloud-file">
+          <template slot="title">云文件</template>
+
+          <el-menu-item index="upload" :route="{ name: 'cloudFileUpload' }">上传文件</el-menu-item>
+          <el-menu-item index="listByUploader" :route="{ name: 'cloudFileListByUploader' }">我上传的文件</el-menu-item>
+          <el-menu-item index="listPublic" :route="{ name: 'cloudFileListPublic' }">公开的文件</el-menu-item>
+        </el-submenu>
       </el-menu>
     </div>
 

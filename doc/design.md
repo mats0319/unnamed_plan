@@ -69,10 +69,11 @@ type ResponseData struct {
 1. 符合条件的数据条数 total
 2. 用户列表 users
     1. 用户ID userID
-    2. 昵称 nickname
-    3. 锁定状态 isLocked
-    4. 用户权限等级 permission
-    5. 创建人 createdBy
+    2. 用户名 userName
+    3. 昵称 nickname
+    4. 锁定状态 isLocked
+    5. 用户权限等级 permission
+    6. 创建人 createdBy
 
 #### 修改用户信息（昵称和密码）
 
@@ -199,9 +200,6 @@ type ResponseData struct {
 
 1. 当前用户上传的全部文件 /api/cloudFile/listByUploader
 2. 当前用户可查看的公开文件 /api/cloudFile/listPublic
-3. 查询已删除的文件（仅后台） /api/cloudFile/listDeleted
-    1. 规则1：需要**S级管理员权限**
-    2. 规则2：仅可查询权限等级**不高于**自身的上传者上传的文件
 
 规则：
 
@@ -240,7 +238,7 @@ type ResponseData struct {
    }
    ```
 
-### 后台(5)
+### 后台(4)
 
 #### 上传
 
@@ -310,9 +308,6 @@ type ResponseData struct {
 
 1. 当前用户编辑的笔记 /api/thinkingNote/listByWriter
 2. 当前用户可查看的公开笔记 /api/thinkingNote/listPublic
-3. 查看已删除的笔记（仅后台） /api/thinkingNote/listDeleted
-    1. 规则1：需要**S级管理员权限**
-    2. 规则2：仅可查询权限等级**不高于**自身的用户编辑的笔记
 
 规则：
 
@@ -337,7 +332,7 @@ type ResponseData struct {
     6. 更新时间 updateTime
     7. 创建时间 createdTime
 
-### 后台(5)
+### 后台(4)
 
 #### 编辑
 

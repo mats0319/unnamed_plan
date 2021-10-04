@@ -90,32 +90,6 @@ func (cf *CloudFile) QueryPageInPublic(
 	return
 }
 
-// QueryPageInDeleted 查询已删除的文件列表，要求上传者权限等级不高于指定用户（通过userID指定），分页，按照更新时间降序
-// Core: sub-query, same as QueryPageInPublic
-func (cf *CloudFile) QueryPageInDeleted(
-	pageSize int,
-	pageNum int,
-	userID string,
-) (files []*model.CloudFile, count int, err error) {
-	err = mdb.WithNoTx(func(conn orm.DB) error {
-		permission := conn.Model((*model.User)(nil)).Column(model.User_Permission).Where(model.User_UserID+" = ?", userID)
-		userIDs := conn.Model((*model.User)(nil)).Column(model.User_UserID).Where(model.User_Permission+" <= (?)", permission)
-
-		count, err = conn.Model(&files).Where(model.CloudFile_IsDeleted+" = ?", true).
-			Where(model.CloudFile_UploadedBy+" in (?)", userIDs).
-			Order(model.Common_UpdateTime + " DESC").
-			Offset((pageNum - 1) * pageSize).Limit(pageSize).SelectAndCount()
-
-		return err
-	})
-	if err != nil {
-		files = nil
-		count = 0
-	}
-
-	return
-}
-
 // UpdateColumnsByFileID 仅可操作未删除的文件
 func (cf *CloudFile) UpdateColumnsByFileID(data *model.CloudFile, columns ...string) (err error) {
 	data.UpdateTime = time.Duration(time.Now().Unix())

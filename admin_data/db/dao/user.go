@@ -56,7 +56,7 @@ Core: sub-query
 		select "permission"
 		from users u
 		where user_id = 'user id'
-	);
+	) and user_id != 'user id';
 */
 func (u *User) QueryPageByPermission(
 	pageSize int,
@@ -67,6 +67,7 @@ func (u *User) QueryPageByPermission(
 		permission := conn.Model((*model.User)(nil)).Column(model.User_Permission).Where(model.User_UserID+" = ?", userID)
 
 		count, err = conn.Model(&users).Where(model.User_Permission+" <= (?)", permission).
+			Where(model.User_UserID + " != ?", userID).
 			Order(model.User_Permission + " DESC").
 			Offset((pageNum - 1) * pageSize).Limit(pageSize).SelectAndCount()
 
