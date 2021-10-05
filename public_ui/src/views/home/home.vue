@@ -2,7 +2,9 @@
   <div class="home">
     <top class="top" />
 
-    <router-view />
+    <div class="content">
+      <router-view />
+    </div>
 
     <div class="bottom">
       <a href="https://beian.miit.gov.cn/" target="_blank">吉ICP备2021002242号-1</a>
@@ -35,6 +37,7 @@ export default class Home extends Vue {
     display: flex;
 
     position: sticky;
+    z-index: 10;
     top: 0;
 
     background-color: aliceblue; // for test

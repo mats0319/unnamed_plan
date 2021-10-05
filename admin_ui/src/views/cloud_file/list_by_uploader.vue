@@ -70,6 +70,7 @@ import {
   generateCloudFileURL
 } from "@/ts/data";
 import axios from "axios";
+import { calcSHA256 } from "@/ts/sha256";
 
 @Component
 export default class ListCloudFileByUploader extends Vue {
@@ -132,8 +133,13 @@ export default class ListCloudFileByUploader extends Vue {
   }
 
   private deleteFile(): void {
+    const pwd = calcSHA256(this.password);
+    this.password = "";
+
     let data: FormData = new FormData();
-    data.append("operatorID")
+    data.append("operatorID", this.$store.state.userID);
+    data.append("password", pwd);
+    data.append("fileID", this.fileID);
 
     axios.post(process.env.VUE_APP_cloud_file_delete_url, data)
       .then(response => {
@@ -145,7 +151,7 @@ export default class ListCloudFileByUploader extends Vue {
         if (payload.isSuccess) {
           this.$message.success("删除文件成功");
 
-          location.reload();
+          this.listCloudFileByUploader(this.pageNum);
         } else {
           this.$message.error("删除文件失败");
         }

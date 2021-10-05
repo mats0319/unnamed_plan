@@ -87,7 +87,9 @@ export default class UserModify extends Vue {
         if (this.newPassword.length > 0) {
           this.$store.state.isLogin = false;
 
-          location.reload();
+          sessionStorage.removeItem("auth");
+
+          this.$router.push({ name: "login" });
         }
       })
       .catch(err => {

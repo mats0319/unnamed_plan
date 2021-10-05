@@ -1,5 +1,5 @@
 import Vue from "vue"
-import VueRouter, {RouteConfig} from "vue-router"
+import VueRouter, { RouteConfig } from "vue-router"
 
 Vue.use(VueRouter)
 
@@ -15,21 +15,27 @@ const routes: Array<RouteConfig> = [
         component: () => import("@/views/home/content.vue")
       },
       {
-        path: "/files",
-        name: "files",
-        meta: {needLogin: true},
-        component: () => import("@/views/files/files.vue")
+        path: "cloud-file/list-by-uploader",
+        name: "cloudFileListByUploader",
+        meta: { needLogin: true },
+        component: () => import("@/views/cloud_file/list_by_uploader.vue")
+      },
+      {
+        path: "cloud-file/list-public",
+        name: "cloudFileListPublic",
+        meta: { needLogin: true },
+        component: () => import("@/views/cloud_file/list_public.vue")
       }
     ]
   },
   {
     path: "/404",
     name: "notFound",
-    redirect: {name: "home"}
+    redirect: { name: "home" }
   },
   {
     path: "*",
-    redirect: {name: "notFound"}
+    redirect: { name: "notFound" }
   }
 ]
 
@@ -49,7 +55,7 @@ router.beforeEach((to, from, next) => {
     next();
     return;
   } else {
-    next({path: "/"});
+    next({ path: "/" });
     return;
   }
 })

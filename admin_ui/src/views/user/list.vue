@@ -162,7 +162,7 @@ export default class UserList extends Vue {
         if (payload.isSuccess) {
           this.$message.success(wantLock ? "锁定用户成功" : "解锁用户成功");
 
-          location.reload();
+          this.listUser(this.pageNum);
         } else {
           this.$message.error(wantLock ? "锁定用户失败" : "解锁用户失败");
         }
@@ -188,7 +188,7 @@ export default class UserList extends Vue {
         if (payload.isSuccess) {
           this.$message.success("修改用户权限成功");
 
-          location.reload();
+          this.listUser(this.pageNum);
         } else {
           this.$message.error("修改用户权限失败");
         }

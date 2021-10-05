@@ -237,6 +237,11 @@ type ResponseData struct {
        alias /home/xxx/cloud_file/;
    }
    ```
+   
+##### 问题
+
+这样一来，若已知用户ID、文件ID和扩展名，是可以绕过系统的权限验证，从而看到其他人的非公开文件的。  
+有什么办法可以解决吗？
 
 ### 后台(4)
 

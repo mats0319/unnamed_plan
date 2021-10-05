@@ -16,37 +16,37 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/home/home.vue"),
     children: [
       {
-        path: "/user/modify",
+        path: "user/modify",
         name: "userModify",
         meta: { needLogin: true },
         component: () => import("@/views/user/modify.vue")
       },
       {
-        path: "/user/create",
+        path: "user/create",
         name: "userCreate",
         meta: { needLogin: true },
         component: () => import("@/views/user/create.vue")
       },
       {
-        path: "/user/list",
+        path: "user/list",
         name: "userList",
         meta: { needLogin: true },
         component: () => import("@/views/user/list.vue")
       },
       {
-        path: "/cloudFile/upload",
+        path: "cloud-file/upload",
         name: "cloudFileUpload",
         meta: { needLogin: true },
         component: () => import("@/views/cloud_file/upload.vue")
       },
       {
-        path: "/cloudFile/listByUploader",
+        path: "cloud-file/list-by-uploader",
         name: "cloudFileListByUploader",
         meta: { needLogin: true },
         component: () => import("@/views/cloud_file/list_by_uploader.vue")
       },
       {
-        path: "/cloudFile/listPublic",
+        path: "cloud-file/list-public",
         name: "cloudFileListPublic",
         meta: { needLogin: true },
         component: () => import("@/views/cloud_file/list_public.vue")

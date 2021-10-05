@@ -1,14 +1,26 @@
 <template>
   <div>
-    <div class="top-title" @click="linkTo('', 'home')">上弦月</div>
+    <div class="top-title" @click="linkTo('/', 'home')">上弦月</div>
 
     <div class="top-links">
-      <div
-        v-show="$store.state.isLogin"
-        class="tl-item"
-        @click="linkTo('files', 'files')"
-      >
-        云文件
+      <div v-show="$store.state.isLogin" class="tl-item">
+        <el-dropdown class="tli-title">
+          <span>云文件<i class="el-icon-arrow-down  el-icon--right" /></span>
+
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item
+              @click.native="linkTo('/cloud-file/list-by-uploader','cloudFileListByUploader')"
+            >
+              我上传的文件
+            </el-dropdown-item>
+
+            <el-dropdown-item
+              @click.native="linkTo('/cloud-file/list-public', 'cloudFileListPublic')"
+            >
+              公开的文件
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </div>
 
       <div class="tl-item">
@@ -25,7 +37,7 @@
       <div v-if="!$store.state.isLogin" class="tle-text" @click="openLoginDialog">登录</div>
 
       <el-dropdown v-if="$store.state.isLogin" class="tle-text">
-        <span>{{ $store.state.nickname }}<i class="el-icon-arrow-down el-icon--right"/></span>
+        <span>{{ $store.state.nickname }}<i class="el-icon-arrow-down el-icon--right" /></span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item @click.native="exit">退出登录</el-dropdown-item>
         </el-dropdown-menu>
@@ -43,12 +55,12 @@
       <div class="tld-content">
         <div class="tldc-item">
           <span class="tldci-label">用户名&#58;</span>
-          <el-input v-model="userName" placeholder="请输入用户名"/>
+          <el-input v-model="userName" placeholder="请输入用户名" />
         </div>
 
         <div class="tldc-item">
           <span class="tldci-label">密码&#58;</span>
-          <el-input v-model="password" type="password" placeholder="请输入密码" clearable/>
+          <el-input v-model="password" type="password" placeholder="请输入密码" clearable />
         </div>
       </div>
 
@@ -61,7 +73,7 @@
 </template>
 
 <script lang="ts">
-import {Component, Vue} from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import axios from "axios";
 import { calcSHA256 } from "@/ts/sha256";
 
@@ -114,11 +126,11 @@ export default class Top extends Vue {
 
     sessionStorage.removeItem("auth");
 
-    this.linkTo("", "home")
+    this.linkTo("/", "home");
   }
 
   private linkTo(path: string, name: string): void {
-    if (location.href.split("#/")[1] !== path) {
+    if (location.href.split("#")[1] !== path) {
       this.$router.push({ name: name });
     }
   }
@@ -154,22 +166,23 @@ export default class Top extends Vue {
   display: flex;
   justify-content: flex-end;
 
-  font-size: 2rem;
-
   .tl-item {
     width: 7vw;
     margin: auto 0;
 
+    .tli-title {
+      font-size: 2rem;
+    }
+
     a {
+      font-size: 2rem;
       color: black;
       text-decoration: none;
     }
   }
 
   .tl-item:hover {
-    color: darkgray;
     cursor: pointer;
-    text-decoration-line: underline;
   }
 }
 
@@ -181,6 +194,7 @@ export default class Top extends Vue {
   .tle-text {
     font-size: 2rem;
   }
+
   .tle-text:hover {
     cursor: pointer;
   }
