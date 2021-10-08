@@ -33,12 +33,11 @@ func (u *User) Insert(user *model.User) (err error) {
 	})
 }
 
-// QueryOne only query users unlocked
-func (u *User) QueryOne(condition string, param ...interface{}) (user *model.User, err error) {
+func (u *User) QueryUnlocked(condition string, param ...interface{}) (user *model.User, err error) {
 	user = &model.User{}
 
 	err = mdb.WithNoTx(func(conn orm.DB) error {
-		return conn.Model(user).Where(model.User_IsLocked+" = ?", false).Where(condition, param...).First()
+		return conn.Model(user).Where(model.User_IsLocked+" = ?", false).Where(condition, param...).Select()
 	})
 	if err != nil {
 		user = nil

@@ -2,18 +2,23 @@ package handlers
 
 import (
 	"fmt"
-	"net/http"
-	"strconv"
-
 	"github.com/go-pg/pg/v10"
-
 	"github.com/mats9693/unnamed_plan/admin_data/config"
 	"github.com/mats9693/unnamed_plan/admin_data/db/dao"
 	"github.com/mats9693/unnamed_plan/admin_data/db/model"
 	"github.com/mats9693/unnamed_plan/admin_data/http/response_type"
 	"github.com/mats9693/unnamed_plan/admin_data/kits"
-	mhttp "github.com/mats9693/utils/toy_server/http"
+	"github.com/mats9693/utils/toy_server/http"
+	"github.com/pkg/errors"
+	"math/rand"
+	"net/http"
+	"strconv"
+	"time"
 )
+
+func init() {
+	rand.Seed(time.Now().Unix())
+}
 
 func Login(w http.ResponseWriter, r *http.Request) {
 	if isDev {
@@ -23,14 +28,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	userName := r.PostFormValue("userName")
 	password := r.PostFormValue("password")
 
-	user, err := dao.GetUser().QueryOne(model.User_UserName+" = ?", userName)
+	user, err := checkPwdByUserName(password, userName)
 	if err != nil {
 		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
-	}
-
-	if user.Password != kits.CalcSHA256(password, user.Salt) {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError("invalid account or password"))
 		return
 	}
 
@@ -55,11 +55,11 @@ func ListUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	operatorID := r.PostFormValue("operatorID")
-	pageSize, pageSizeErr := strconv.Atoi(r.PostFormValue("pageSize"))
-	pageNum, pageNumErr := strconv.Atoi(r.PostFormValue("pageNum"))
+	pageSize, err := strconv.Atoi(r.PostFormValue("pageSize"))
+	pageNum, err2 := strconv.Atoi(r.PostFormValue("pageNum"))
 
-	if pageSizeErr != nil || pageNumErr != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(pageSizeErr.Error()+pageNumErr.Error()))
+	if err != nil || err2 != nil {
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()+err2.Error()))
 		return
 	}
 
@@ -120,13 +120,9 @@ func ModifyUserInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := dao.GetUser().QueryOne(model.User_UserID+" = ?", userID)
+	user, err := checkPwdByUserID(currPwd, userID)
 	if err != nil {
 		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
-	}
-	if user.Password != kits.CalcSHA256(currPwd, user.Salt) {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError("invalid account or password"))
 		return
 	}
 
@@ -179,7 +175,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	permission := uint8(permissionInt)
 
-	operator, err := dao.GetUser().QueryOne(model.User_UserID+" = ?", operatorID)
+	operator, err := dao.GetUser().QueryUnlocked(model.User_UserID+" = ?", operatorID)
 	if err != nil {
 		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
@@ -234,12 +230,8 @@ func LockUser(w http.ResponseWriter, r *http.Request) {
 		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
-	if len(users) != 2 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("unmatched user amount, want: 2, get: %d", len(users))))
-		return
-	}
 
-	users, err = kits.SortUsersByUserID(users, []string{operatorID, userID})
+	users, err = sortUsersByUserID(users, []string{operatorID, userID})
 	if err != nil {
 		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
@@ -293,12 +285,8 @@ func UnlockUser(w http.ResponseWriter, r *http.Request) {
 		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
-	if len(users) != 2 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("unmatched user amount, want 2, get: %d", len(users))))
-		return
-	}
 
-	users, err = kits.SortUsersByUserID(users, []string{operatorID, userID})
+	users, err = sortUsersByUserID(users, []string{operatorID, userID})
 	if err != nil {
 		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
@@ -358,12 +346,8 @@ func ModifyUserPermission(w http.ResponseWriter, r *http.Request) {
 		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
-	if len(users) != 2 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("unmatched user amount, want: 2, get: %d", len(users))))
-		return
-	}
 
-	users, err = kits.SortUsersByUserID(users, []string{operatorID, userID})
+	users, err = sortUsersByUserID(users, []string{operatorID, userID})
 	if err != nil {
 		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
@@ -396,4 +380,34 @@ func ModifyUserPermission(w http.ResponseWriter, r *http.Request) {
 	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
 
 	return
+}
+
+func sortUsersByUserID(users []*model.User, order []string) ([]*model.User, error) {
+	if len(users) != len(order) {
+		return nil, errors.New(fmt.Sprintf("unmatched users amount, users %d, orders %d", len(users), len(order)))
+	}
+
+	length := len(users)
+	for i := 0; i < length; i++ {
+		for j := i; j < length; j++ {
+			if order[j] == users[i].UserID {
+				users[i], users[j] = users[j], users[i]
+				break
+			}
+		}
+	}
+
+	unmatchedIndex := -1
+	for i := 0; i < length; i++ {
+		if users[i].UserID != order[i] {
+			unmatchedIndex = i
+			break
+		}
+	}
+
+	if unmatchedIndex >= 0 {
+		return nil, errors.New(fmt.Sprintf("unmatched user id: %s", users[unmatchedIndex].UserID))
+	}
+
+	return users, nil
 }

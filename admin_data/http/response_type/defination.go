@@ -11,11 +11,20 @@ type HttpResUser struct {
 	CreatedBy  string `json:"createdBy"`
 }
 
-type HTTPResFiles struct {
+type HTTPResFile struct {
 	FileID      string        `json:"fileID"`
 	FileName    string        `json:"fileName"`
 	FileURL     string        `json:"fileURL"`
 	IsPublic    bool          `json:"isPublic"`
 	UpdateTime  time.Duration `json:"updateTime"`
+	CreatedTime time.Duration `json:"createdTime"`
+}
+
+type HTTPResNote struct {
+	NoteID      string        `json:"noteID"`
+	WriteBy     string        `json:"writeBy"`
+	Topic       string        `json:"topic"`
+	Content     string        `json:"content"`
+	IsPublic    bool          `json:"isPublic"`
 	CreatedTime time.Duration `json:"createdTime"`
 }

@@ -2,17 +2,16 @@ package handlers
 
 import (
 	"fmt"
-	"net/http"
-	"os"
-	"strconv"
-	"time"
-
 	"github.com/mats9693/unnamed_plan/admin_data/config"
 	"github.com/mats9693/unnamed_plan/admin_data/db/dao"
 	"github.com/mats9693/unnamed_plan/admin_data/db/model"
 	"github.com/mats9693/unnamed_plan/admin_data/http/response_type"
 	"github.com/mats9693/unnamed_plan/admin_data/kits"
-	mhttp "github.com/mats9693/utils/toy_server/http"
+	"github.com/mats9693/utils/toy_server/http"
+	"net/http"
+	"os"
+	"strconv"
+	"time"
 )
 
 func UploadCloudFile(w http.ResponseWriter, r *http.Request) {
@@ -117,7 +116,7 @@ func ListCloudFileByUploader(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filesRes := make([]*http_res_type.HTTPResFiles, 0, len(files))
+	filesRes := make([]*http_res_type.HTTPResFile, 0, len(files))
 	for i := range files {
 		url := ""
 		if files[i].IsPublic {
@@ -127,7 +126,7 @@ func ListCloudFileByUploader(w http.ResponseWriter, r *http.Request) {
 		}
 		url = kits.AppendDirSuffix(url) + files[i].FileID + "." + files[i].ExtensionName
 
-		filesRes = append(filesRes, &http_res_type.HTTPResFiles{
+		filesRes = append(filesRes, &http_res_type.HTTPResFile{
 			FileID:      files[i].FileID,
 			FileName:    files[i].FileName,
 			FileURL:     url,
@@ -138,8 +137,8 @@ func ListCloudFileByUploader(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resData := &struct {
-		Total int                           `json:"total"`
-		Files []*http_res_type.HTTPResFiles `json:"files"`
+		Total int                          `json:"total"`
+		Files []*http_res_type.HTTPResFile `json:"files"`
 	}{
 		Total: count,
 		Files: filesRes,
@@ -174,7 +173,7 @@ func ListPublicCloudFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filesRes := make([]*http_res_type.HTTPResFiles, 0, len(files))
+	filesRes := make([]*http_res_type.HTTPResFile, 0, len(files))
 	for i := range files {
 		url := ""
 		if files[i].IsPublic {
@@ -184,7 +183,7 @@ func ListPublicCloudFile(w http.ResponseWriter, r *http.Request) {
 		}
 		url = kits.AppendDirSuffix(url) + files[i].FileID + "." + files[i].ExtensionName
 
-		filesRes = append(filesRes, &http_res_type.HTTPResFiles{
+		filesRes = append(filesRes, &http_res_type.HTTPResFile{
 			FileID:      files[i].FileID,
 			FileName:    files[i].FileName,
 			FileURL:     url,
@@ -195,8 +194,8 @@ func ListPublicCloudFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resData := &struct {
-		Total int                           `json:"total"`
-		Files []*http_res_type.HTTPResFiles `json:"files"`
+		Total int                          `json:"total"`
+		Files []*http_res_type.HTTPResFile `json:"files"`
 	}{
 		Total: count,
 		Files: filesRes,
@@ -221,13 +220,9 @@ func DeleteCloudFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	operator, err := dao.GetUser().QueryOne(model.User_UserID+" = ?", operatorID)
+	_, err := checkPwdByUserID(password, operatorID)
 	if err != nil {
 		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
-	}
-	if operator.Password != kits.CalcSHA256(password, operator.Salt) {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError("invalid account or password"))
 		return
 	}
 

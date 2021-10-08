@@ -29,12 +29,13 @@
 18. 文件路径：files
 19. 文件ID：fileID
 20. 访问路径：fileURL
+21. 上次修改时间：lastModifiedTime
 
-21. 编辑者：writeBy
-22. 主题：topic
-23. 内容：content
-24. 笔记：notes
-25. 笔记ID：noteID
+22. 编辑者：writeBy
+23. 主题：topic
+24. 内容：content
+25. 笔记：notes
+26. 笔记ID：noteID
 
 ## CRUD
 

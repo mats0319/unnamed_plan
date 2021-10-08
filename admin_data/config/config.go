@@ -3,10 +3,9 @@ package system_config
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/mats9693/utils/toy_server/config"
+	"github.com/mats9693/utils/toy_server/const"
 	"os"
-
-	mconfig "github.com/mats9693/utils/toy_server/config"
-	mconst "github.com/mats9693/utils/toy_server/const"
 )
 
 type configuration struct {

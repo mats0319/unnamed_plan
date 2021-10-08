@@ -218,9 +218,9 @@ type ResponseData struct {
 2. 文件列表 files
     1. 文件ID fileID
     2. 文件名 fileName
-    3. 访问路径 fileURL ```/public/ffff.pdf```
-    4. 是否公开 isPublic
-    5. 更新时间 updateTime
+    3. 上次修改时间 lastModifiedTime
+    4. 访问路径 fileURL ```/public/ffff.pdf```
+    5. 是否公开 isPublic
     6. 创建时间 createdTime
 
 #### 预览
@@ -301,9 +301,8 @@ type ResponseData struct {
 ## 随想系统
 
 记录一些自己的想法（空想）与体会（经一事，长一智）
-
-编写**后台程序移动端界面**，开放编辑模块、查询模块（无样式）  
-编写**前台程序移动端界面**，开放查询模块（有样式）
+ 
+编写**前台程序移动端界面**，开放查询模块，支持查询自己上传的笔记
 
 ### 前台(2)
 
@@ -334,8 +333,7 @@ type ResponseData struct {
     3. 主题 topic
     4. 内容 content
     5. 是否公开 isPublic
-    6. 更新时间 updateTime
-    7. 创建时间 createdTime
+    6. 记录时间 createdTime
 
 ### 后台(4)
 
@@ -361,7 +359,8 @@ type ResponseData struct {
 输入：
 
 1. 删除者ID operatorID
-2. 笔记ID noteID
+2. 密码 password
+3. 笔记ID noteID
 
 规则：
 
