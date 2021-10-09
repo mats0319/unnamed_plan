@@ -59,7 +59,7 @@ func ListUser(w http.ResponseWriter, r *http.Request) {
 	pageNum, err2 := strconv.Atoi(r.PostFormValue("pageNum"))
 
 	if err != nil || err2 != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()+err2.Error()))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(errorsToString(err, err2)))
 		return
 	}
 
@@ -99,60 +99,6 @@ func ListUser(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func ModifyUserInfo(w http.ResponseWriter, r *http.Request) {
-	if isDev {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-	}
-
-	operatorID := r.PostFormValue("operatorID")
-	userID := r.PostFormValue("userID")
-	currPwd := r.PostFormValue("currPwd")
-	nickname := r.PostFormValue("nickname")
-	password := r.PostFormValue("password")
-
-	if len(operatorID) < 1 || len(userID) < 1 || operatorID != userID {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user id: %s", operatorID, userID)))
-		return
-	}
-
-	if len(nickname)+len(password) < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError("invalid params, not any modification received"))
-		return
-	}
-
-	user, err := checkPwdByUserID(currPwd, userID)
-	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
-	}
-
-	updateColumns := make([]string, 0, 2)
-	if len(nickname) > 0 {
-		user.Nickname = nickname
-		updateColumns = append(updateColumns, model.User_Nickname)
-	}
-	if len(password) > 0 {
-		user.Password = kits.CalcSHA256(password, user.Salt)
-		updateColumns = append(updateColumns, model.User_Password)
-	}
-
-	err = dao.GetUser().UpdateColumnsByUserID(user, updateColumns...)
-	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
-	}
-
-	resData := &struct {
-		IsSuccess bool `json:"isSuccess"`
-	}{
-		IsSuccess: true,
-	}
-
-	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
-
-	return
-}
-
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	if isDev {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -175,7 +121,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	permission := uint8(permissionInt)
 
-	operator, err := dao.GetUser().QueryUnlocked(model.User_UserID+" = ?", operatorID)
+	operator, err := dao.GetUser().QueryOneInUnlocked(model.User_UserID+" = ?", operatorID)
 	if err != nil {
 		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
@@ -306,6 +252,60 @@ func UnlockUser(w http.ResponseWriter, r *http.Request) {
 	users[1].IsLocked = false
 
 	err = dao.GetUser().UpdateColumnsByUserID(users[1], model.User_IsLocked)
+	if err != nil {
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
+		return
+	}
+
+	resData := &struct {
+		IsSuccess bool `json:"isSuccess"`
+	}{
+		IsSuccess: true,
+	}
+
+	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
+
+	return
+}
+
+func ModifyUserInfo(w http.ResponseWriter, r *http.Request) {
+	if isDev {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+	}
+
+	operatorID := r.PostFormValue("operatorID")
+	userID := r.PostFormValue("userID")
+	currPwd := r.PostFormValue("currPwd")
+	nickname := r.PostFormValue("nickname")
+	password := r.PostFormValue("password")
+
+	if len(operatorID) < 1 || len(userID) < 1 || operatorID != userID {
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user id: %s", operatorID, userID)))
+		return
+	}
+
+	if len(nickname)+len(password) < 1 {
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError("invalid params, not any modification received"))
+		return
+	}
+
+	user, err := checkPwdByUserID(currPwd, userID)
+	if err != nil {
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
+		return
+	}
+
+	updateColumns := make([]string, 0, 2)
+	if len(nickname) > 0 {
+		user.Nickname = nickname
+		updateColumns = append(updateColumns, model.User_Nickname)
+	}
+	if len(password) > 0 {
+		user.Password = kits.CalcSHA256(password, user.Salt)
+		updateColumns = append(updateColumns, model.User_Password)
+	}
+
+	err = dao.GetUser().UpdateColumnsByUserID(user, updateColumns...)
 	if err != nil {
 		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return

@@ -36,6 +36,7 @@
 24. 内容：content
 25. 笔记：notes
 26. 笔记ID：noteID
+27. 编辑者ID：writerID
 
 ## CRUD
 

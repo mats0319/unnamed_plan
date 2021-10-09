@@ -18,13 +18,14 @@ const (
 )
 
 const (
-	CloudFile_FileID        = "file_id"
-	CloudFile_UploadedBy    = "uploaded_by"
-	CloudFile_FileName      = "file_name"
-	CloudFile_ExtensionName = "extension_name"
-	CloudFile_FileSize      = "file_size"
-	CloudFile_IsPublic      = "is_public"
-	CloudFile_IsDeleted     = "is_deleted"
+	CloudFile_FileID           = "file_id"
+	CloudFile_UploadedBy       = "uploaded_by"
+	CloudFile_FileName         = "file_name"
+	CloudFile_ExtensionName    = "extension_name"
+	CloudFile_LastModifiedTime = "last_modified_time"
+	CloudFile_FileSize         = "file_size"
+	CloudFile_IsPublic         = "is_public"
+	CloudFile_IsDeleted        = "is_deleted"
 )
 
 const (

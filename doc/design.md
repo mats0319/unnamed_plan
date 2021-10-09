@@ -47,6 +47,27 @@ type ResponseData struct {
 
 > 与前台登录功能相同
 
+#### 创建
+
+/api/user/create
+
+输入：
+
+1. 创建者ID operatorID
+2. 新用户的用户名 userName
+3. 新用户的密码 password
+4. 新用户的权限等级 permission
+
+规则：
+
+1. 需要创建者权限等级达到**A级管理员权限等级**（见配置文件）
+2. 只能创建比自己权限等级**低**的用户
+3. 新用户的昵称与用户名相同
+
+返回：
+
+1. 创建结果 isSuccess
+
 #### 查询
 
 /api/user/list
@@ -74,50 +95,6 @@ type ResponseData struct {
     4. 锁定状态 isLocked
     5. 用户权限等级 permission
     6. 创建人 createdBy
-
-#### 修改用户信息（昵称和密码）
-
-/api/user/modifyInfo
-
-修改自己的昵称和密码
-
-输入：
-
-1. 修改者ID operatorID （当前登录用户）
-2. 目标用户ID userID （想要修改的用户）
-3. 当前密码 currPwd
-4. 新的昵称 nickname
-5. 新的密码 password
-
-规则：
-
-1. 只允许修改自己的昵称和密码
-2. 若成功修改密码，则前端退出登录
-
-输出：
-
-1. 修改结果 isSuccess
-
-#### 创建
-
-/api/user/create
-
-输入：
-
-1. 创建者ID operatorID
-2. 新用户的用户名 userName
-3. 新用户的密码 password
-4. 新用户的权限等级 permission
-
-规则：
-
-1. 需要创建者权限等级达到**A级管理员权限等级**（见配置文件）
-2. 只能创建比自己权限等级**低**的用户
-3. 新用户的昵称与用户名相同
-
-返回：
-
-1. 创建结果 isSuccess
 
 #### 锁定
 
@@ -160,6 +137,30 @@ type ResponseData struct {
 返回：
 
 1. 解锁结果 isSuccess
+
+#### 修改用户信息（昵称和密码）
+
+/api/user/modifyInfo
+
+修改自己的昵称和密码
+
+输入：
+
+1. 修改者ID operatorID （当前登录用户）
+2. 目标用户ID userID （想要修改的用户）
+3. 当前密码 currPwd
+4. 新的昵称 nickname
+5. 新的密码 password
+
+规则：
+
+1. 只允许修改自己的昵称和密码
+2. 若**昵称**与**密码**均无改动，不应允许执行修改
+3. 若成功修改密码，则前端退出登录
+
+输出：
+
+1. 修改结果 isSuccess
 
 #### 修改权限
 
@@ -241,9 +242,9 @@ type ResponseData struct {
 ##### 问题
 
 这样一来，若已知用户ID、文件ID和扩展名，是可以绕过系统的权限验证，从而看到其他人的非公开文件的。  
-有什么办法可以解决吗？
+除了通过后端获取文件，有什么办法可以解决吗？
 
-### 后台(4)
+### 后台(5)
 
 #### 上传
 
@@ -256,6 +257,7 @@ type ResponseData struct {
 1. 上传者ID operatorID
 2. 文件名 fileName
 3. 扩展名 extensionName
+4. 最后修改时间 lastModifiedTime
 5. 是否公开 isPublic
 6. 文件 file
 
@@ -267,6 +269,29 @@ type ResponseData struct {
 返回：
 
 1. 上传结果 isSuccess
+
+#### 修改
+
+/api/cloudFile/modify
+
+输入：
+
+1. 修改者ID operatorID
+2. 目标文件ID fileID
+3. 修改者密码 password
+4. 新的文件名 fileName
+5. 新的扩展名 extensionName
+6. 是否公开 isPublic
+7. 新的文件 file
+8. 新的文件最后修改时间 lastModifiedTime
+
+规则：
+1. 仅允许修改自己上传的文件
+2. 若**文件**、**文件名**、**扩展名**、**是否公开**均无改动，不应允许执行修改
+
+返回：
+
+1. 修改结果 isSuccess
 
 #### 删除
 
@@ -333,24 +358,46 @@ type ResponseData struct {
     3. 主题 topic
     4. 内容 content
     5. 是否公开 isPublic
-    6. 记录时间 createdTime
+    6. 上次更新 updateTime
+    7. 创建时间 createdTime
 
-### 后台(4)
+### 后台(5)
 
-#### 编辑
+#### 记录（创建）
 
 /api/thinkingNote/create
 
 输入：
 
-1. 编辑者ID operatorID
+1. 记录者ID operatorID
 2. 主题 topic
 3. 内容 content
 4. 是否公开 isPublic
 
 返回：
 
-1. 编辑结果 isSuccess
+1. 记录结果 isSuccess
+
+#### 修改
+
+/api/thinkingNote/modify
+
+输入：
+
+1. 修改者ID operatorID
+2. 目标笔记ID noteID
+4. 修改者密码 password
+5. 新的主题 topic
+6. 新的内容 content
+7. 是否公开 isPublic
+
+规则：
+1. 仅允许修改自己编辑的笔记
+2. 若**主题**、**内容**、**是否公开**均无改动，不应允许执行修改
+
+返回：
+
+1. 修改结果 isSuccess
 
 #### 删除
 

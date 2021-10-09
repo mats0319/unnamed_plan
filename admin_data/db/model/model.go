@@ -27,13 +27,14 @@ type User struct {
 }
 
 type CloudFile struct {
-	FileID        string `pg:",unique"` // sha256('user id' + timestamp), storage name
-	UploadedBy    string // user id
-	FileName      string // show name, for display
-	ExtensionName string
-	FileSize      string
-	IsPublic      bool `pg:",use_zero"`
-	IsDeleted     bool `pg:",use_zero"`
+	FileID           string `pg:",unique"` // sha256('user id' + timestamp), storage name
+	UploadedBy       string // user id
+	FileName         string // show name, for display
+	ExtensionName    string
+	LastModifiedTime time.Duration `pg:",use_zero"`
+	FileSize         int64
+	IsPublic         bool `pg:",use_zero"`
+	IsDeleted        bool `pg:",use_zero"`
 
 	Common
 }

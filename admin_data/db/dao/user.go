@@ -1,13 +1,13 @@
 package dao
 
 import (
+	"github.com/mats9693/utils/uuid"
 	"time"
 
 	"github.com/go-pg/pg/v10/orm"
 
 	"github.com/mats9693/unnamed_plan/admin_data/db/model"
 	mdb "github.com/mats9693/utils/toy_server/db"
-	"github.com/mats9693/utils/uuid"
 )
 
 type User model.User
@@ -18,29 +18,25 @@ func GetUser() *User {
 	return userIns
 }
 
-func (u *User) Insert(user *model.User) (err error) {
-	if len(user.ID) < 1 {
-		user.Common = model.NewCommon()
-	}
-
-	if len(user.UserID) < 1 {
-		user.UserID = uuid.New()
-	}
-
-	return mdb.WithTx(func(conn orm.DB) error {
-		_, err = conn.Model(user).Insert()
-		return err
-	})
-}
-
-func (u *User) QueryUnlocked(condition string, param ...interface{}) (user *model.User, err error) {
+func (u *User) QueryOneInUnlocked(condition string, param ...interface{}) (user *model.User, err error) {
 	user = &model.User{}
 
 	err = mdb.WithNoTx(func(conn orm.DB) error {
-		return conn.Model(user).Where(model.User_IsLocked+" = ?", false).Where(condition, param...).Select()
+		return conn.Model(user).Where(model.User_IsLocked+" = ?", false).Where(condition, param...).First()
 	})
 	if err != nil {
 		user = nil
+	}
+
+	return
+}
+
+func (u *User) Query(condition string, param ...interface{}) (users []*model.User, err error) {
+	err = mdb.WithNoTx(func(conn orm.DB) error {
+		return conn.Model(&users).Where(condition, param...).Select()
+	})
+	if err != nil {
+		users = nil
 	}
 
 	return
@@ -80,15 +76,19 @@ func (u *User) QueryPageByPermission(
 	return
 }
 
-func (u *User) Query(condition string, param ...interface{}) (users []*model.User, err error) {
-	err = mdb.WithNoTx(func(conn orm.DB) error {
-		return conn.Model(&users).Where(condition, param...).Select()
-	})
-	if err != nil {
-		users = nil
+func (u *User) Insert(user *model.User) (err error) {
+	if len(user.ID) < 1 {
+		user.Common = model.NewCommon()
 	}
 
-	return
+	if len(user.UserID) < 1 {
+		user.UserID = uuid.New()
+	}
+
+	return mdb.WithTx(func(conn orm.DB) error {
+		_, err = conn.Model(user).Insert()
+		return err
+	})
 }
 
 func (u *User) UpdateColumnsByUserID(data *model.User, columns ...string) (err error) {

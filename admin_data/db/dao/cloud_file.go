@@ -17,15 +17,18 @@ func GetCloudFile() *CloudFile {
 	return cloudFileIns
 }
 
-func (cf *CloudFile) Insert(cloudFile *model.CloudFile) error {
-	if len(cloudFile.ID) < 1 {
-		cloudFile.Common = model.NewCommon()
+// QueryFirst 仅选择未删除的文件
+func (cf *CloudFile) QueryFirst(condition string, params ...interface{}) (file *model.CloudFile, err error) {
+	file = &model.CloudFile{}
+
+	err = mdb.WithNoTx(func(conn orm.DB) error {
+		return conn.Model(file).Where(model.CloudFile_IsDeleted + " = ?", false).Where(condition, params...).First()
+	})
+	if err != nil {
+		file = nil
 	}
 
-	return mdb.WithTx(func(conn orm.DB) error {
-		_, err := conn.Model(cloudFile).Insert()
-		return err
-	})
+	return
 }
 
 // QueryPageByUploader 不查询已删除的记录，按照更新时间降序
@@ -88,6 +91,17 @@ func (cf *CloudFile) QueryPageInPublic(
 	}
 
 	return
+}
+
+func (cf *CloudFile) Insert(cloudFile *model.CloudFile) error {
+	if len(cloudFile.ID) < 1 {
+		cloudFile.Common = model.NewCommon()
+	}
+
+	return mdb.WithTx(func(conn orm.DB) error {
+		_, err := conn.Model(cloudFile).Insert()
+		return err
+	})
 }
 
 // UpdateColumnsByFileID 仅可操作未删除的文件

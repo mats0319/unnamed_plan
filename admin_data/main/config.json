@@ -7,7 +7,7 @@
       "jsonDev": {
         "ARankAdminPermission": 6,
         "SRankAdminPermission": 8,
-        "cloudFileRootPath": "F:/EnglishRoad/workspace/Go/src/github.com/mats9693/unnamed_plan/admin_data/main/cloud_file",
+        "cloudFileRootPath": "D:/GoPath/src/github.com/mats9693/unnamed_plan/admin_data/main/cloud_file",
         "cloudFilePublicDir": "public"
       }
     },

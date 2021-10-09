@@ -8,7 +8,7 @@ import (
 )
 
 func checkPwdByUserName(password string, userName string) (user *model.User, err error) {
-    user, err = dao.GetUser().QueryUnlocked(model.User_UserName+" = ?", userName)
+    user, err = dao.GetUser().QueryOneInUnlocked(model.User_UserName+" = ?", userName)
     if err != nil {
         return
     }
@@ -22,7 +22,7 @@ func checkPwdByUserName(password string, userName string) (user *model.User, err
 }
 
 func checkPwdByUserID(password string, userID string) (user *model.User, err error) {
-    user, err = dao.GetUser().QueryUnlocked(model.User_UserID+" = ?", userID)
+    user, err = dao.GetUser().QueryOneInUnlocked(model.User_UserID+" = ?", userID)
     if err != nil {
         return
     }
@@ -33,4 +33,15 @@ func checkPwdByUserID(password string, userID string) (user *model.User, err err
     }
 
     return
+}
+
+func errorsToString(errs ...error) string {
+    res := ""
+    for i := range errs {
+        if errs[i] != nil {
+            res += errs[i].Error()
+        }
+    }
+
+    return res
 }

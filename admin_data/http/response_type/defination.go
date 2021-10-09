@@ -26,5 +26,6 @@ type HTTPResNote struct {
 	Topic       string        `json:"topic"`
 	Content     string        `json:"content"`
 	IsPublic    bool          `json:"isPublic"`
+	UpdateTime  time.Duration `json:"updateTime"`
 	CreatedTime time.Duration `json:"createdTime"`
 }

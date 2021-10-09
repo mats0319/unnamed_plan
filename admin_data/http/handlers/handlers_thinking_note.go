@@ -11,6 +11,106 @@ import (
 	"strconv"
 )
 
+func ListThinkingNoteByWriter(w http.ResponseWriter, r *http.Request) {
+	if isDev {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+	}
+
+	operatorID := r.PostFormValue("operatorID")
+	pageSize, err := strconv.Atoi(r.PostFormValue("pageSize"))
+	pageNum, err2 := strconv.Atoi(r.PostFormValue("pageNum"))
+
+	if err != nil || err2 != nil {
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(errorsToString(err, err2)))
+		return
+	}
+	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
+		return
+	}
+
+	notes, count, err := dao.GetThinkingNote().QueryPageByWriter(pageSize, pageNum, operatorID)
+	if err != nil {
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
+		return
+	}
+
+	notesRes := make([]*http_res_type.HTTPResNote, 0, len(notes))
+	for i := range notes {
+		notesRes = append(notesRes, &http_res_type.HTTPResNote{
+			NoteID:      notes[i].NoteID,
+			WriteBy:     notes[i].WriteBy,
+			Topic:       notes[i].Topic,
+			Content:     notes[i].Content,
+			IsPublic:    notes[i].IsPublic,
+			UpdateTime:  notes[i].UpdateTime,
+			CreatedTime: notes[i].CreatedTime,
+		})
+	}
+
+	resData := &struct {
+		Total int                          `json:"total"`
+		Notes []*http_res_type.HTTPResNote `json:"notes"`
+	}{
+		Total: count,
+		Notes: notesRes,
+	}
+
+	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
+
+	return
+}
+
+func ListPublicThinkingNote(w http.ResponseWriter, r *http.Request) {
+	if isDev {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+	}
+
+	operatorID := r.PostFormValue("operatorID")
+	pageSize, err := strconv.Atoi(r.PostFormValue("pageSize"))
+	pageNum, err2 := strconv.Atoi(r.PostFormValue("pageNum"))
+
+	if err != nil || err2 != nil {
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(errorsToString(err, err2)))
+		return
+	}
+	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
+		return
+	}
+
+	notes, count, err := dao.GetThinkingNote().QueryPageInPublic(pageSize, pageNum, operatorID)
+	if err != nil {
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
+		return
+	}
+
+	notesRes := make([]*http_res_type.HTTPResNote, 0, len(notes))
+	for i := range notes {
+		notesRes = append(notesRes, &http_res_type.HTTPResNote{
+			NoteID:      notes[i].NoteID,
+			WriteBy:     notes[i].WriteBy,
+			Topic:       notes[i].Topic,
+			Content:     notes[i].Content,
+			IsPublic:    notes[i].IsPublic,
+			UpdateTime:  notes[i].UpdateTime,
+			CreatedTime: notes[i].CreatedTime,
+		})
+	}
+
+	resData := &struct {
+		Total int                          `json:"total"`
+		Notes []*http_res_type.HTTPResNote `json:"notes"`
+	}{
+		Total: count,
+		Notes: notesRes,
+	}
+
+	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
+
+	return
+}
+
 func CreateThinkingNote(w http.ResponseWriter, r *http.Request) {
 	if isDev {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -52,97 +152,73 @@ func CreateThinkingNote(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func ListThinkingNoteByWriter(w http.ResponseWriter, r *http.Request) {
+func ModifyThinkingNote(w http.ResponseWriter, r *http.Request) {
 	if isDev {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
 
 	operatorID := r.PostFormValue("operatorID")
-	pageSize, err := strconv.Atoi(r.PostFormValue("pageSize"))
-	pageNum, err2 := strconv.Atoi(r.PostFormValue("pageNum"))
+	noteID := r.PostFormValue("noteID")
+	password := r.PostFormValue("password")
+	topic := r.PostFormValue("topic")
+	content := r.PostFormValue("content")
+	isPublicStr := r.PostFormValue("isPublic")
 
-	if err != nil || err2 != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()+err2.Error()))
+	if len(operatorID) < 1 || len(noteID) < 1 {
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, note id: %s", operatorID, noteID)))
 		return
 	}
-	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
+	if len(topic)+len(content)+len(isPublicStr) < 1 {
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError("invalid params, not any modification received"))
 		return
 	}
 
-	notes, count, err := dao.GetThinkingNote().QueryPageByWriter(pageSize, pageNum, operatorID)
+	isPublic, err := kits.StringToBool(isPublicStr)
 	if err != nil {
 		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
-	notesRes := make([]*http_res_type.HTTPResNote, 0, len(notes))
-	for i := range notes {
-		notesRes = append(notesRes, &http_res_type.HTTPResNote{
-			NoteID:      notes[i].NoteID,
-			WriteBy:     notes[i].WriteBy,
-			Topic:       notes[i].Topic,
-			Content:     notes[i].Content,
-			IsPublic:    notes[i].IsPublic,
-			CreatedTime: notes[i].CreatedTime,
-		})
-	}
-
-	resData := &struct {
-		Total int                          `json:"total"`
-		Notes []*http_res_type.HTTPResNote `json:"notes"`
-	}{
-		Total: count,
-		Notes: notesRes,
-	}
-
-	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
-
-	return
-}
-
-func ListPublicThinkingNote(w http.ResponseWriter, r *http.Request) {
-	if isDev {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-	}
-
-	operatorID := r.PostFormValue("operatorID")
-	pageSize, err := strconv.Atoi(r.PostFormValue("pageSize"))
-	pageNum, err2 := strconv.Atoi(r.PostFormValue("pageNum"))
-
-	if err != nil || err2 != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()+err2.Error()))
-		return
-	}
-	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
-		return
-	}
-
-	notes, count, err := dao.GetThinkingNote().QueryPageInPublic(pageSize, pageNum, operatorID)
+	_, err = checkPwdByUserID(password, operatorID)
 	if err != nil {
 		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 
-	notesRes := make([]*http_res_type.HTTPResNote, 0, len(notes))
-	for i := range notes {
-		notesRes = append(notesRes, &http_res_type.HTTPResNote{
-			NoteID:      notes[i].NoteID,
-			WriteBy:     notes[i].WriteBy,
-			Topic:       notes[i].Topic,
-			Content:     notes[i].Content,
-			IsPublic:    notes[i].IsPublic,
-			CreatedTime: notes[i].CreatedTime,
-		})
+	newNote, err := dao.GetThinkingNote().QueryFirst(model.ThinkingNote_NoteID + " = ?", noteID)
+	if err != nil {
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
+		return
+	}
+	if newNote.WriteBy != operatorID {
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError("invalid params, operator is not the writer of the note"))
+		return
+	}
+
+	updateColumns := make([]string, 0, 3)
+	if len(topic) > 0 {
+		newNote.Topic = topic
+		updateColumns = append(updateColumns, model.ThinkingNote_Topic)
+	}
+	if len(content) > 0 {
+		newNote.Content = content
+		updateColumns = append(updateColumns, model.ThinkingNote_Content)
+	}
+	if len(isPublicStr) > 0 {
+		newNote.IsPublic = isPublic
+		updateColumns = append(updateColumns, model.ThinkingNote_IsPublic)
+	}
+
+	err = dao.GetThinkingNote().UpdateColumnsByNoteID(newNote, updateColumns...)
+	if err != nil {
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
+		return
 	}
 
 	resData := &struct {
-		Total int                          `json:"total"`
-		Notes []*http_res_type.HTTPResNote `json:"notes"`
+		IsSuccess bool `json:"isSuccess"`
 	}{
-		Total: count,
-		Notes: notesRes,
+		IsSuccess: true,
 	}
 
 	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
