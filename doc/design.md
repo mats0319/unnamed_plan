@@ -217,12 +217,13 @@ type ResponseData struct {
 
 1. 符合条件的数据条数 total
 2. 文件列表 files
-    1. 文件ID fileID
-    2. 文件名 fileName
-    3. 上次修改时间 lastModifiedTime
+    1. 文件ID fileID （文件存储名称）
+    2. 文件名 fileName （文件展示名称）
+    3. 文件最后修改时间 lastModifiedTime
     4. 访问路径 fileURL ```/public/ffff.pdf```
     5. 是否公开 isPublic
-    6. 创建时间 createdTime
+    6. 上次修改时间 updateTime
+    7. 初次上传时间 createdTime
 
 #### 预览
 
@@ -288,6 +289,7 @@ type ResponseData struct {
 规则：
 1. 仅允许修改自己上传的文件
 2. 若**文件**、**文件名**、**扩展名**、**是否公开**均无改动，不应允许执行修改
+3. 不删除旧文件，将旧文件移动至**修改者非公开文件目录**备份
 
 返回：
 

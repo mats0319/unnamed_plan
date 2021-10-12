@@ -17,7 +17,7 @@ func GetCloudFile() *CloudFile {
 	return cloudFileIns
 }
 
-// QueryFirst 仅选择未删除的文件
+// QueryFirst 仅选择未删除的文件，pg.ErrNoRows
 func (cf *CloudFile) QueryFirst(condition string, params ...interface{}) (file *model.CloudFile, err error) {
 	file = &model.CloudFile{}
 

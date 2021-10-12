@@ -12,12 +12,13 @@ type HttpResUser struct {
 }
 
 type HTTPResFile struct {
-	FileID      string        `json:"fileID"`
-	FileName    string        `json:"fileName"`
-	FileURL     string        `json:"fileURL"`
-	IsPublic    bool          `json:"isPublic"`
-	UpdateTime  time.Duration `json:"updateTime"`
-	CreatedTime time.Duration `json:"createdTime"`
+	FileID           string        `json:"fileID"`
+	FileName         string        `json:"fileName"`
+	LastModifiedTime time.Duration `json:"lastModifiedTime"`
+	FileURL          string        `json:"fileURL"`
+	IsPublic         bool          `json:"isPublic"`
+	UpdateTime       time.Duration `json:"updateTime"`
+	CreatedTime      time.Duration `json:"createdTime"`
 }
 
 type HTTPResNote struct {

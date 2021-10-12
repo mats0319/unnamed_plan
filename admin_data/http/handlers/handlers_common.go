@@ -7,6 +7,12 @@ import (
     "github.com/pkg/errors"
 )
 
+const (
+    error_InvalidAccountOrPassword = "invalid account or password"
+    error_InvalidParams = "invalid param(s)"
+    error_PermissionDenied = "permission denied"
+)
+
 func checkPwdByUserName(password string, userName string) (user *model.User, err error) {
     user, err = dao.GetUser().QueryOneInUnlocked(model.User_UserName+" = ?", userName)
     if err != nil {
@@ -14,7 +20,7 @@ func checkPwdByUserName(password string, userName string) (user *model.User, err
     }
 
     if user.Password != kits.CalcSHA256(password, user.Salt) {
-        err = errors.New("invalid account or password")
+        err = errors.New(error_InvalidAccountOrPassword)
         return
     }
 
@@ -28,7 +34,7 @@ func checkPwdByUserID(password string, userID string) (user *model.User, err err
     }
 
     if user.Password != kits.CalcSHA256(password, user.Salt) {
-        err = errors.New("invalid account or password")
+        err = errors.New(error_InvalidAccountOrPassword)
         return
     }
 

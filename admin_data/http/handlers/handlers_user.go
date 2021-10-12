@@ -64,7 +64,8 @@ func ListUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid param, operator id: %s, page size: %d, page num: %d.", operatorID, pageSize, pageNum)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, page size: %d, page num: %d.", operatorID, pageSize, pageNum)))
 		return
 	}
 
@@ -115,7 +116,8 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(operatorID) < 1 || len(userName) < 1 || len(password) < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user name: %s, password: %s", operatorID, userName, password)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, user name: %s, password: %s", operatorID, userName, password)))
 		return
 	}
 
