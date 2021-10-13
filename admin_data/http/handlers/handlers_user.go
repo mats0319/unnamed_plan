@@ -65,7 +65,7 @@ func ListUser(w http.ResponseWriter, r *http.Request) {
 
 	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
 		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
-			fmt.Sprintf(", operator id: %s, page size: %d, page num: %d.", operatorID, pageSize, pageNum)))
+			fmt.Sprintf(", operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
 		return
 	}
 
@@ -130,8 +130,8 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	if operator.Permission < system_config.GetConfiguration().ARankAdminPermission ||
 		operator.Permission <= permission {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("permission denied, operator: %d, want create: %d.",
-			operator.Permission, permission)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_PermissionDenied+
+			fmt.Sprintf(", operator: %d, want create: %d", operator.Permission, permission)))
 		return
 	}
 
@@ -169,7 +169,8 @@ func LockUser(w http.ResponseWriter, r *http.Request) {
 	userID := r.PostFormValue("userID")
 
 	if len(operatorID) < 1 || len(userID) < 1 || operatorID == userID {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user id: %s", operatorID, userID)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, user id: %s", operatorID, userID)))
 		return
 	}
 
@@ -186,13 +187,14 @@ func LockUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if users[1].IsLocked {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError("user is already locked"))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_UserLocked))
 		return
 	}
 	if users[0].Permission <= users[1].Permission ||
 		users[0].Permission < system_config.GetConfiguration().ARankAdminPermission {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("permission denied, operator: %d, user: %d, need: %d",
-			users[0].Permission, users[1].Permission, system_config.GetConfiguration().SRankAdminPermission)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_PermissionDenied+
+			fmt.Sprintf(", operator: %d, user: %d, need: %d",
+				users[0].Permission, users[1].Permission, system_config.GetConfiguration().ARankAdminPermission)))
 		return
 	}
 
@@ -224,7 +226,8 @@ func UnlockUser(w http.ResponseWriter, r *http.Request) {
 	userID := r.PostFormValue("userID")
 
 	if len(operatorID) < 1 || len(userID) < 1 || operatorID == userID {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user id: %s", operatorID, userID)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, user id: %s", operatorID, userID)))
 		return
 	}
 
@@ -241,13 +244,14 @@ func UnlockUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !users[1].IsLocked {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError("user is already unlocked"))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_UserUnlocked))
 		return
 	}
 	if users[0].Permission <= users[1].Permission ||
 		users[0].Permission < system_config.GetConfiguration().ARankAdminPermission {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("permission denied, operator: %d, user: %d, need: %d",
-			users[0].Permission, users[1].Permission, system_config.GetConfiguration().SRankAdminPermission)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_PermissionDenied+
+			fmt.Sprintf(", operator: %d, user: %d, need: %d",
+				users[0].Permission, users[1].Permission, system_config.GetConfiguration().ARankAdminPermission)))
 		return
 	}
 
@@ -282,12 +286,13 @@ func ModifyUserInfo(w http.ResponseWriter, r *http.Request) {
 	password := r.PostFormValue("password")
 
 	if len(operatorID) < 1 || len(userID) < 1 || operatorID != userID {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user id: %s", operatorID, userID)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, user id: %s", operatorID, userID)))
 		return
 	}
 
 	if len(nickname)+len(password) < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError("invalid params, not any modification received"))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_NoValidModification))
 		return
 	}
 
@@ -339,7 +344,8 @@ func ModifyUserPermission(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(operatorID) < 1 || len(userID) < 1 || operatorID == userID {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, user id: %s", operatorID, userID)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, user id: %s", operatorID, userID)))
 		return
 	}
 
@@ -360,8 +366,8 @@ func ModifyUserPermission(w http.ResponseWriter, r *http.Request) {
 	if users[0].Permission < system_config.GetConfiguration().SRankAdminPermission ||
 		users[1].Permission >= system_config.GetConfiguration().SRankAdminPermission ||
 		permission >= system_config.GetConfiguration().SRankAdminPermission {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("permission denied, operator: %d, user: %d, user new: %d",
-			users[0].Permission, users[1].Permission, permission)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_PermissionDenied+
+			fmt.Sprintf(", operator: %d, user: %d, user new: %d", users[0].Permission, users[1].Permission, permission)))
 		return
 	}
 

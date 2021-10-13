@@ -31,7 +31,8 @@ func ListCloudFileByUploader(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
 		return
 	}
 
@@ -81,7 +82,8 @@ func ListPublicCloudFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
 		return
 	}
 
@@ -136,7 +138,9 @@ func UploadCloudFile(w http.ResponseWriter, r *http.Request) {
 	defer file.Close()
 
 	if len(operatorID) < 1 || len(fileName) < 1 || len(extensionName) < 1 || lastModifiedTime < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, file name: %s, extension name: %s, last modified time: %d", operatorID, fileName, extensionName, lastModifiedTime)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, file name: %s, extension name: %s, last modified time: %d",
+				operatorID, fileName, extensionName, lastModifiedTime)))
 		return
 	}
 
@@ -205,7 +209,8 @@ func ModifyCloudFile(w http.ResponseWriter, r *http.Request) {
 	defer file.Close()
 
 	if len(operatorID) < 1 || len(fileID) < 1 || len(password) < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, file id: %s, password: %s", operatorID, fileID, password)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, file id: %s, password: %s", operatorID, fileID, password)))
 		return
 	}
 
@@ -222,11 +227,7 @@ func ModifyCloudFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(fileName)+len(extensionName) < 1 && fileRecord.IsPublic == isPublic && err2 != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, not any modification received")))
-		return
-	}
-	if err2 == nil && err3 != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, parse file last modified time failed")))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_NoValidModification))
 		return
 	}
 
@@ -315,7 +316,8 @@ func DeleteCloudFile(w http.ResponseWriter, r *http.Request) {
 	fileID := r.PostFormValue("fileID")
 
 	if len(operatorID) < 1 || len(password) < 1 || len(fileID) < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, password: %s, file id: %s", operatorID, password, fileID)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, password: %s, file id: %s", operatorID, password, fileID)))
 		return
 	}
 

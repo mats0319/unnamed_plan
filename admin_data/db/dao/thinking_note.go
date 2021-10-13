@@ -22,7 +22,7 @@ func (tn *ThinkNote) QueryFirst(condition string, params ...interface{}) (note *
 	note = &model.ThinkingNote{}
 
 	err = mdb.WithNoTx(func(conn orm.DB) error {
-		return conn.Model(note).Where(model.ThinkingNote_IsDeleted + " = ?", false).Where(condition, params...).Select()
+		return conn.Model(note).Where(model.ThinkingNote_IsDeleted+" = ?", false).Where(condition, params...).Select()
 	})
 	if err != nil {
 		note = nil

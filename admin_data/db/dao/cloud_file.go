@@ -22,7 +22,7 @@ func (cf *CloudFile) QueryFirst(condition string, params ...interface{}) (file *
 	file = &model.CloudFile{}
 
 	err = mdb.WithNoTx(func(conn orm.DB) error {
-		return conn.Model(file).Where(model.CloudFile_IsDeleted + " = ?", false).Where(condition, params...).First()
+		return conn.Model(file).Where(model.CloudFile_IsDeleted+" = ?", false).Where(condition, params...).First()
 	})
 	if err != nil {
 		file = nil

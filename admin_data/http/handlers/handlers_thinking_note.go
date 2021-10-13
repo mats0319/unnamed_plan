@@ -25,7 +25,8 @@ func ListThinkingNoteByWriter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
 		return
 	}
 
@@ -75,7 +76,8 @@ func ListPublicThinkingNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
 		return
 	}
 
@@ -126,7 +128,8 @@ func CreateThinkingNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if len(operatorID) < 1 || len(content) < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, content length: %d", operatorID, len(content))))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, content length: %d", operatorID, len(content))))
 		return
 	}
 
@@ -165,11 +168,12 @@ func ModifyThinkingNote(w http.ResponseWriter, r *http.Request) {
 	isPublicStr := r.PostFormValue("isPublic")
 
 	if len(operatorID) < 1 || len(noteID) < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, note id: %s", operatorID, noteID)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, note id: %s", operatorID, noteID)))
 		return
 	}
 	if len(topic)+len(content)+len(isPublicStr) < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError("invalid params, not any modification received"))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_NoValidModification))
 		return
 	}
 
@@ -185,13 +189,13 @@ func ModifyThinkingNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newNote, err := dao.GetThinkingNote().QueryFirst(model.ThinkingNote_NoteID + " = ?", noteID)
+	newNote, err := dao.GetThinkingNote().QueryFirst(model.ThinkingNote_NoteID+" = ?", noteID)
 	if err != nil {
 		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
 		return
 	}
 	if newNote.WriteBy != operatorID {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError("invalid params, operator is not the writer of the note"))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_ModifyOthersThinkingNote))
 		return
 	}
 
@@ -236,7 +240,8 @@ func DeleteThinkingNote(w http.ResponseWriter, r *http.Request) {
 	noteID := r.PostFormValue("noteID")
 
 	if len(operatorID) < 1 || len(password) < 1 || len(noteID) < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(fmt.Sprintf("invalid params, operator id: %s, password: %s, note id: %s", operatorID, password, noteID)))
+		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, password: %s, note id: %s", operatorID, password, noteID)))
 		return
 	}
 
