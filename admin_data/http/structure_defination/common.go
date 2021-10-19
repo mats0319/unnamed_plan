@@ -1,8 +1,42 @@
-package http_res_type
+package structure
 
 import "time"
 
-type HttpResUser struct {
+// request params
+const (
+	params_UserName = "userName"
+	params_Password = "password"
+)
+
+// common
+
+type Total struct {
+	Total int `json:"total"`
+}
+
+type IsSuccess struct {
+	IsSuccess bool `json:"isSuccess"`
+}
+
+// user
+
+type UserID struct {
+	UserID string `json:"userID"`
+}
+
+type Nickname struct {
+	Nickname string `json:"nickname"`
+}
+
+type Permission struct {
+	Permission uint8 `json:"permission"`
+}
+
+type Users struct {
+	Users []*UserListRes `json:"users"`
+}
+
+type UserListRes struct {
 	UserID     string `json:"userID"`
 	UserName   string `json:"userName"`
 	Nickname   string `json:"nickname"`
@@ -11,7 +45,13 @@ type HttpResUser struct {
 	CreatedBy  string `json:"createdBy"`
 }
 
-type HTTPResFile struct {
+// cloud file
+
+type Files struct {
+    Files []*FileListRes `json:"files"`
+}
+
+type FileListRes struct {
 	FileID           string        `json:"fileID"`
 	FileName         string        `json:"fileName"`
 	LastModifiedTime time.Duration `json:"lastModifiedTime"`
@@ -21,7 +61,13 @@ type HTTPResFile struct {
 	CreatedTime      time.Duration `json:"createdTime"`
 }
 
-type HTTPResNote struct {
+// note
+
+type Notes struct {
+	Notes []*NoteListRes `json:"notes"`
+}
+
+type NoteListRes struct {
 	NoteID      string        `json:"noteID"`
 	WriteBy     string        `json:"writeBy"`
 	Topic       string        `json:"topic"`

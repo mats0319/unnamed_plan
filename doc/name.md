@@ -14,29 +14,30 @@
 5. 更新时间：updateTime
 6. 是否公开：isPublic
 
-7. 用户ID：userID
-8. 用户名：userName
-9. 昵称：nickname
-10. 锁定状态：isLocked
-11. 密码：password
-12. 权限等级：permission
-13. 创建人：createdBy
+7. 用户：users
+8. 用户ID：userID
+9. 用户名：userName
+10. 昵称：nickname
+11. 锁定状态：isLocked
+12. 密码：password
+13. 权限等级：permission
+14. 创建人：createdBy
 
-14. 文件名：fileName
-15. 扩展名：extensionName
-16. 文件大小：fileSize
-17. 文件：file
-18. 文件路径：files
-19. 文件ID：fileID
-20. 访问路径：fileURL
-21. 上次修改时间：lastModifiedTime
+15. 文件名：fileName
+16. 扩展名：extensionName
+17. 文件大小：fileSize
+18. 文件：file
+19. 文件路径：files
+20. 文件ID：fileID
+21. 访问路径：fileURL
+22. 上次修改时间：lastModifiedTime
 
-22. 编辑者：writeBy
-23. 主题：topic
-24. 内容：content
-25. 笔记：notes
-26. 笔记ID：noteID
-27. 编辑者ID：writerID
+23. 编辑者：writeBy
+24. 主题：topic
+25. 内容：content
+26. 笔记：notes
+27. 笔记ID：noteID
+28. 编辑者ID：writerID
 
 ## CRUD
 

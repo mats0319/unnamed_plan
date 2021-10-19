@@ -4,41 +4,34 @@ import (
 	"fmt"
 	"github.com/mats9693/unnamed_plan/admin_data/db/dao"
 	"github.com/mats9693/unnamed_plan/admin_data/db/model"
-	"github.com/mats9693/unnamed_plan/admin_data/http/response_type"
-	"github.com/mats9693/unnamed_plan/admin_data/kits"
+    "github.com/mats9693/unnamed_plan/admin_data/http/structure_defination"
+    "github.com/mats9693/unnamed_plan/admin_data/utils"
 	"github.com/mats9693/utils/toy_server/http"
 	"net/http"
 	"strconv"
 )
 
-func ListThinkingNoteByWriter(w http.ResponseWriter, r *http.Request) {
-	if isDev {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-	}
-
+func ListThinkingNoteByWriter(r *http.Request) string {
 	operatorID := r.PostFormValue("operatorID")
 	pageSize, err := strconv.Atoi(r.PostFormValue("pageSize"))
 	pageNum, err2 := strconv.Atoi(r.PostFormValue("pageNum"))
 
 	if err != nil || err2 != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(errorsToString(err, err2)))
-		return
+		return mhttp.ResponseWithError(errorsToString(err, err2))
 	}
 	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
-			fmt.Sprintf(", operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
-		return
+		return mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum))
 	}
 
 	notes, count, err := dao.GetThinkingNote().QueryPageByWriter(pageSize, pageNum, operatorID)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
+		return mhttp.ResponseWithError(err.Error())
 	}
 
-	notesRes := make([]*http_res_type.HTTPResNote, 0, len(notes))
+	noteListRes := make([]*structure.NoteListRes, 0, len(notes))
 	for i := range notes {
-		notesRes = append(notesRes, &http_res_type.HTTPResNote{
+		noteListRes = append(noteListRes, &structure.NoteListRes{
 			NoteID:      notes[i].NoteID,
 			WriteBy:     notes[i].WriteBy,
 			Topic:       notes[i].Topic,
@@ -49,47 +42,30 @@ func ListThinkingNoteByWriter(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	resData := &struct {
-		Total int                          `json:"total"`
-		Notes []*http_res_type.HTTPResNote `json:"notes"`
-	}{
-		Total: count,
-		Notes: notesRes,
-	}
-
-	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
-
-	return
+	return mhttp.Response(structure.MakeListThinkingNoteByWriterRes(count, noteListRes))
 }
 
-func ListPublicThinkingNote(w http.ResponseWriter, r *http.Request) {
-	if isDev {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-	}
-
+func ListPublicThinkingNote(r *http.Request) string {
 	operatorID := r.PostFormValue("operatorID")
 	pageSize, err := strconv.Atoi(r.PostFormValue("pageSize"))
 	pageNum, err2 := strconv.Atoi(r.PostFormValue("pageNum"))
 
 	if err != nil || err2 != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(errorsToString(err, err2)))
-		return
+		return mhttp.ResponseWithError(errorsToString(err, err2))
 	}
 	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
-			fmt.Sprintf(", operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
-		return
+		return mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum))
 	}
 
 	notes, count, err := dao.GetThinkingNote().QueryPageInPublic(pageSize, pageNum, operatorID)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
+		return mhttp.ResponseWithError(err.Error())
 	}
 
-	notesRes := make([]*http_res_type.HTTPResNote, 0, len(notes))
+	noteListRes := make([]*structure.NoteListRes, 0, len(notes))
 	for i := range notes {
-		notesRes = append(notesRes, &http_res_type.HTTPResNote{
+		noteListRes = append(noteListRes, &structure.NoteListRes{
 			NoteID:      notes[i].NoteID,
 			WriteBy:     notes[i].WriteBy,
 			Topic:       notes[i].Topic,
@@ -100,37 +76,21 @@ func ListPublicThinkingNote(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	resData := &struct {
-		Total int                          `json:"total"`
-		Notes []*http_res_type.HTTPResNote `json:"notes"`
-	}{
-		Total: count,
-		Notes: notesRes,
-	}
-
-	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
-
-	return
+	return mhttp.Response(structure.MakeListPublicThinkingNoteRes(count, noteListRes))
 }
 
-func CreateThinkingNote(w http.ResponseWriter, r *http.Request) {
-	if isDev {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-	}
-
+func CreateThinkingNote(r *http.Request) string {
 	operatorID := r.PostFormValue("operatorID")
 	topic := r.PostFormValue("topic")
 	content := r.PostFormValue("content")
-	isPublic, err := kits.StringToBool(r.PostFormValue("isPublic"))
+	isPublic, err := utils.StringToBool(r.PostFormValue("isPublic"))
 
 	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
+		return mhttp.ResponseWithError(err.Error())
 	}
 	if len(operatorID) < 1 || len(content) < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
-			fmt.Sprintf(", operator id: %s, content length: %d", operatorID, len(content))))
-		return
+		return mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, content length: %d", operatorID, len(content)))
 	}
 
 	err = dao.GetThinkingNote().Insert(&model.ThinkingNote{
@@ -140,26 +100,13 @@ func CreateThinkingNote(w http.ResponseWriter, r *http.Request) {
 		IsPublic: isPublic,
 	})
 	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
+		return mhttp.ResponseWithError(err.Error())
 	}
 
-	resData := &struct {
-		IsSuccess bool `json:"isSuccess"`
-	}{
-		IsSuccess: true,
-	}
-
-	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
-
-	return
+	return mhttp.Response(structure.MakeCreateThinkingNoteRes(true))
 }
 
-func ModifyThinkingNote(w http.ResponseWriter, r *http.Request) {
-	if isDev {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-	}
-
+func ModifyThinkingNote(r *http.Request) string {
 	operatorID := r.PostFormValue("operatorID")
 	noteID := r.PostFormValue("noteID")
 	password := r.PostFormValue("password")
@@ -168,35 +115,29 @@ func ModifyThinkingNote(w http.ResponseWriter, r *http.Request) {
 	isPublicStr := r.PostFormValue("isPublic")
 
 	if len(operatorID) < 1 || len(noteID) < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
-			fmt.Sprintf(", operator id: %s, note id: %s", operatorID, noteID)))
-		return
+		return mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, note id: %s", operatorID, noteID))
 	}
 	if len(topic)+len(content)+len(isPublicStr) < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_NoValidModification))
-		return
+		return mhttp.ResponseWithError(error_NoValidModification)
 	}
 
-	isPublic, err := kits.StringToBool(isPublicStr)
+	isPublic, err := utils.StringToBool(isPublicStr)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
+		return mhttp.ResponseWithError(err.Error())
 	}
 
-	_, err = checkPwdByUserID(password, operatorID)
+	_, err = verifyPwdByUserID(password, operatorID)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
+		return mhttp.ResponseWithError(err.Error())
 	}
 
 	newNote, err := dao.GetThinkingNote().QueryFirst(model.ThinkingNote_NoteID+" = ?", noteID)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
+		return mhttp.ResponseWithError(err.Error())
 	}
 	if newNote.WriteBy != operatorID {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_ModifyOthersThinkingNote))
-		return
+		return mhttp.ResponseWithError(error_ModifyOthersThinkingNote)
 	}
 
 	updateColumns := make([]string, 0, 3)
@@ -215,40 +156,25 @@ func ModifyThinkingNote(w http.ResponseWriter, r *http.Request) {
 
 	err = dao.GetThinkingNote().UpdateColumnsByNoteID(newNote, updateColumns...)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
+		return mhttp.ResponseWithError(err.Error())
 	}
 
-	resData := &struct {
-		IsSuccess bool `json:"isSuccess"`
-	}{
-		IsSuccess: true,
-	}
-
-	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
-
-	return
+	return mhttp.Response(structure.MakeModifyThinkingNoteRes(true))
 }
 
-func DeleteThinkingNote(w http.ResponseWriter, r *http.Request) {
-	if isDev {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-	}
-
+func DeleteThinkingNote(r *http.Request) string {
 	operatorID := r.PostFormValue("operatorID")
 	password := r.PostFormValue("password")
 	noteID := r.PostFormValue("noteID")
 
 	if len(operatorID) < 1 || len(password) < 1 || len(noteID) < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
-			fmt.Sprintf(", operator id: %s, password: %s, note id: %s", operatorID, password, noteID)))
-		return
+		return mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, password: %s, note id: %s", operatorID, password, noteID))
 	}
 
-	_, err := checkPwdByUserID(password, operatorID)
+	_, err := verifyPwdByUserID(password, operatorID)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
+		return mhttp.ResponseWithError(err.Error())
 	}
 
 	err = dao.GetThinkingNote().UpdateColumnsByNoteID(&model.ThinkingNote{
@@ -256,17 +182,8 @@ func DeleteThinkingNote(w http.ResponseWriter, r *http.Request) {
 		IsDeleted: true,
 	}, model.ThinkingNote_IsDeleted)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
+		return mhttp.ResponseWithError(err.Error())
 	}
 
-	resData := &struct {
-		IsSuccess bool `json:"isSuccess"`
-	}{
-		IsSuccess: true,
-	}
-
-	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
-
-	return
+	return mhttp.Response(structure.MakeDeleteThinkingNoteRes(true))
 }

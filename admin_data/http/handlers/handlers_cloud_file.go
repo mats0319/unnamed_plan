@@ -5,8 +5,8 @@ import (
 	"github.com/mats9693/unnamed_plan/admin_data/config"
 	"github.com/mats9693/unnamed_plan/admin_data/db/dao"
 	"github.com/mats9693/unnamed_plan/admin_data/db/model"
-	"github.com/mats9693/unnamed_plan/admin_data/http/response_type"
-	"github.com/mats9693/unnamed_plan/admin_data/kits"
+	"github.com/mats9693/unnamed_plan/admin_data/http/structure_defination"
+	"github.com/mats9693/unnamed_plan/admin_data/utils"
 	"github.com/mats9693/utils/toy_server/http"
 	"mime/multipart"
 	"net/http"
@@ -17,34 +17,27 @@ import (
 
 const backupFileSuffix = ".backup"
 
-func ListCloudFileByUploader(w http.ResponseWriter, r *http.Request) {
-	if isDev {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-	}
-
+func ListCloudFileByUploader(r *http.Request) string {
 	operatorID := r.PostFormValue("operatorID")
 	pageSize, err := strconv.Atoi(r.PostFormValue("pageSize"))
 	pageNum, err2 := strconv.Atoi(r.PostFormValue("pageNum"))
 
 	if err != nil || err2 != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(errorsToString(err, err2)))
-		return
+		return mhttp.ResponseWithError(errorsToString(err, err2))
 	}
 	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
-			fmt.Sprintf(", operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
-		return
+		return mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum))
 	}
 
 	files, count, err := dao.GetCloudFile().QueryPageByUploader(pageSize, pageNum, operatorID)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
+		return mhttp.ResponseWithError(err.Error())
 	}
 
-	filesRes := make([]*http_res_type.HTTPResFile, 0, len(files))
+	fileListRes := make([]*structure.FileListRes, 0, len(files))
 	for i := range files {
-		filesRes = append(filesRes, &http_res_type.HTTPResFile{
+		fileListRes = append(fileListRes, &structure.FileListRes{
 			FileID:           files[i].FileID,
 			FileName:         files[i].FileName,
 			LastModifiedTime: files[i].LastModifiedTime,
@@ -55,47 +48,30 @@ func ListCloudFileByUploader(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	resData := &struct {
-		Total int                          `json:"total"`
-		Files []*http_res_type.HTTPResFile `json:"files"`
-	}{
-		Total: count,
-		Files: filesRes,
-	}
-
-	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
-
-	return
+	return mhttp.Response(structure.MakeListCloudFileByUploaderRes(count, fileListRes))
 }
 
-func ListPublicCloudFile(w http.ResponseWriter, r *http.Request) {
-	if isDev {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-	}
-
+func ListPublicCloudFile(r *http.Request) string {
 	operatorID := r.PostFormValue("operatorID")
 	pageSize, err := strconv.Atoi(r.PostFormValue("pageSize"))
 	pageNum, err2 := strconv.Atoi(r.PostFormValue("pageNum"))
 
 	if err != nil || err2 != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(errorsToString(err, err2)))
-		return
+		return mhttp.ResponseWithError(errorsToString(err, err2))
 	}
 	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
-			fmt.Sprintf(", operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum)))
-		return
+		return mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum))
 	}
 
 	files, count, err := dao.GetCloudFile().QueryPageInPublic(pageSize, pageNum, operatorID)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
+		return mhttp.ResponseWithError(err.Error())
 	}
 
-	filesRes := make([]*http_res_type.HTTPResFile, 0, len(files))
+	fileListRes := make([]*structure.FileListRes, 0, len(files))
 	for i := range files {
-		filesRes = append(filesRes, &http_res_type.HTTPResFile{
+		fileListRes = append(fileListRes, &structure.FileListRes{
 			FileID:           files[i].FileID,
 			FileName:         files[i].FileName,
 			LastModifiedTime: files[i].LastModifiedTime,
@@ -106,60 +82,42 @@ func ListPublicCloudFile(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	resData := &struct {
-		Total int                          `json:"total"`
-		Files []*http_res_type.HTTPResFile `json:"files"`
-	}{
-		Total: count,
-		Files: filesRes,
-	}
-
-	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
-
-	return
+	return mhttp.Response(structure.MakeListPublicCloudFileRes(count, fileListRes))
 }
 
-func UploadCloudFile(w http.ResponseWriter, r *http.Request) {
-	if isDev {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-	}
-
+func UploadCloudFile(r *http.Request) string {
 	operatorID := r.PostFormValue("operatorID")
 	fileName := r.PostFormValue("fileName")
 	extensionName := r.PostFormValue("extensionName")
 	lastModifiedTime, err := strconv.Atoi(r.PostFormValue("lastModifiedTime"))
-	isPublic, err2 := kits.StringToBool(r.PostFormValue("isPublic"))
+	isPublic, err2 := utils.StringToBool(r.PostFormValue("isPublic"))
 	file, fileHeader, err3 := r.FormFile("file")
 
 	if err != nil || err2 != nil || err3 != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(errorsToString(err, err2, err3)))
-		return
+		return mhttp.ResponseWithError(errorsToString(err, err2, err3))
 	}
 	defer file.Close()
 
 	if len(operatorID) < 1 || len(fileName) < 1 || len(extensionName) < 1 || lastModifiedTime < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
+		return mhttp.ResponseWithError(error_InvalidParams+
 			fmt.Sprintf(", operator id: %s, file name: %s, extension name: %s, last modified time: %d",
-				operatorID, fileName, extensionName, lastModifiedTime)))
-		return
+				operatorID, fileName, extensionName, lastModifiedTime))
 	}
 
 	// make sure target directory structure exist
 	dir := spliceFileDir(isPublic, operatorID)
 	err = os.MkdirAll(dir, 0755)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
+		return mhttp.ResponseWithError(err.Error())
 	}
 
 	// save file
-	fileID := kits.CalcSHA256(operatorID + time.Now().GoString())
+	fileID := utils.CalcSHA256(operatorID + time.Now().GoString())
 	absolutePath := spliceFilePath(dir, fileID, extensionName)
 
 	err = saveFile(file, absolutePath, fileHeader.Size)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
+		return mhttp.ResponseWithError(err.Error())
 	}
 
 	// save db, if failed, remove file
@@ -173,62 +131,45 @@ func UploadCloudFile(w http.ResponseWriter, r *http.Request) {
 		IsPublic:         isPublic,
 	})
 	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(errorsToString(err, os.Remove(absolutePath))))
-		return
+		return mhttp.ResponseWithError(errorsToString(err, os.Remove(absolutePath)))
 	}
 
-	resData := &struct {
-		IsSuccess bool `json:"isSuccess"`
-	}{
-		IsSuccess: true,
-	}
-
-	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
-
-	return
+	return mhttp.Response(structure.MakeUploadCloudFileRes(true))
 }
 
-func ModifyCloudFile(w http.ResponseWriter, r *http.Request) {
-	if isDev {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-	}
-
+func ModifyCloudFile(r *http.Request) string {
 	operatorID := r.PostFormValue("operatorID")
 	fileID := r.PostFormValue("fileID")
 	password := r.PostFormValue("password")
 	fileName := r.PostFormValue("fileName")
 	extensionName := r.PostFormValue("extensionName")
-	isPublic, err := kits.StringToBool(r.PostFormValue("isPublic"))
+	isPublic, err := utils.StringToBool(r.PostFormValue("isPublic"))
 	file, fileHeader, err2 := r.FormFile("file")
 	lastModifiedTime, err3 := strconv.Atoi(r.PostFormValue("lastModifiedTime"))
 
+	// params check
 	if err != nil || err2 != nil || err3 != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(errorsToString(err, err2, err3)))
-		return
+		return mhttp.ResponseWithError(errorsToString(err, err2, err3))
 	}
 	defer file.Close()
 
 	if len(operatorID) < 1 || len(fileID) < 1 || len(password) < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
-			fmt.Sprintf(", operator id: %s, file id: %s, password: %s", operatorID, fileID, password)))
-		return
+		return mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, file id: %s, password: %s", operatorID, fileID, password))
 	}
 
-	_, err = checkPwdByUserID(password, operatorID)
+	_, err = verifyPwdByUserID(password, operatorID)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
+		return mhttp.ResponseWithError(err.Error())
 	}
 
 	fileRecord, err := dao.GetCloudFile().QueryFirst(model.CloudFile_FileID+" = ?", fileID)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
+		return mhttp.ResponseWithError(err.Error())
 	}
 
 	if len(fileName)+len(extensionName) < 1 && fileRecord.IsPublic == isPublic && err2 != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_NoValidModification))
-		return
+		return mhttp.ResponseWithError(error_NoValidModification)
 	}
 
 	updateColumns := make([]string, 0, 5)
@@ -239,8 +180,7 @@ func ModifyCloudFile(w http.ResponseWriter, r *http.Request) {
 		if fileRecord.IsPublic {
 			err = os.MkdirAll(spliceFileDir(false, operatorID), 0755)
 			if err != nil {
-				_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-				return
+				return mhttp.ResponseWithError(err.Error())
 			}
 		}
 
@@ -250,16 +190,14 @@ func ModifyCloudFile(w http.ResponseWriter, r *http.Request) {
 
 		err = os.Rename(oldPath, getValidBackupFileName(privPath))
 		if err != nil {
-			_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-			return
+			return mhttp.ResponseWithError(err.Error())
 		}
 
 		// save new file
 		absolutePath := spliceFilePath(spliceFileDir(isPublic, operatorID), fileRecord.FileID, extensionName)
 		err = saveFile(file, absolutePath, fileHeader.Size)
 		if err != nil {
-			_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-			return
+			return mhttp.ResponseWithError(err.Error())
 		}
 
 		// update db record: file last modified time and file size
@@ -291,40 +229,25 @@ func ModifyCloudFile(w http.ResponseWriter, r *http.Request) {
 			absolutePath := spliceFilePath(spliceFileDir(isPublic, operatorID), fileRecord.FileID, extensionName)
 			errMsg += errorsToString(os.Remove(absolutePath))
 		}
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(errMsg))
-		return
+		return mhttp.ResponseWithError(errMsg)
 	}
 
-	resData := &struct {
-		IsSuccess bool `json:"isSuccess"`
-	}{
-		IsSuccess: true,
-	}
-
-	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
-
-	return
+	return mhttp.Response(structure.MakeModifyCloudFileRes(true))
 }
 
-func DeleteCloudFile(w http.ResponseWriter, r *http.Request) {
-	if isDev {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-	}
-
+func DeleteCloudFile(r *http.Request) string {
 	operatorID := r.PostFormValue("operatorID")
 	password := r.PostFormValue("password")
 	fileID := r.PostFormValue("fileID")
 
 	if len(operatorID) < 1 || len(password) < 1 || len(fileID) < 1 {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(error_InvalidParams+
-			fmt.Sprintf(", operator id: %s, password: %s, file id: %s", operatorID, password, fileID)))
-		return
+		return mhttp.ResponseWithError(error_InvalidParams+
+			fmt.Sprintf(", operator id: %s, password: %s, file id: %s", operatorID, password, fileID))
 	}
 
-	_, err := checkPwdByUserID(password, operatorID)
+	_, err := verifyPwdByUserID(password, operatorID)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
+		return mhttp.ResponseWithError(err.Error())
 	}
 
 	err = dao.GetCloudFile().UpdateColumnsByFileID(&model.CloudFile{
@@ -332,19 +255,10 @@ func DeleteCloudFile(w http.ResponseWriter, r *http.Request) {
 		IsDeleted: true,
 	}, model.CloudFile_IsDeleted)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, mhttp.ResponseWithError(err.Error()))
-		return
+		return mhttp.ResponseWithError(err.Error())
 	}
 
-	resData := &struct {
-		IsSuccess bool `json:"isSuccess"`
-	}{
-		IsSuccess: true,
-	}
-
-	_, _ = fmt.Fprintln(w, mhttp.Response(resData))
-
-	return
+	return mhttp.Response(structure.MakeDeleteCloudFileRes(true))
 }
 
 func saveFile(file multipart.File, absolutePath string, fileSize int64) (err error) {
@@ -363,14 +277,14 @@ func saveFile(file multipart.File, absolutePath string, fileSize int64) (err err
 }
 
 func spliceFileDir(isPublic bool, operatorID string) string {
-	dir := kits.AppendDirSuffix(system_config.GetConfiguration().CloudFileRootPath)
+	dir := utils.AppendDirSuffix(system_config.GetConfiguration().CloudFileRootPath)
 	if isPublic {
 		dir += system_config.GetConfiguration().CloudFilePublicDir
 	} else {
 		dir += operatorID
 	}
 
-	return kits.AppendDirSuffix(dir)
+	return utils.AppendDirSuffix(dir)
 }
 
 // spliceFilePath return absolute path

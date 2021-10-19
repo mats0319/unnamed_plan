@@ -3,7 +3,7 @@ package handlers
 import (
 	"github.com/mats9693/unnamed_plan/admin_data/db/dao"
 	"github.com/mats9693/unnamed_plan/admin_data/db/model"
-	"github.com/mats9693/unnamed_plan/admin_data/kits"
+	"github.com/mats9693/unnamed_plan/admin_data/utils"
 	"github.com/pkg/errors"
 )
 
@@ -19,13 +19,13 @@ const (
 	error_ModifyOthersThinkingNote = "not allowed to modify others' thinking note"
 )
 
-func checkPwdByUserName(password string, userName string) (user *model.User, err error) {
+func verifyPwdByUserName(password string, userName string) (user *model.User, err error) {
 	user, err = dao.GetUser().QueryOneInUnlocked(model.User_UserName+" = ?", userName)
 	if err != nil {
 		return
 	}
 
-	if user.Password != kits.CalcSHA256(password, user.Salt) {
+	if user.Password != utils.CalcSHA256(password, user.Salt) {
 		err = errors.New(error_InvalidAccountOrPassword)
 		return
 	}
@@ -33,13 +33,13 @@ func checkPwdByUserName(password string, userName string) (user *model.User, err
 	return
 }
 
-func checkPwdByUserID(password string, userID string) (user *model.User, err error) {
+func verifyPwdByUserID(password string, userID string) (user *model.User, err error) {
 	user, err = dao.GetUser().QueryOneInUnlocked(model.User_UserID+" = ?", userID)
 	if err != nil {
 		return
 	}
 
-	if user.Password != kits.CalcSHA256(password, user.Salt) {
+	if user.Password != utils.CalcSHA256(password, user.Salt) {
 		err = errors.New(error_InvalidAccountOrPassword)
 		return
 	}

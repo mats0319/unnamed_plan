@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/mats9693/utils/toy_server/config"
-	"github.com/mats9693/utils/toy_server/const"
 	"os"
 )
+
+const UID_Config = "eed7ef1e-45b0-440e-b924-80346f341008"
 
 type configuration struct {
 	ARankAdminPermission uint8  `json:"ARankAdminPermission"`
@@ -18,11 +19,11 @@ type configuration struct {
 var systemConfig = &configuration{}
 
 func init() {
-	byteSlice := mconfig.GetConfig(mconst.UID_Config)
+	byteSlice := mconfig.GetConfig(UID_Config)
 
 	err := json.Unmarshal(byteSlice, systemConfig)
 	if err != nil {
-		fmt.Printf("json unmarshal failed, uid: %s, error: %v\n", mconst.UID_Config, err)
+		fmt.Printf("json unmarshal failed, uid: %s, error: %v\n", UID_Config, err)
 		os.Exit(-1)
 	}
 

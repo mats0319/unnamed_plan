@@ -1,4 +1,4 @@
-package kits
+package utils
 
 import (
 	"crypto/sha256"
