@@ -3,6 +3,8 @@ go: 1.17.x
 
 before_install: chmod +x ./go.test.sh
 
-script: ./go.test.sh
+script:
+ - go mod download github.com/mats9693/utils
+ - ./go.test.sh
 
 after_success: bash <(curl -s https://codecov.io/bash)

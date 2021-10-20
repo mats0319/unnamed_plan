@@ -14,7 +14,7 @@ func MakeLoginRes(userID string, nickname string, permission uint8) interface{} 
 	}
 }
 
-func MakeListUserRes(total int, users []*UserListRes) interface{} {
+func MakeListUserRes(total int, users []*UserRes) interface{} {
 	return &struct {
 		*Total
 		*Users
@@ -66,7 +66,7 @@ func MakeModifyUserPermissionRes(isSuccess bool) interface{} {
 
 // cloud file
 
-func MakeListCloudFileByUploaderRes(total int, files []*FileListRes) interface{} {
+func MakeListCloudFileByUploaderRes(total int, files []*FileRes) interface{} {
 	return &struct {
 		*Total
 		*Files
@@ -76,7 +76,7 @@ func MakeListCloudFileByUploaderRes(total int, files []*FileListRes) interface{}
 	}
 }
 
-func MakeListPublicCloudFileRes(total int, files []*FileListRes) interface{} {
+func MakeListPublicCloudFileRes(total int, files []*FileRes) interface{} {
 	return &struct {
 		*Total
 		*Files
@@ -112,7 +112,7 @@ func MakeDeleteCloudFileRes(isSuccess bool) interface{} {
 
 // note
 
-func MakeListThinkingNoteByWriterRes(total int, notes []*NoteListRes) interface{} {
+func MakeListThinkingNoteByWriterRes(total int, notes []*NoteRes) interface{} {
 	return &struct {
 		*Total
 		*Notes
@@ -122,7 +122,7 @@ func MakeListThinkingNoteByWriterRes(total int, notes []*NoteListRes) interface{
 	}
 }
 
-func MakeListPublicThinkingNoteRes(total int, notes []*NoteListRes) interface{} {
+func MakeListPublicThinkingNoteRes(total int, notes []*NoteRes) interface{} {
 	return &struct {
 		*Total
 		*Notes

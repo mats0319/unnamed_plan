@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/mats9693/unnamed_plan/admin_data/db/dao"
 	"github.com/mats9693/unnamed_plan/admin_data/db/model"
 	"github.com/mats9693/unnamed_plan/admin_data/utils"
@@ -47,13 +48,14 @@ func verifyPwdByUserID(password string, userID string) (user *model.User, err er
 	return
 }
 
-func errorsToString(errs ...error) string {
-	res := ""
-	for i := range errs {
-		if errs[i] != nil {
-			res += errs[i].Error()
-		}
-	}
+func String(key string, value string) string {
+	return fmt.Sprintf(" { %s : %s } ", key, value)
+}
 
-	return res
+func Int(key string, value int) string {
+	return fmt.Sprintf(" { %s : %d } ", key, value)
+}
+
+func Uint8(key string, value uint8) string {
+	return fmt.Sprintf(" { %s : %d } ", key, value)
 }

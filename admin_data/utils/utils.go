@@ -42,11 +42,13 @@ func StringToBool(str string) (res bool, err error) {
 	return
 }
 
-// AppendDirSuffix make sure path is directory(end with '/')
-func AppendDirSuffix(path string) string {
-	if !strings.HasSuffix(path, "/") {
-		path += "/"
+func ErrorsToString(errs ...error) string {
+	res := ""
+	for i := range errs {
+		if errs[i] != nil {
+			res += errs[i].Error()
+		}
 	}
 
-	return path
+	return res
 }

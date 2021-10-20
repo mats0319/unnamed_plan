@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/mats9693/unnamed_plan/admin_data/config"
 	"github.com/mats9693/unnamed_plan/admin_data/http/handlers"
-	"github.com/mats9693/unnamed_plan/admin_data/utils"
 	"github.com/mats9693/utils/toy_server/http"
+	mutils "github.com/mats9693/utils/toy_server/utils"
 	"os"
 )
 
@@ -41,7 +41,7 @@ func init() {
 
 func initCloudFileDir() {
 	root := system_config.GetConfiguration().CloudFileRootPath
-	path := utils.AppendDirSuffix(root) + system_config.GetConfiguration().CloudFilePublicDir
+	path := mutils.FormatDirSuffix(root) + system_config.GetConfiguration().CloudFilePublicDir
 
 	err := os.MkdirAll(path, 0755)
 	if err != nil {

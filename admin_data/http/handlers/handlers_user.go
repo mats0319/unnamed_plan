@@ -12,7 +12,6 @@ import (
 	"github.com/pkg/errors"
 	"math/rand"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -21,10 +20,9 @@ func init() {
 }
 
 func Login(r *http.Request) string {
-	// todo: consider to move into public handler?
-	params, err := structure.DecodeLoginParams(r)
-	if err != nil {
-		return mhttp.ResponseWithError(err.Error())
+	params := &structure.LoginReqParams{}
+	if errMsg := params.Decode(r); len(errMsg) > 0 {
+		return mhttp.ResponseWithError(errMsg)
 	}
 
 	user, err := verifyPwdByUserName(params.Password, params.UserName)
@@ -36,74 +34,63 @@ func Login(r *http.Request) string {
 }
 
 func ListUser(r *http.Request) string {
-	operatorID := r.PostFormValue("operatorID")
-	pageSize, err := strconv.Atoi(r.PostFormValue("pageSize"))
-	pageNum, err2 := strconv.Atoi(r.PostFormValue("pageNum"))
-
-	if err != nil || err2 != nil {
-		return mhttp.ResponseWithError(errorsToString(err, err2))
+	params := &structure.ListUserReqParams{}
+	if errMsg := params.Decode(r); len(errMsg) > 0 {
+		return mhttp.ResponseWithError(errMsg)
 	}
 
-	if len(operatorID) < 1 || pageSize < 1 || pageNum < 1 {
-		return mhttp.ResponseWithError(error_InvalidParams +
-			fmt.Sprintf(", operator id: %s, page size: %d, page num: %d", operatorID, pageSize, pageNum))
+	if len(params.OperatorID) < 1 || params.PageSize < 1 || params.PageNum < 1 {
+		return mhttp.ResponseWithError(error_InvalidParams,
+			String("operator id", params.OperatorID),
+			Int("page size", params.PageSize),
+			Int("page num", params.PageNum))
 	}
 
-	users, count, err := dao.GetUser().QueryPageByPermission(pageSize, pageNum, operatorID)
+	users, count, err := dao.GetUser().QueryPageByPermission(params.PageSize, params.PageNum, params.OperatorID)
 	if err != nil {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	userListRes := make([]*structure.UserListRes, 0, len(users))
+	userListRes := make([]*structure.UserRes, 0, len(users))
 	for i := range users {
-		userListRes = append(userListRes, &structure.UserListRes{
-			UserID:     users[i].UserID,
-			UserName:   users[i].UserName,
-			Nickname:   users[i].Nickname,
-			IsLocked:   users[i].IsLocked,
-			Permission: users[i].Permission,
-			CreatedBy:  users[i].CreatedBy,
-		})
+		userListRes = append(userListRes, userDBToHTTPRes(users[i]))
 	}
 
 	return mhttp.Response(structure.MakeListUserRes(count, userListRes))
 }
 
 func CreateUser(r *http.Request) string {
-	operatorID := r.PostFormValue("operatorID")
-	userName := r.PostFormValue("userName")
-	password := r.PostFormValue("password")
-	permissionInt, err := strconv.Atoi(r.PostFormValue("permission"))
-
-	if err != nil {
-		return mhttp.ResponseWithError(err.Error())
+	params := &structure.CreateUserReqParams{}
+	if errMsg := params.Decode(r); len(errMsg) > 0 {
+		return mhttp.ResponseWithError(errMsg)
 	}
 
-	if len(operatorID) < 1 || len(userName) < 1 || len(password) < 1 {
-		return mhttp.ResponseWithError(error_InvalidParams +
-			fmt.Sprintf(", operator id: %s, user name: %s, password: %s", operatorID, userName, password))
+	if len(params.OperatorID) < 1 || len(params.UserName) < 1 || len(params.Password) < 1 {
+		return mhttp.ResponseWithError(error_InvalidParams,
+			String("operator id", params.OperatorID),
+			String("user name", params.UserName),
+			String("password", params.Password))
 	}
 
-	permission := uint8(permissionInt)
-
-	operator, err := dao.GetUser().QueryOneInUnlocked(model.User_UserID+" = ?", operatorID)
+	operator, err := dao.GetUser().QueryOneInUnlocked(model.User_UserID+" = ?", params.OperatorID)
 	if err != nil {
 		return mhttp.ResponseWithError(err.Error())
 	}
 	if operator.Permission < system_config.GetConfiguration().ARankAdminPermission ||
-		operator.Permission <= permission {
-		return mhttp.ResponseWithError(error_PermissionDenied +
-			fmt.Sprintf(", operator: %d, want create: %d", operator.Permission, permission))
+		operator.Permission <= params.Permission {
+		return mhttp.ResponseWithError(error_PermissionDenied,
+			Uint8("operator", operator.Permission),
+			Uint8("want create", params.Permission))
 	}
 
 	salt := utils.RandomString(10)
 	err = dao.GetUser().Insert(&model.User{
-		UserName:   userName,
-		Nickname:   userName,
-		Password:   utils.CalcSHA256(password, salt),
+		UserName:   params.UserName,
+		Nickname:   params.UserName,
+		Password:   utils.CalcSHA256(params.Password, salt),
 		Salt:       salt,
-		Permission: permission,
-		CreatedBy:  operatorID,
+		Permission: params.Permission,
+		CreatedBy:  params.OperatorID,
 	})
 	if err != nil {
 		return mhttp.ResponseWithError(err.Error())
@@ -113,20 +100,23 @@ func CreateUser(r *http.Request) string {
 }
 
 func LockUser(r *http.Request) string {
-	operatorID := r.PostFormValue("operatorID")
-	userID := r.PostFormValue("userID")
-
-	if len(operatorID) < 1 || len(userID) < 1 || operatorID == userID {
-		return mhttp.ResponseWithError(error_InvalidParams +
-			fmt.Sprintf(", operator id: %s, user id: %s", operatorID, userID))
+	params := &structure.LockUserReqParams{}
+	if errMsg := params.Decode(r); len(errMsg) > 0 {
+		return mhttp.ResponseWithError(errMsg)
 	}
 
-	users, err := dao.GetUser().Query(model.User_UserID+" in (?)", pg.In([]string{operatorID, userID}))
+	if len(params.OperatorID) < 1 || len(params.UserID) < 1 || params.OperatorID == params.UserID {
+		return mhttp.ResponseWithError(error_InvalidParams,
+			String("operator id", params.OperatorID),
+			String("user id", params.UserID))
+	}
+
+	users, err := dao.GetUser().Query(model.User_UserID+" in (?)", pg.In([]string{params.OperatorID, params.UserID}))
 	if err != nil {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	users, err = sortUsersByUserID(users, []string{operatorID, userID})
+	users, err = sortUsersByUserID(users, []string{params.OperatorID, params.UserID})
 	if err != nil {
 		return mhttp.ResponseWithError(err.Error())
 	}
@@ -136,9 +126,10 @@ func LockUser(r *http.Request) string {
 	}
 	if users[0].Permission <= users[1].Permission ||
 		users[0].Permission < system_config.GetConfiguration().ARankAdminPermission {
-		return mhttp.ResponseWithError(error_PermissionDenied +
-			fmt.Sprintf(", operator: %d, user: %d, need: %d",
-				users[0].Permission, users[1].Permission, system_config.GetConfiguration().ARankAdminPermission))
+		return mhttp.ResponseWithError(error_PermissionDenied,
+			Uint8("operator", users[0].Permission),
+			Uint8("user", users[1].Permission),
+			Uint8("need", system_config.GetConfiguration().ARankAdminPermission))
 	}
 
 	users[1].IsLocked = true
@@ -152,20 +143,23 @@ func LockUser(r *http.Request) string {
 }
 
 func UnlockUser(r *http.Request) string {
-	operatorID := r.PostFormValue("operatorID")
-	userID := r.PostFormValue("userID")
-
-	if len(operatorID) < 1 || len(userID) < 1 || operatorID == userID {
-		return mhttp.ResponseWithError(error_InvalidParams +
-			fmt.Sprintf(", operator id: %s, user id: %s", operatorID, userID))
+	params := &structure.UnlockUserReqParams{}
+	if errMsg := params.Decode(r); len(errMsg) > 0 {
+		return mhttp.ResponseWithError(errMsg)
 	}
 
-	users, err := dao.GetUser().Query(model.User_UserID+" in (?)", pg.In([]string{operatorID, userID}))
+	if len(params.OperatorID) < 1 || len(params.UserID) < 1 || params.OperatorID == params.UserID {
+		return mhttp.ResponseWithError(error_InvalidParams,
+			String("operator id", params.OperatorID),
+			String("user id", params.UserID))
+	}
+
+	users, err := dao.GetUser().Query(model.User_UserID+" in (?)", pg.In([]string{params.OperatorID, params.UserID}))
 	if err != nil {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	users, err = sortUsersByUserID(users, []string{operatorID, userID})
+	users, err = sortUsersByUserID(users, []string{params.OperatorID, params.UserID})
 	if err != nil {
 		return mhttp.ResponseWithError(err.Error())
 	}
@@ -175,9 +169,10 @@ func UnlockUser(r *http.Request) string {
 	}
 	if users[0].Permission <= users[1].Permission ||
 		users[0].Permission < system_config.GetConfiguration().ARankAdminPermission {
-		return mhttp.ResponseWithError(error_PermissionDenied +
-			fmt.Sprintf(", operator: %d, user: %d, need: %d",
-				users[0].Permission, users[1].Permission, system_config.GetConfiguration().ARankAdminPermission))
+		return mhttp.ResponseWithError(error_PermissionDenied,
+			Uint8("operator", users[0].Permission),
+			Uint8("user", users[1].Permission),
+			Uint8("need", system_config.GetConfiguration().ARankAdminPermission))
 	}
 
 	users[1].IsLocked = false
@@ -191,33 +186,33 @@ func UnlockUser(r *http.Request) string {
 }
 
 func ModifyUserInfo(r *http.Request) string {
-	operatorID := r.PostFormValue("operatorID")
-	userID := r.PostFormValue("userID")
-	currPwd := r.PostFormValue("currPwd")
-	nickname := r.PostFormValue("nickname")
-	password := r.PostFormValue("password")
-
-	if len(operatorID) < 1 || len(userID) < 1 || operatorID != userID {
-		return mhttp.ResponseWithError(error_InvalidParams +
-			fmt.Sprintf(", operator id: %s, user id: %s", operatorID, userID))
+	params := &structure.ModifyUserInfoReqParams{}
+	if errMsg := params.Decode(r); len(errMsg) > 0 {
+		return mhttp.ResponseWithError(errMsg)
 	}
 
-	if len(nickname)+len(password) < 1 {
+	if len(params.OperatorID) < 1 || len(params.UserID) < 1 || params.OperatorID != params.UserID {
+		return mhttp.ResponseWithError(error_InvalidParams,
+			String("operator id", params.OperatorID),
+			String("user id", params.UserID))
+	}
+
+	if len(params.Nickname)+len(params.Password) < 1 {
 		return mhttp.ResponseWithError(error_NoValidModification)
 	}
 
-	user, err := verifyPwdByUserID(currPwd, userID)
+	user, err := verifyPwdByUserID(params.CurrPwd, params.UserID)
 	if err != nil {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
 	updateColumns := make([]string, 0, 2)
-	if len(nickname) > 0 {
-		user.Nickname = nickname
+	if len(params.Nickname) > 0 {
+		user.Nickname = params.Nickname
 		updateColumns = append(updateColumns, model.User_Nickname)
 	}
-	if len(password) > 0 {
-		user.Password = utils.CalcSHA256(password, user.Salt)
+	if len(params.Password) > 0 {
+		user.Password = utils.CalcSHA256(params.Password, user.Salt)
 		updateColumns = append(updateColumns, model.User_Password)
 	}
 
@@ -230,39 +225,37 @@ func ModifyUserInfo(r *http.Request) string {
 }
 
 func ModifyUserPermission(r *http.Request) string {
-	operatorID := r.PostFormValue("operatorID")
-	userID := r.PostFormValue("userID")
-	permissionInt, err := strconv.Atoi(r.PostFormValue("permission"))
+	params := &structure.ModifyUserPermissionReqParams{}
+	if errMsg := params.Decode(r); len(errMsg) > 0 {
+		return mhttp.ResponseWithError(errMsg)
+	}
 
+	if len(params.OperatorID) < 1 || len(params.UserID) < 1 || params.OperatorID == params.UserID {
+		return mhttp.ResponseWithError(error_InvalidParams,
+			String("operator id", params.OperatorID),
+			String("user id", params.UserID))
+	}
+
+	users, err := dao.GetUser().Query(model.User_UserID+" in (?)", pg.In([]string{params.OperatorID, params.UserID}))
 	if err != nil {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	if len(operatorID) < 1 || len(userID) < 1 || operatorID == userID {
-		return mhttp.ResponseWithError(error_InvalidParams +
-			fmt.Sprintf(", operator id: %s, user id: %s", operatorID, userID))
-	}
-
-	users, err := dao.GetUser().Query(model.User_UserID+" in (?)", pg.In([]string{operatorID, userID}))
+	users, err = sortUsersByUserID(users, []string{params.OperatorID, params.UserID})
 	if err != nil {
 		return mhttp.ResponseWithError(err.Error())
 	}
-
-	users, err = sortUsersByUserID(users, []string{operatorID, userID})
-	if err != nil {
-		return mhttp.ResponseWithError(err.Error())
-	}
-
-	permission := uint8(permissionInt)
 
 	if users[0].Permission < system_config.GetConfiguration().SRankAdminPermission ||
 		users[1].Permission >= system_config.GetConfiguration().SRankAdminPermission ||
-		permission >= system_config.GetConfiguration().SRankAdminPermission {
-		return mhttp.ResponseWithError(error_PermissionDenied +
-			fmt.Sprintf(", operator: %d, user: %d, user new: %d", users[0].Permission, users[1].Permission, permission))
+		params.Permission >= system_config.GetConfiguration().SRankAdminPermission {
+		return mhttp.ResponseWithError(error_PermissionDenied,
+			Uint8("operator", users[0].Permission),
+			Uint8("user", users[1].Permission),
+			Uint8("user new", params.Permission))
 	}
 
-	users[1].Permission = permission
+	users[1].Permission = params.Permission
 
 	err = dao.GetUser().UpdateColumnsByUserID(users[1], model.User_Permission)
 	if err != nil {
@@ -300,4 +293,19 @@ func sortUsersByUserID(users []*model.User, order []string) ([]*model.User, erro
 	}
 
 	return users, nil
+}
+
+func userDBToHTTPRes(data *model.User) *structure.UserRes {
+	if data == nil {
+		return &structure.UserRes{}
+	}
+
+	return &structure.UserRes{
+		UserID:     data.UserID,
+		UserName:   data.UserName,
+		Nickname:   data.Nickname,
+		IsLocked:   data.IsLocked,
+		Permission: data.Permission,
+		CreatedBy:  data.CreatedBy,
+	}
 }
