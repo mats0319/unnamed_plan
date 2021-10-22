@@ -32,9 +32,9 @@ type CloudFile struct {
 	FileName         string // show name, for display
 	ExtensionName    string
 	LastModifiedTime time.Duration `pg:",use_zero"`
-	FileSize         int64
-	IsPublic         bool `pg:",use_zero"`
-	IsDeleted        bool `pg:",use_zero"`
+	FileSize         int64         `pg:",use_zero"`
+	IsPublic         bool          `pg:",use_zero"`
+	IsDeleted        bool          `pg:",use_zero"`
 
 	Common
 }
@@ -42,10 +42,20 @@ type CloudFile struct {
 type ThinkingNote struct {
 	NoteID    string `pg:",unique"`
 	WriteBy   string // user id
-	Topic     string // main topic
-	Content   string `pg:",notnull"` // note content
+	Topic     string
+	Content   string `pg:",notnull"`
 	IsPublic  bool   `pg:",use_zero"`
 	IsDeleted bool   `pg:",use_zero"`
+
+	Common
+}
+
+type GameResult struct {
+	ResultID string        `pg:",unique"`
+	Player   string        // user id
+	Duration time.Duration `pg:",use_zero"` // unit: second
+	Result   string        // json string
+	Remark   string        // for extend
 
 	Common
 }

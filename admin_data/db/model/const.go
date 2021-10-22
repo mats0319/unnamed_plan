@@ -36,3 +36,11 @@ const (
 	ThinkingNote_IsPublic  = "is_public"
 	ThinkingNote_IsDeleted = "is_deleted"
 )
+
+const (
+	GameResult_ResultID = "result_id"
+	GameResult_Player   = "player"
+	GameResult_Duration = "duration"
+	GameResult_Result   = "result"
+	GameResult_Remark   = "remark"
+)

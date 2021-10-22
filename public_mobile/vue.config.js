@@ -16,7 +16,7 @@ module.exports = {
   },
   devServer: {
     open: true,
-    port: 9694
+    port: 9695
   },
   configureWebpack: {
     plugins: [

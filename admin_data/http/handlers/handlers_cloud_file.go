@@ -261,13 +261,21 @@ func saveFile(file multipart.File, absolutePath string, fileSize int64) (err err
 	return
 }
 
+func spliceFileURL(isPublic bool, operatorID string) string {
+	url := ""
+
+	if isPublic {
+		url += system_config.GetConfiguration().CloudFilePublicDir
+	} else {
+		url += operatorID
+	}
+
+	return mutils.FormatDirSuffix(url)
+}
+
 func spliceFileDir(isPublic bool, operatorID string) string {
 	dir := mutils.FormatDirSuffix(system_config.GetConfiguration().CloudFileRootPath)
-	if isPublic {
-		dir += system_config.GetConfiguration().CloudFilePublicDir
-	} else {
-		dir += operatorID
-	}
+	dir += spliceFileURL(isPublic, operatorID)
 
 	return mutils.FormatDirSuffix(dir)
 }
@@ -300,7 +308,7 @@ func fileDBToHTTPRes(data *model.CloudFile) *structure.FileRes {
 		FileID:           data.FileID,
 		FileName:         data.FileName,
 		LastModifiedTime: data.LastModifiedTime,
-		FileURL:          spliceFilePath(spliceFileDir(data.IsPublic, data.UploadedBy), data.FileID, data.ExtensionName),
+		FileURL:          spliceFilePath(spliceFileURL(data.IsPublic, data.UploadedBy), data.FileID, data.ExtensionName),
 		IsPublic:         data.IsPublic,
 		UpdateTime:       data.UpdateTime,
 		CreatedTime:      data.CreatedTime,
