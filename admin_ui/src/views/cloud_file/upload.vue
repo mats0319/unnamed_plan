@@ -13,7 +13,7 @@
       <el-form-item label="文件名">
         <el-input v-model="fileName" placeholder="文件名" />
 
-        <el-popover trigger="hover" placement="top" :content="fileNameTips">
+        <el-popover trigger="hover" placement="top" :content="tips_CloudFile_FileName">
           <i slot="reference" class="el-icon-warning-outline" />
         </el-popover>
       </el-form-item>
@@ -21,7 +21,7 @@
       <el-form-item label="是否公开">
         <el-checkbox v-model="isPublic">公开</el-checkbox>
 
-        <el-popover trigger="hover" placement="top" :content="isPublicTips">
+        <el-popover trigger="hover" placement="top" :content="tips_IsPublic">
           <i slot="reference" class="el-icon-warning-outline" />
         </el-popover>
       </el-form-item>
@@ -38,19 +38,21 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import axios from "axios";
+import { tips_IsPublic, tips_CloudFile_FileName } from "@/ts/const";
 
 @Component
 export default class UploadCloudFile extends Vue {
   private fileName = "";
   private extensionName = "";
+  private lastModifiedTime = 0;
   private isPublic = false;
 
   private isLoadingFile = false;
   private fileList: FileList;
 
   // const
-  private fileNameTips = "设置文件显示名称，默认使用已选择文件的文件名";
-  private isPublicTips = "是否公开该文件，公开的文件可能被其他人查看";
+  private tips_IsPublic = tips_IsPublic;
+  private tips_CloudFile_FileName = tips_CloudFile_FileName;
 
   private mounted() {
     // placeholder
@@ -61,6 +63,7 @@ export default class UploadCloudFile extends Vue {
     data.append("operatorID", this.$store.state.userID);
     data.append("fileName", this.fileName);
     data.append("extensionName", this.extensionName);
+    data.append("lastModifiedTime", this.lastModifiedTime.toString())
     data.append("isPublic", this.isPublic.toString());
     data.append("file", this.fileList.item(0) as File);
 
@@ -78,7 +81,7 @@ export default class UploadCloudFile extends Vue {
         }
       })
       .catch(err => {
-        console.log("upload cloud file failed, error:", err);
+        this.$message.error("上传文件失败，错误：" + err);
       });
   }
 
@@ -97,10 +100,12 @@ export default class UploadCloudFile extends Vue {
       this.fileName += fileNameSplit[i];
     }
     this.extensionName = fileNameSplit.pop();
+
+    this.lastModifiedTime = this.fileList.item(0).lastModified;
   }
 
   private beforeUpload(): void {
-    if (this.fileList && this.fileList.item(0).name.length < 1) {
+    if (!this.fileList || !this.fileList.item(0)) {
       this.$message.info("请选择想要上传的文件");
       return;
     }

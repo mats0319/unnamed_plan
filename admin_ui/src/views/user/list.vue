@@ -50,7 +50,7 @@
       :page-size="pageSize"
       :current-page="pageNum"
       layout="prev, pager, next, ->, total"
-      @current-change="listUser"
+      @current-change="list"
     />
 
     <el-dialog
@@ -86,7 +86,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { User, displayUserIsLocked } from "@/ts/data";
+import { User } from "@/ts/data";
 import axios from "axios";
 
 @Component
@@ -102,10 +102,10 @@ export default class UserList extends Vue {
   private permissionStr = "";
 
   private mounted() {
-    this.listUser();
+    this.list();
   }
 
-  private listUser(currPage?: number): void {
+  private list(currPage?: number): void {
     this.total = 0;
     this.users = [];
 
@@ -134,14 +134,14 @@ export default class UserList extends Vue {
             userName: item.userName,
             nickname: item.nickname,
             isLocked: item.isLocked,
-            isLockedDisplay: displayUserIsLocked(item.isLocked),
+            isLockedDisplay: item.isLocked ? "已锁定" : "未锁定",
             permission: item.permission,
             createdBy: item.createdBy
           });
         }
       })
       .catch(err => {
-        console.log("list user failed, error:", err);
+        this.$message.error("获取用户列表失败，错误：" + err);
       });
   }
 
@@ -162,13 +162,13 @@ export default class UserList extends Vue {
         if (payload.isSuccess) {
           this.$message.success(wantLock ? "锁定用户成功" : "解锁用户成功");
 
-          this.listUser(this.pageNum);
+          this.list(this.pageNum);
         } else {
           this.$message.error(wantLock ? "锁定用户失败" : "解锁用户失败");
         }
       })
       .catch(err => {
-        console.log("lock or unlock failed, want lock:", wantLock, ", error:", err);
+        this.$message.error(wantLock ? "锁定用户失败" : "解锁用户失败" + "，错误：" + err);
       });
   }
 
@@ -188,13 +188,13 @@ export default class UserList extends Vue {
         if (payload.isSuccess) {
           this.$message.success("修改用户权限成功");
 
-          this.listUser(this.pageNum);
+          this.list(this.pageNum);
         } else {
           this.$message.error("修改用户权限失败");
         }
       })
       .catch(err => {
-        console.log("modify user permission failed, error:", err);
+        this.$message.error("修改用户权限失败，错误：" + err);
       })
   }
 

@@ -23,6 +23,14 @@ Start-Transcript "build.log" -Force
 
     Write-Output "> build public data finished."
 
+    # public_mobile
+    Set-Location ".\public_mobile"
+    npm run build-report
+
+    Set-Location ..
+
+    Write-Output "> build public mobile finished."
+
     # public_ui
     Set-Location ".\public_ui"
     npm run build-report

@@ -231,7 +231,7 @@ type ResponseData struct {
 
 与nginx配合，前端根据url直接定位到服务器文件：
 
-1. 后端返回的```fileURL```举例：```/public/ffff.pdf```，
+1. 后端返回的```fileURL```举例：```public/ffff.pdf```，
 2. 前端拼上**源**和**云文件标识**：```https://mats9693.cn/cloud-file/public/ffff.pdf```
 3. nginx识别**云文件标识**：
    ```text 

@@ -69,7 +69,8 @@ func CreateThinkingNote(r *http.Request) string {
 	if len(params.OperatorID) < 1 || len(params.Content) < 1 {
 		return mhttp.ResponseWithError(error_InvalidParams,
 			String("operator id", params.OperatorID),
-			Int("content length", len(params.Content)))
+			String("topic(allow null)", params.Topic),
+			String("content", params.Content))
 	}
 
 	err := dao.GetThinkingNote().Insert(&model.ThinkingNote{

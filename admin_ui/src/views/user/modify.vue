@@ -14,7 +14,7 @@
       <el-form-item label="新的昵称">
         <el-input v-model="newNickname" placeholder="请输入新的昵称" />
 
-        <el-popover trigger="hover" placement="top" :content="ruleText">
+        <el-popover trigger="hover" placement="top" :content="tips_User_Create">
           <i slot="reference" class="el-icon-warning-outline" />
         </el-popover>
       </el-form-item>
@@ -28,15 +28,13 @@
           clearable
         />
 
-        <el-popover trigger="hover" placement="top" :content="ruleText">
+        <el-popover trigger="hover" placement="top" :content="tips_User_Create">
           <i slot="reference" class="el-icon-warning-outline" />
         </el-popover>
       </el-form-item>
 
       <el-form-item>
-        <el-button type="info" plain @click="beforeModifyUserInfo">
-          修改
-        </el-button>
+        <el-button type="info" plain @click="beforeModifyUserInfo">修改</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -45,16 +43,17 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import axios from "axios";
-import { calcSHA256 } from "@/ts/sha256";
+import { calcSHA256 } from "@/ts/utils";
+import { tips_User_Create } from "@/ts/const";
 
 @Component
-export default class UserModify extends Vue {
+export default class UserModifyInfo extends Vue {
   private currPassword = "";
   private newNickname = "";
   private newPassword = "";
 
   // const
-  private ruleText = "新昵称 或 新密码 不为空时，可提交修改";
+  private tips_User_Create = tips_User_Create;
 
   private mounted() {
     // placeholder
@@ -93,7 +92,7 @@ export default class UserModify extends Vue {
         }
       })
       .catch(err => {
-        console.log("modify user info failed, error:", err);
+        this.$message.error("修改用户信息失败，错误：" + err);
       })
   }
 

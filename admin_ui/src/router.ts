@@ -50,6 +50,24 @@ const routes: Array<RouteConfig> = [
         name: "cloudFileListPublic",
         meta: { needLogin: true },
         component: () => import("@/views/cloud_file/list_public.vue")
+      },
+      {
+        path: "thinking-note/create",
+        name: "thinkingNoteCreate",
+        meta: { needLogin: true },
+        component: () => import("@/views/thinking_note/create.vue")
+      },
+      {
+        path: "thinking-note/list-by-writer",
+        name: "thinkingNoteListByWriter",
+        meta: { needLogin: true },
+        component: () => import("@/views/thinking_note/list_by_writer.vue")
+      },
+      {
+        path: "thinking-note/list-public",
+        name: "thinkingNoteListPublic",
+        meta: { needLogin: true },
+        component: () => import("@/views/thinking_note/list_public.vue")
       }
     ]
   },

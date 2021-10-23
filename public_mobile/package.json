@@ -1,12 +1,12 @@
 {
-  "name": "m_mats9693_cn",
+  "name": "public_mobile",
   "version": "0.1.0",
   "license": "MIT",
   "private": true,
   "author": {
     "email": "982254249@qq.com",
     "name": "mario",
-    "url": "mats9693.cn"
+    "url": "m_mats9693.cn"
   },
   "scripts": {
     "serve": "vue-cli-service serve",

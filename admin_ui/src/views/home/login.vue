@@ -24,8 +24,8 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import axios from "axios";
-import { calcSHA256 } from "@/ts/sha256";
+import { calcSHA256 } from "@/ts/utils";
+import homeAxios from "@/ts/axios_wrapper/home";
 
 @Component
 export default class Login extends Vue {
@@ -44,7 +44,7 @@ export default class Login extends Vue {
     data.append("userName", this.userName);
     data.append("password", pwd);
 
-    axios.post(process.env.VUE_APP_login_url, data)
+    homeAxios.login(this.userName, pwd)
       .then(response => {
         if (response.data.hasError) {
           throw response.data.data;
@@ -63,7 +63,7 @@ export default class Login extends Vue {
         this.$router.push({ name: "home" });
       })
       .catch(err => {
-        console.log("login failed, error:", err);
+        this.$message.error("登录失败，错误：" + err);
       });
   }
 }

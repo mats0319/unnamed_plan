@@ -16,20 +16,18 @@
       </el-form-item>
 
       <el-form-item label="权限等级">
-        <el-select v-model="permissionStr" placeholder="请选择新用户的权限等级" clearable>
+        <el-select v-model="permission" placeholder="请选择新用户的权限等级" clearable>
           <el-option
             v-for="item in $store.state.permission-1"
             :key="item"
             :label="item"
-            :value="item.toString()"
+            :value="item"
           />
         </el-select>
       </el-form-item>
 
       <el-form-item>
-        <el-button type="info" plain @click="beforeCreateUser">
-          创建新用户
-        </el-button>
+        <el-button type="info" plain @click="beforeCreate">创建新用户</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -37,30 +35,24 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import axios from "axios";
-import { calcSHA256 } from "@/ts/sha256";
+import { calcSHA256 } from "@/ts/utils";
+import userAxios from "@/ts/axios_wrapper/user";
 
 @Component
 export default class UserCreate extends Vue {
   private userName = "";
   private password = "";
-  private permissionStr = "";
+  private permission = 0;
 
   private mounted() {
     // placeholder
   }
 
-  private createUser(): void {
+  private create(): void {
     const pwd = calcSHA256(this.password);
     this.password = "";
 
-    let data: FormData = new FormData();
-    data.append("operatorID", this.$store.state.userID);
-    data.append("userName", this.userName);
-    data.append("password", pwd);
-    data.append("permission", this.permissionStr);
-
-    axios.post(process.env.VUE_APP_user_create_url, data)
+    userAxios.create(this.$store.state.userID, this.userName, pwd, this.permission)
       .then(response => {
         if (response.data.hasError) {
           throw response.data.data;
@@ -77,11 +69,11 @@ export default class UserCreate extends Vue {
         }
       })
       .catch(err => {
-        console.log("create user failed, error:", err);
+        this.$message.error("创建新用户失败，错误：" + err);
       })
   }
 
-  private beforeCreateUser(): void {
+  private beforeCreate(): void {
     let isAllowed = true;
     let errMsg = "";
     if (this.userName.length < 1) {
@@ -100,7 +92,7 @@ export default class UserCreate extends Vue {
       return;
     }
 
-    this.createUser();
+    this.create();
   }
 }
 </script>

@@ -9,11 +9,5 @@ export default new Vuex.Store({
     userID: "",
     nickname: "",
     permission: 0,
-  },
-  mutations: {
-  },
-  actions: {
-  },
-  modules: {
   }
 })

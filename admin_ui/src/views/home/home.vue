@@ -35,6 +35,14 @@
           <el-menu-item index="listByUploader" :route="{ name: 'cloudFileListByUploader' }">我上传的文件</el-menu-item>
           <el-menu-item index="listPublic" :route="{ name: 'cloudFileListPublic' }">公开的文件</el-menu-item>
         </el-submenu>
+
+        <el-submenu index="thinking-note">
+          <template slot="title">随想</template>
+
+          <el-menu-item index="create" :route="{ name: 'thinkingNoteCreate' }">记录</el-menu-item>
+          <el-menu-item index="listByWriter" :route="{ name: 'thinkingNoteListByWriter' }">我记录的随想</el-menu-item>
+          <el-menu-item index="listPublic" :route="{ name: 'thinkingNoteListPublic' }">公开的随想</el-menu-item>
+        </el-submenu>
       </el-menu>
     </div>
 
