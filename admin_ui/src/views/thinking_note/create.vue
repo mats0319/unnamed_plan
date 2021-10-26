@@ -36,8 +36,8 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import axios from "axios";
-import { tips_IsPublic, tips_ThinkingNote_Topic } from "@/ts/const";
+import { tips_IsPublic, tips_ThinkingNote_Topic } from "shared_ui/ts/const";
+import thinkingNoteAxios from "shared_ui/ts/axios_wrapper/thinking_note";
 
 @Component
 export default class CreateThinkingNote extends Vue {
@@ -54,19 +54,13 @@ export default class CreateThinkingNote extends Vue {
   }
 
   private createThinkingNote(): void {
-    let data: FormData = new FormData();
-    data.append("operatorID", this.$store.state.userID);
-    data.append("topic", this.topic);
-    data.append("content", this.content);
-    data.append("isPublic", this.isPublic.toString());
-
-    axios.post(process.env.VUE_APP_thinking_note_create_url, data)
+    thinkingNoteAxios.create(this.$store.state.userID, this.topic, this.content, this.isPublic)
       .then(response => {
-        if (response.data.hasError) {
-          throw response.data.data;
+        if (response.data["hasError"]) {
+          throw response.data["data"];
         }
 
-        const payload = JSON.parse(response.data.data as string);
+        const payload = JSON.parse(response.data["data"] as string);
         if (payload.isSuccess) {
           this.$message.success("记录随想成功");
         } else {

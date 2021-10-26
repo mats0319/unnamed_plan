@@ -8,9 +8,24 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="是否公开" prop="isPublicDisplay" min-width="1" show-overflow-tooltip />
-      <el-table-column label="修改时间" prop="updateTimeDisplay" min-width="3" show-overflow-tooltip />
-      <el-table-column label="上传时间" prop="createdTimeDisplay" min-width="3" show-overflow-tooltip />
+
+      <el-table-column label="是否公开" min-width="1" show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{ scope.row.isPublic | displayIsPublic }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="修改时间" min-width="3" show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{ scope.row.updateTime | displayTime }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="上传时间" min-width="3" show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{ scope.row.createdTime | displayTime }}
+        </template>
+      </el-table-column>
     </el-table>
 
     <el-pagination
@@ -18,18 +33,18 @@
       :page-size="pageSize"
       :current-page="pageNum"
       layout="prev, pager, next, ->, total"
-      @current-change="listPublic"
+      @current-change="list"
     />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { CloudFile, displayIsPublic, displayTime, generateCloudFileURL } from "@/ts/data";
-import axios from "axios";
+import { CloudFile, generateCloudFileURL } from "shared_ui/ts/data";
+import cloudFileAxios from "shared_ui/ts/axios_wrapper/cloud_file";
 
 @Component
-export default class listPublic extends Vue {
+export default class ListPublic extends Vue {
   private cloudFiles: Array<CloudFile> = new Array<CloudFile>();
 
   private total = 0;
@@ -37,29 +52,24 @@ export default class listPublic extends Vue {
   private pageNum = 1;
 
   private mounted() {
-    this.listPublic();
+    this.list();
   }
 
-  private listPublic(currPage?: number): void {
+  private list(currPage?: number): void {
     this.total = 0;
     this.cloudFiles = [];
 
-    let data: FormData = new FormData();
-    data.append("operatorID", this.$store.state.userID);
-    data.append("pageSize", this.pageSize.toString());
-    data.append("pageNum", currPage ? currPage.toString() : "1");
-
-    axios.post(process.env.VUE_APP_cloud_file_list_public_url, data)
+    cloudFileAxios.listPublic(this.$store.state.userID, this.pageSize, currPage ? currPage : 1)
       .then(response => {
-        if (response.data.hasError) {
-          throw response.data.data;
+        if (response.data["hasError"]) {
+          throw response.data["data"];
         }
 
         if (currPage) {
           this.pageNum = currPage;
         }
 
-        const payload = JSON.parse(response.data.data as string);
+        const payload = JSON.parse(response.data["data"] as string);
 
         this.total = payload.total;
         for (let i = 0; i < payload.files.length; i++) {
@@ -70,11 +80,8 @@ export default class listPublic extends Vue {
             fileName: item.fileName,
             fileURL: generateCloudFileURL(item.fileURL),
             isPublic: item.isPublic,
-            isPublicDisplay: displayIsPublic(item.isPublic),
             updateTime: item.updateTime,
-            updateTimeDisplay: displayTime(item.updateTime),
-            createdTime: item.createdTime,
-            createdTimeDisplay: displayTime(item.createdTime)
+            createdTime: item.createdTime
           });
         }
       })

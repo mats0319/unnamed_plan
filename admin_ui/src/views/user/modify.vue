@@ -42,9 +42,8 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import axios from "axios";
-import { calcSHA256 } from "@/ts/utils";
-import { tips_User_Create } from "@/ts/const";
+import { tips_User_Create } from "shared_ui/ts/const";
+import userAxios from "shared_ui/ts/axios_wrapper/user";
 
 @Component
 export default class UserModifyInfo extends Vue {
@@ -60,23 +59,13 @@ export default class UserModifyInfo extends Vue {
   }
 
   private modifyUserInfo(): void {
-    const pwd = calcSHA256(this.currPassword);
-    this.currPassword = "";
-
-    let data: FormData = new FormData();
-    data.append("operatorID", this.$store.state.userID);
-    data.append("userID", this.$store.state.userID);
-    data.append("currPwd", pwd);
-    data.append("nickname", this.newNickname);
-    data.append("password", calcSHA256(this.newPassword))
-
-    axios.post(process.env.VUE_APP_user_modify_info_url, data)
+    userAxios.modifyInfo(this.$store.state.userID, this.$store.state.userID, this.currPassword, this.newNickname, this.newPassword)
       .then(response => {
-        if (response.data.hasError) {
-          throw response.data.data;
+        if (response.data["hasError"]) {
+          throw response.data["data"];
         }
 
-        const payload = JSON.parse(response.data.data as string);
+        const payload = JSON.parse(response.data["data"] as string);
         if (payload.isSuccess) {
           this.$message.success("修改用户信息成功");
         } else {
@@ -93,6 +82,9 @@ export default class UserModifyInfo extends Vue {
       })
       .catch(err => {
         this.$message.error("修改用户信息失败，错误：" + err);
+      })
+      .finally(() => {
+        this.currPassword = "";
       })
   }
 

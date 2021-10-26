@@ -35,8 +35,8 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { calcSHA256 } from "@/ts/utils";
-import userAxios from "@/ts/axios_wrapper/user";
+import { calcSHA256 } from "shared_ui/ts/utils";
+import userAxios from "shared_ui/ts/axios_wrapper/user";
 
 @Component
 export default class UserCreate extends Vue {
@@ -48,22 +48,22 @@ export default class UserCreate extends Vue {
     // placeholder
   }
 
-  private create(): void {
+  private createUser(): void {
     const pwd = calcSHA256(this.password);
     this.password = "";
 
     userAxios.create(this.$store.state.userID, this.userName, pwd, this.permission)
       .then(response => {
-        if (response.data.hasError) {
-          throw response.data.data;
+        if (response.data["hasError"]) {
+          throw response.data["data"];
         }
 
-        const payload = JSON.parse(response.data.data as string);
+        const payload = JSON.parse(response.data["data"] as string);
         if (payload.isSuccess) {
           this.$message.success("创建新用户成功");
 
           this.userName = "";
-          this.permissionStr = "";
+          this.permission = 0;
         } else {
           this.$message.error("创建新用户失败");
         }
@@ -82,9 +82,6 @@ export default class UserCreate extends Vue {
     } else if (this.password.length < 1) {
       isAllowed = false;
       errMsg = "请填写新用户的密码";
-    } else if (this.permissionStr.length < 1) {
-      isAllowed = false;
-      errMsg = "请选择新用户的权限等级";
     }
 
     if (!isAllowed) {
@@ -92,7 +89,7 @@ export default class UserCreate extends Vue {
       return;
     }
 
-    this.create();
+    this.createUser();
   }
 }
 </script>

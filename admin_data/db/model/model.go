@@ -2,7 +2,6 @@ package model
 
 import (
 	"time"
-
 	"github.com/mats9693/utils/uuid"
 )
 

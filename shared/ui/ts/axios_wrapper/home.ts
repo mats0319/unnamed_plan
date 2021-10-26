@@ -1,10 +1,11 @@
-import { axiosWrapper } from "@/ts/axios_wrapper/config";
+import { axiosWrapper } from "./config";
+import { calcSHA256 } from "../utils";
 
 class HomeAxios {
   public login(userName: string, password: string) {
     const data: FormData = new FormData();
     data.append("userName", userName);
-    data.append("password", password);
+    data.append("password", calcSHA256(password));
     return axiosWrapper.post("/api/login", data);
   }
 }

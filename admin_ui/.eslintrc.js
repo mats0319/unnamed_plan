@@ -3,18 +3,18 @@ module.exports = {
   env: {
     node: true
   },
-  'extends': [
-    'plugin:vue/essential',
-    'eslint:recommended',
-    '@vue/typescript/recommended'
+  "extends": [
+    "plugin:vue/essential",
+    "eslint:recommended",
+    "@vue/typescript/recommended"
   ],
   parserOptions: {
     ecmaVersion: 2020
   },
   rules: {
-    'no-console': "off",
-    'no-debugger': "off",
+    "no-console": "off",
+    "no-debugger": "off",
     "@typescript-eslint/no-var-requires": "off", // mainly for vue.config.js
-    "@typescript-eslint/ban-ts-comment": "off"
+    "@typescript-eslint/ban-ts-comment": "off" // mainly for read file
   }
 }

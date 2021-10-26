@@ -37,8 +37,8 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import axios from "axios";
-import { tips_IsPublic, tips_CloudFile_FileName } from "@/ts/const";
+import { tips_IsPublic, tips_CloudFile_FileName } from "shared_ui/ts/const";
+import cloudFileAxios from "shared_ui/ts/axios_wrapper/cloud_file";
 
 @Component
 export default class UploadCloudFile extends Vue {
@@ -58,22 +58,15 @@ export default class UploadCloudFile extends Vue {
     // placeholder
   }
 
-  private upload(): void {
-    let data: FormData = new FormData();
-    data.append("operatorID", this.$store.state.userID);
-    data.append("fileName", this.fileName);
-    data.append("extensionName", this.extensionName);
-    data.append("lastModifiedTime", this.lastModifiedTime.toString())
-    data.append("isPublic", this.isPublic.toString());
-    data.append("file", this.fileList.item(0) as File);
-
-    axios.post(process.env.VUE_APP_cloud_file_upload_url, data)
+  private uploadFile(): void {
+    cloudFileAxios.upload(this.$store.state.userID, this.fileName, this.extensionName, this.lastModifiedTime,
+      this.isPublic, this.fileList.item(0) as File)
       .then(response => {
-        if (response.data.hasError) {
-          throw response.data.data;
+        if (response.data["hasError"]) {
+          throw response.data["data"];
         }
 
-        const payload = JSON.parse(response.data.data as string);
+        const payload = JSON.parse(response.data["data"] as string);
         if (payload.isSuccess) {
           this.$message.success("上传文件成功");
         } else {
@@ -110,7 +103,7 @@ export default class UploadCloudFile extends Vue {
       return;
     }
 
-    this.upload();
+    this.uploadFile();
   }
 }
 </script>

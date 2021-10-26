@@ -13,7 +13,8 @@
     "build": "vue-cli-service build",
     "build-report": "npm run build -- --report",
     "lint": "vue-cli-service lint",
-    "fix": "npm run lint -- --fix"
+    "fix": "npm run lint -- --fix",
+    "link": "npm link shared_ui"
   },
   "dependencies": {
     "core-js": "^3.6.5",

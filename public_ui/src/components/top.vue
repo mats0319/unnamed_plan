@@ -5,6 +5,26 @@
     <div class="top-links">
       <div v-show="$store.state.isLogin" class="tl-item">
         <el-dropdown class="tli-title">
+          <span>随想<i class="el-icon-arrow-down  el-icon--right" /></span>
+
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item
+              @click.native="linkTo('/thinking-note/list-by-writer','thinkingNoteListByWriter')"
+            >
+              我记录的随想
+            </el-dropdown-item>
+
+            <el-dropdown-item
+              @click.native="linkTo('/thinking-note/list-public', 'thinkingNoteListPublic')"
+            >
+              公开的随想
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div>
+
+      <div v-show="$store.state.isLogin" class="tl-item">
+        <el-dropdown class="tli-title">
           <span>云文件<i class="el-icon-arrow-down  el-icon--right" /></span>
 
           <el-dropdown-menu slot="dropdown">
@@ -66,7 +86,7 @@
 
       <div slot="footer">
         <el-button @click="cancelLogin">取消</el-button>
-        <el-button type="info" @click="login">登录</el-button>
+        <el-button type="info" @click="auth">登录</el-button>
       </div>
     </el-dialog>
   </div>
@@ -74,8 +94,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import axios from "axios";
-import { calcSHA256 } from "@/ts/sha256";
+import homeAxios from "shared_ui/ts/axios_wrapper/home";
 
 @Component
 export default class Top extends Vue {
@@ -88,23 +107,16 @@ export default class Top extends Vue {
     // placeholder
   }
 
-  private login(): void {
-    const pwd = calcSHA256(this.password);
-    this.password = "";
-
-    let data: FormData = new FormData();
-    data.append("userName", this.userName);
-    data.append("password", pwd);
-
-    axios.post(process.env.VUE_APP_login_url, data).then(
-      response => {
-        if (response.data.hasError) {
-          throw response.data.data;
+  private auth(): void {
+    homeAxios.login(this.userName, this.password)
+      .then(response => {
+        if (response.data["hasError"]) {
+          throw response.data["data"];
         }
 
         sessionStorage.setItem("auth", "passed");
 
-        const payload = JSON.parse(response.data.data as string);
+        const payload = JSON.parse(response.data["data"] as string);
         this.$store.state.userID = payload.userID;
         this.$store.state.nickname = payload.nickname;
         this.$store.state.permission = payload.permission;
@@ -113,12 +125,13 @@ export default class Top extends Vue {
 
         this.$store.state.isLogin = true;
         this.loginDialogController = false;
-      }
-    ).catch(
-      err => {
-        console.log("login failed, error:", err);
-      }
-    );
+      })
+      .catch(err => {
+        this.$message.error("登录失败，错误：" + err);
+      })
+      .finally(() => {
+        this.password = "";
+      });
   }
 
   private exit(): void {

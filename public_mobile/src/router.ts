@@ -19,12 +19,6 @@ const routes: Array<RouteConfig> = [
         name: "cloudFileListByUploader",
         meta: { needLogin: true },
         component: () => import("@/views/cloud_file/list_by_uploader.vue")
-      },
-      {
-        path: "cloud-file/list-public",
-        name: "cloudFileListPublic",
-        meta: { needLogin: true },
-        component: () => import("@/views/cloud_file/list_public.vue")
       }
     ]
   },

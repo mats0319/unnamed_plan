@@ -6,14 +6,15 @@
   "author": {
     "email": "982254249@qq.com",
     "name": "mario",
-    "url": "m_mats9693.cn"
+    "url": "m.mats9693.cn"
   },
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "build-report": "npm run build -- --report",
     "lint": "vue-cli-service lint",
-    "fix": "npm run lint -- --fix"
+    "fix": "npm run lint -- --fix",
+    "link": "npm link shared_ui"
   },
   "dependencies": {
     "core-js": "^3.6.5",

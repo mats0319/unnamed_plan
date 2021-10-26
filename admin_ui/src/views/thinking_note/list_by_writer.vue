@@ -3,9 +3,24 @@
     <el-table :data="notes" height="calc(80vh - 32px)" stripe highlight-current-row>
       <el-table-column label="主题" prop="topic" min-width="3" show-overflow-tooltip />
       <el-table-column label="内容" prop="content" min-width="5" show-overflow-tooltip />
-      <el-table-column label="是否公开" prop="isPublicDisplay" min-width="1" show-overflow-tooltip />
-      <el-table-column label="修改时间" prop="updateTimeDisplay" min-width="2" show-overflow-tooltip />
-      <el-table-column label="上传时间" prop="createdTimeDisplay" min-width="2" show-overflow-tooltip />
+
+      <el-table-column label="是否公开" min-width="1" show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{ scope.row.isPublic | displayIsPublic }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="修改时间" min-width="3" show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{ scope.row.updateTime | displayTime }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="上传时间" min-width="3" show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{ scope.row.createdTime | displayTime }}
+        </template>
+      </el-table-column>
       <el-table-column label="操作" min-width="2">
         <template slot-scope="scope">
           <el-button
@@ -34,7 +49,7 @@
       :page-size="pageSize"
       :current-page="pageNum"
       layout="prev, pager, next, ->, total"
-      @current-change="listByWriter"
+      @current-change="list"
     />
 
     <el-dialog
@@ -127,10 +142,9 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { displayIsPublic, displayTime, ThinkingNote } from "@/ts/data";
-import axios from "axios";
-import { tips_IsPublic, tips_ThinkingNote_Topic } from "@/ts/const";
-import { calcSHA256 } from "@/ts/utils";
+import { ThinkingNote } from "shared_ui/ts/data";
+import { tips_IsPublic, tips_ThinkingNote_Topic } from "shared_ui/ts/const";
+import thinkingNoteAxios from "shared_ui/ts/axios_wrapper/thinking_note";
 
 @Component
 export default class ListThinkingNoteByWriter extends Vue {
@@ -157,29 +171,24 @@ export default class ListThinkingNoteByWriter extends Vue {
   private tips_ThinkingNote_Topic = tips_ThinkingNote_Topic;
 
   private mounted() {
-    this.listByWriter();
+    this.list();
   }
 
-  private listByWriter(currPage?: number): void {
+  private list(currPage?: number): void {
     this.total = 0;
     this.notes = [];
 
-    let data: FormData = new FormData();
-    data.append("operatorID", this.$store.state.userID);
-    data.append("pageSize", this.pageSize.toString());
-    data.append("pageNum", currPage ? currPage.toString() : "1");
-
-    axios.post(process.env.VUE_APP_thinking_note_list_by_writer_url, data)
+    thinkingNoteAxios.listByWriter(this.$store.state.userID, this.pageSize, currPage ? currPage : 1)
       .then(response => {
-        if (response.data.hasError) {
-          throw response.data.data;
+        if (response.data["hasError"]) {
+          throw response.data["data"];
         }
 
         if (currPage) {
           this.pageNum = currPage;
         }
 
-        const payload = JSON.parse(response.data.data as string);
+        const payload = JSON.parse(response.data["data"] as string);
 
         this.total = payload.total;
         for (let i = 0; i < payload.notes.length; i++) {
@@ -191,11 +200,8 @@ export default class ListThinkingNoteByWriter extends Vue {
             topic: item.topic,
             content: item.content,
             isPublic: item.isPublic,
-            isPublicDisplay: displayIsPublic(item.isPublic),
             updateTime: item.updateTime,
-            updateTimeDisplay: displayTime(item.updateTime),
-            createdTime: item.createdTime,
-            createdTimeDisplay: displayTime(item.createdTime)
+            createdTime: item.createdTime
           });
         }
       })
@@ -210,28 +216,17 @@ export default class ListThinkingNoteByWriter extends Vue {
       return;
     }
 
-    const pwd = calcSHA256(this.password);
-    this.password = "";
-
-    let data: FormData = new FormData();
-    data.append("operatorID", this.$store.state.userID);
-    data.append("noteID", this.noteID);
-    data.append("password", pwd);
-    data.append("topic", this.topic);
-    data.append("content", this.content);
-    data.append("isPublic", this.isPublic.toString());
-
-    axios.post(process.env.VUE_APP_cloud_file_modify_url, data)
+    thinkingNoteAxios.modify(this.$store.state.userID, this.noteID, this.password, this.topic, this.content, this.isPublic)
       .then(response => {
-        if (response.data.hasError) {
-          throw response.data.data;
+        if (response.data["hasError"]) {
+          throw response.data["data"];
         }
 
-        const payload = JSON.parse(response.data.data as string);
+        const payload = JSON.parse(response.data["data"] as string);
         if (payload.isSuccess) {
           this.$message.success("修改随想成功");
 
-          this.listByWriter(this.pageNum);
+          this.list(this.pageNum);
         } else {
           this.$message.error("修改随想失败");
         }
@@ -239,34 +234,32 @@ export default class ListThinkingNoteByWriter extends Vue {
       .catch(err => {
         this.$message.error("修改随想失败，错误：" + err);
       })
+      .finally(() => {
+        this.password = "";
+      })
   }
 
   private deleteNote(): void {
-    const pwd = calcSHA256(this.password);
-    this.password = "";
-
-    let data: FormData = new FormData();
-    data.append("operatorID", this.$store.state.userID);
-    data.append("noteID", this.noteID);
-    data.append("password", pwd);
-
-    axios.post(process.env.VUE_APP_thinking_note_delete_url, data)
+    thinkingNoteAxios.delete(this.$store.state.userID, this.noteID, this.password)
       .then(response => {
-        if (response.data.hasError) {
-          throw response.data.data;
+        if (response.data["hasError"]) {
+          throw response.data["data"];
         }
 
-        const payload = JSON.parse(response.data.data as string);
+        const payload = JSON.parse(response.data["data"] as string);
         if (payload.isSuccess) {
           this.$message.success("删除随想成功");
 
-          this.listByWriter(this.pageNum);
+          this.list(this.pageNum);
         } else {
           this.$message.error("删除随想失败");
         }
       })
       .catch(err => {
         this.$message.error("删除随想失败，错误：" + err);
+      })
+      .finally(() => {
+        this.password = "";
       })
   }
 

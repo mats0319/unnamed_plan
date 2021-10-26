@@ -3,7 +3,11 @@
     <el-table :data="users" height="calc(80vh - 32px)" stripe highlight-current-row>
       <el-table-column label="用户名" prop="userName" min-width="2" show-overflow-tooltip />
       <el-table-column label="昵称" prop="nickname" min-width="2" show-overflow-tooltip />
-      <el-table-column label="锁定状态" prop="isLockedDisplay" min-width="2" show-overflow-tooltip />
+      <el-table-column label="锁定状态" prop="isLocked" min-width="2" show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{ scope.row.isLocked | displayIsLocked }}
+        </template>
+      </el-table-column>
       <el-table-column label="权限等级" prop="permission" min-width="2" show-overflow-tooltip />
       <el-table-column label="操作" min-width="3">
         <template slot-scope="scope">
@@ -50,7 +54,7 @@
       :page-size="pageSize"
       :current-page="pageNum"
       layout="prev, pager, next, ->, total"
-      @current-change="list"
+      @current-change="listUsers"
     />
 
     <el-dialog
@@ -64,7 +68,7 @@
 
         <el-select
           class="ulmpd-permission"
-          v-model="permissionStr"
+          v-model="permission"
           placeholder="请选择目标用户新的权限等级"
           clearable
         >
@@ -86,8 +90,8 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { User } from "@/ts/data";
-import axios from "axios";
+import { User } from "shared_ui/ts/data";
+import userAxios from "shared_ui/ts/axios_wrapper/user";
 
 @Component
 export default class UserList extends Vue {
@@ -99,32 +103,27 @@ export default class UserList extends Vue {
 
   private modifyPermissionDialogController = false;
   private userID = "";
-  private permissionStr = "";
+  private permission = 0;
 
   private mounted() {
-    this.list();
+    this.listUsers();
   }
 
-  private list(currPage?: number): void {
+  private listUsers(currPage?: number): void {
     this.total = 0;
     this.users = [];
 
-    let data: FormData = new FormData();
-    data.append("operatorID", this.$store.state.userID);
-    data.append("pageSize", this.pageSize.toString());
-    data.append("pageNum", currPage ? currPage.toString() : "1");
-
-    axios.post(process.env.VUE_APP_user_list_url, data)
+    userAxios.list(this.$store.state.userID, this.pageSize, currPage ? currPage : 1)
       .then(response => {
-        if (response.data.hasError) {
-          throw response.data.data;
+        if (response.data["hasError"]) {
+          throw response.data["data"];
         }
 
         if (currPage) {
           this.pageNum = currPage;
         }
 
-        const payload = JSON.parse(response.data.data as string);
+        const payload = JSON.parse(response.data["data"] as string);
         this.total = payload.total;
         for (let i = 0; i < payload.users.length; i++) {
           const item = payload.users[i];
@@ -134,7 +133,6 @@ export default class UserList extends Vue {
             userName: item.userName,
             nickname: item.nickname,
             isLocked: item.isLocked,
-            isLockedDisplay: item.isLocked ? "已锁定" : "未锁定",
             permission: item.permission,
             createdBy: item.createdBy
           });
@@ -146,23 +144,17 @@ export default class UserList extends Vue {
   }
 
   private lockOrUnlockUser(userID: string, wantLock: boolean): void {
-    let data: FormData = new FormData();
-    data.append("operatorID", this.$store.state.userID);
-    data.append("userID", userID);
-
-    let url = wantLock ? process.env.VUE_APP_user_lock_url : process.env.VUE_APP_user_unlock_url;
-
-    axios.post(url, data)
-      .then(response => {
-        if (response.data.hasError) {
-          throw response.data.data;
+    let promise = wantLock ? userAxios.lock(this.$store.state.userID, userID) : userAxios.unlock(this.$store.state.userID, userID);
+    promise.then(response => {
+        if (response.data["hasError"]) {
+          throw response.data["data"];
         }
 
-        const payload = JSON.parse(response.data.data as string);
+        const payload = JSON.parse(response.data["data"] as string);
         if (payload.isSuccess) {
           this.$message.success(wantLock ? "锁定用户成功" : "解锁用户成功");
 
-          this.list(this.pageNum);
+          this.listUsers(this.pageNum);
         } else {
           this.$message.error(wantLock ? "锁定用户失败" : "解锁用户失败");
         }
@@ -173,29 +165,24 @@ export default class UserList extends Vue {
   }
 
   private modifyUserPermission(): void {
-    let data: FormData = new FormData();
-    data.append("operatorID", this.$store.state.userID);
-    data.append("userID", this.userID);
-    data.append("permission", this.permissionStr);
-
-    axios.post(process.env.VUE_APP_user_modify_permission_url, data)
+    userAxios.modifyPermission(this.$store.state.userID, this.userID, this.permission)
       .then(response => {
-        if (response.data.hasError) {
-          throw response.data.data;
+        if (response.data["hasError"]) {
+          throw response.data["data"];
         }
 
-        const payload = JSON.parse(response.data.data as string);
+        const payload = JSON.parse(response.data["data"] as string);
         if (payload.isSuccess) {
           this.$message.success("修改用户权限成功");
 
-          this.list(this.pageNum);
+          this.listUsers(this.pageNum);
         } else {
           this.$message.error("修改用户权限失败");
         }
       })
       .catch(err => {
         this.$message.error("修改用户权限失败，错误：" + err);
-      })
+      });
   }
 
   private beforeModifyUserPermission(userID: string): void {
@@ -205,7 +192,7 @@ export default class UserList extends Vue {
 
   private resetDialogData(): void {
     this.userID = "";
-    this.permissionStr = "";
+    this.permission = 0;
   }
 }
 </script>

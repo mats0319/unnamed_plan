@@ -8,9 +8,25 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="是否公开" prop="isPublicDisplay" min-width="1" show-overflow-tooltip />
-      <el-table-column label="修改时间" prop="updateTimeDisplay" min-width="3" show-overflow-tooltip />
-      <el-table-column label="上传时间" prop="createdTimeDisplay" min-width="3" show-overflow-tooltip />
+
+      <el-table-column label="是否公开" min-width="1" show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{ scope.row.isPublic | displayIsPublic }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="修改时间" min-width="3" show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{ scope.row.updateTime | displayTime }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="上传时间" min-width="3" show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{ scope.row.createdTime | displayTime }}
+        </template>
+      </el-table-column>
+
       <el-table-column label="操作" min-width="2">
         <template slot-scope="scope">
           <el-button
@@ -39,7 +55,7 @@
       :page-size="pageSize"
       :current-page="pageNum"
       layout="prev, pager, next, ->, total"
-      @current-change="listByUploader"
+      @current-change="list"
     />
 
     <el-dialog
@@ -134,15 +150,9 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import {
-  CloudFile,
-  displayIsPublic,
-  displayTime,
-  generateCloudFileURL
-} from "@/ts/data";
-import axios from "axios";
-import { calcSHA256 } from "@/ts/utils";
-import { tips_CloudFile_FileName, tips_IsPublic } from "@/ts/const";
+import { CloudFile, generateCloudFileURL } from "shared_ui/ts/data";
+import { tips_CloudFile_FileName, tips_IsPublic } from "shared_ui/ts/const";
+import cloudFileAxios from "shared_ui/ts/axios_wrapper/cloud_file";
 
 @Component
 export default class listByUploader extends Vue {
@@ -170,29 +180,24 @@ export default class listByUploader extends Vue {
   private tips_CloudFile_FileName = tips_CloudFile_FileName;
 
   private mounted() {
-    this.listByUploader();
+    this.list();
   }
 
-  private listByUploader(currPage?: number): void {
+  private list(currPage?: number): void {
     this.total = 0;
     this.cloudFiles = [];
 
-    let data: FormData = new FormData();
-    data.append("operatorID", this.$store.state.userID);
-    data.append("pageSize", this.pageSize.toString());
-    data.append("pageNum", currPage ? currPage.toString() : "1");
-
-    axios.post(process.env.VUE_APP_cloud_file_list_by_uploader_url, data)
+    cloudFileAxios.listByUploader(this.$store.state.userID, this.pageSize, currPage ? currPage : 1)
       .then(response => {
-        if (response.data.hasError) {
-          throw response.data.data;
+        if (response.data["hasError"]) {
+          throw response.data["data"];
         }
 
         if (currPage) {
           this.pageNum = currPage;
         }
 
-        const payload = JSON.parse(response.data.data as string);
+        const payload = JSON.parse(response.data["data"] as string);
 
         this.total = payload.total;
         for (let i = 0; i < payload.files.length; i++) {
@@ -203,11 +208,8 @@ export default class listByUploader extends Vue {
             fileName: item.fileName,
             fileURL: generateCloudFileURL(item.fileURL),
             isPublic: item.isPublic,
-            isPublicDisplay: displayIsPublic(item.isPublic),
             updateTime: item.updateTime,
-            updateTimeDisplay: displayTime(item.updateTime),
-            createdTime: item.createdTime,
-            createdTimeDisplay: displayTime(item.createdTime)
+            createdTime: item.createdTime
           });
         }
       })
@@ -222,23 +224,16 @@ export default class listByUploader extends Vue {
       return;
     }
 
-    const pwd = calcSHA256(this.password);
-    this.password = "";
-
-    let data: FormData = new FormData();
-    data.append("operatorID", this.$store.state.userID);
-    data.append("fileID", this.fileID);
-    data.append("password", pwd);
-    data.append("fileName", this.fileName);
-    data.append("isPublic", this.isPublic.toString());
-    data.append("lastModifiedTime", this.lastModifiedTime.toString());
+    let promise;
     if (this.fileList && this.fileList.item(0)) {
-      data.append("file", this.fileList.item(0) as File);
-      data.append("extensionName", this.extensionName);
+      promise = cloudFileAxios.modify(this.$store.state.userID, this.fileID, this.password, this.fileName, this.isPublic,
+        this.lastModifiedTime, this.fileList.item(0) as File, this.extensionName);
+    } else {
+      promise = cloudFileAxios.modify(this.$store.state.userID, this.fileID, this.password, this.fileName, this.isPublic,
+        this.lastModifiedTime);
     }
 
-    axios.post(process.env.VUE_APP_cloud_file_modify_url, data)
-      .then(response => {
+    promise.then(response => {
         if (response.data.hasError) {
           throw response.data.data;
         }
@@ -247,7 +242,7 @@ export default class listByUploader extends Vue {
         if (payload.isSuccess) {
           this.$message.success("修改文件成功");
 
-          this.listByUploader(this.pageNum);
+          this.list(this.pageNum);
         } else {
           this.$message.error("修改文件失败");
         }
@@ -257,29 +252,22 @@ export default class listByUploader extends Vue {
       })
       .finally(() => {
         this.modifyDialogController = false;
+        this.password = "";
       })
   }
 
   private deleteFile(): void {
-    const pwd = calcSHA256(this.password);
-    this.password = "";
-
-    let data: FormData = new FormData();
-    data.append("operatorID", this.$store.state.userID);
-    data.append("fileID", this.fileID);
-    data.append("password", pwd);
-
-    axios.post(process.env.VUE_APP_cloud_file_delete_url, data)
+    cloudFileAxios.delete(this.$store.state.userID, this.fileID, this.password)
       .then(response => {
-        if (response.data.hasError) {
-          throw response.data.data;
+        if (response.data["hasError"]) {
+          throw response.data["data"];
         }
 
-        const payload = JSON.parse(response.data.data as string);
+        const payload = JSON.parse(response.data["data"] as string);
         if (payload.isSuccess) {
           this.$message.success("删除文件成功");
 
-          this.listByUploader(this.pageNum);
+          this.list(this.pageNum);
         } else {
           this.$message.error("删除文件失败");
         }
@@ -289,6 +277,7 @@ export default class listByUploader extends Vue {
       })
       .finally(() => {
         this.deleteDialogController = false;
+        this.password = "";
       })
   }
 

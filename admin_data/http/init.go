@@ -5,7 +5,7 @@ import (
 	"github.com/mats9693/unnamed_plan/admin_data/config"
 	"github.com/mats9693/unnamed_plan/admin_data/http/handlers"
 	"github.com/mats9693/utils/toy_server/http"
-	mutils "github.com/mats9693/utils/toy_server/utils"
+	"github.com/mats9693/utils/toy_server/utils"
 	"os"
 )
 

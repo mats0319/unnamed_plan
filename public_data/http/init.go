@@ -2,7 +2,7 @@ package http
 
 import (
 	"github.com/mats9693/unnamed_plan/admin_data/http/handlers"
-	mhttp "github.com/mats9693/utils/toy_server/http"
+	"github.com/mats9693/utils/toy_server/http"
 )
 
 var Handlers *mhttp.Handlers

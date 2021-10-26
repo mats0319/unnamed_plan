@@ -2,11 +2,10 @@ package dao
 
 import (
 	"github.com/go-pg/pg/v10/orm"
-	"time"
-
 	"github.com/mats9693/unnamed_plan/admin_data/db/model"
-	mdb "github.com/mats9693/utils/toy_server/db"
+	"github.com/mats9693/utils/toy_server/db"
 	"github.com/mats9693/utils/uuid"
+	"time"
 )
 
 type ThinkNote model.ThinkingNote

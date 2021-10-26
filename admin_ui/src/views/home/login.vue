@@ -14,7 +14,7 @@
           </div>
 
           <div class="lcc-submit">
-            <el-button type="primary" @click="login">登录</el-button>
+            <el-button type="primary" @click="auth">登录</el-button>
           </div>
         </div>
       </el-card>
@@ -24,8 +24,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { calcSHA256 } from "@/ts/utils";
-import homeAxios from "@/ts/axios_wrapper/home";
+import homeAxios from "shared_ui/ts/axios_wrapper/home";
 
 @Component
 export default class Login extends Vue {
@@ -36,25 +35,16 @@ export default class Login extends Vue {
     // placeholder
   }
 
-  private login(): void {
-    const pwd = calcSHA256(this.password);
-    this.password = "";
-
-    let data: FormData = new FormData();
-    data.append("userName", this.userName);
-    data.append("password", pwd);
-
-    homeAxios.login(this.userName, pwd)
+  private auth(): void { // not use 'login', because func name as 'homeAxios.login', idea can't distinguish them
+    homeAxios.login(this.userName, this.password)
       .then(response => {
-        if (response.data.hasError) {
-          throw response.data.data;
+        if (response.data["hasError"]) {
+          throw response.data["data"];
         }
 
         sessionStorage.setItem("auth", "passed");
 
-        this.$store.state.userName = this.userName;
-
-        const payload = JSON.parse(response.data.data as string);
+        const payload = JSON.parse(response.data["data"] as string);
         this.$store.state.userID = payload.userID;
         this.$store.state.nickname = payload.nickname;
         this.$store.state.permission = payload.permission;
@@ -64,6 +54,9 @@ export default class Login extends Vue {
       })
       .catch(err => {
         this.$message.error("登录失败，错误：" + err);
+      })
+      .finally(() => {
+        this.password = "";
       });
   }
 }

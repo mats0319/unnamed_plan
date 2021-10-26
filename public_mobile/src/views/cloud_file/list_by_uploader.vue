@@ -8,8 +8,24 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="是否公开" prop="isPublicDisplay" min-width="2" show-overflow-tooltip />
-      <el-table-column label="上传时间" prop="createdTimeDisplay" min-width="3" show-overflow-tooltip />
+
+      <el-table-column label="是否公开" min-width="1" show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{ scope.row.isPublic | displayIsPublic }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="修改时间" min-width="3" show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{ scope.row.updateTime | displayTime }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="上传时间" min-width="3" show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{ scope.row.createdTime | displayTime }}
+        </template>
+      </el-table-column>
     </el-table>
 
     <el-pagination
@@ -17,15 +33,15 @@
       :page-size="pageSize"
       :current-page="pageNum"
       layout="prev, pager, next, ->, total"
-      @current-change="listCloudFileByUploader"
+      @current-change="list"
     />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { CloudFile, displayCloudFileIsPublic, displayCloudFileTime, generateCloudFileURL } from "@/ts/data";
-import axios from "axios";
+import { CloudFile, generateCloudFileURL } from "shared_ui/ts/data";
+import cloudFileAxios from "shared_ui/ts/axios_wrapper/cloud_file";
 
 @Component
 export default class ListCloudFileByUploader extends Vue {
@@ -36,29 +52,24 @@ export default class ListCloudFileByUploader extends Vue {
   private pageNum = 1;
 
   private mounted() {
-    this.listCloudFileByUploader();
+    this.list();
   }
 
-  private listCloudFileByUploader(currPage?: number): void {
+  private list(currPage?: number): void {
     this.total = 0;
     this.cloudFiles = [];
 
-    let data: FormData = new FormData();
-    data.append("operatorID", this.$store.state.userID);
-    data.append("pageSize", this.pageSize.toString());
-    data.append("pageNum", currPage ? currPage.toString() : "1");
-
-    axios.post(process.env.VUE_APP_cloud_file_list_by_uploader_url, data)
+    cloudFileAxios.listByUploader(this.$store.state.userID, this.pageSize, currPage ? currPage : 1)
       .then(response => {
-        if (response.data.hasError) {
-          throw response.data.data;
+        if (response.data["hasError"]) {
+          throw response.data["data"];
         }
 
         if (currPage) {
           this.pageNum = currPage;
         }
 
-        const payload = JSON.parse(response.data.data as string);
+        const payload = JSON.parse(response.data["data"] as string);
 
         this.total = payload.total;
         for (let i = 0; i < payload.files.length; i++) {
@@ -69,16 +80,13 @@ export default class ListCloudFileByUploader extends Vue {
             fileName: item.fileName,
             fileURL: generateCloudFileURL(item.fileURL),
             isPublic: item.isPublic,
-            isPublicDisplay: displayCloudFileIsPublic(item.isPublic),
             updateTime: item.updateTime,
-            updateTimeDisplay: displayCloudFileTime(item.updateTime),
-            createdTime: item.createdTime,
-            createdTimeDisplay: displayCloudFileTime(item.createdTime)
+            createdTime: item.createdTime
           });
         }
       })
       .catch(err => {
-        console.log("list cloud file by uploader failed, error:", err);
+        this.$message.error("获取当前用户上传的文件列表失败，错误：" + err);
       })
   }
 }

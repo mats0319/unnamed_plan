@@ -1,13 +1,11 @@
 package main
 
 import (
-	"log"
-
 	"github.com/go-pg/pg/v10"
-
 	"github.com/mats9693/unnamed_plan/admin_data/db/model"
-    "github.com/mats9693/unnamed_plan/admin_data/utils"
+	"github.com/mats9693/unnamed_plan/admin_data/utils"
 	"github.com/mats9693/utils/uuid"
+	"log"
 )
 
 var users = []*model.User{
