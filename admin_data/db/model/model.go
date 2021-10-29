@@ -1,59 +1,68 @@
 package model
 
 import (
-	"time"
 	"github.com/mats9693/utils/uuid"
+	"time"
 )
 
 type Common struct {
 	ID          string        `pg:",pk"`
-	CreatedTime time.Duration `pg:",use_zero"`
-	UpdateTime  time.Duration `pg:",use_zero"`
+	CreatedTime time.Duration `pg:",use_zero,notnull"`
+	UpdateTime  time.Duration `pg:",use_zero,notnull"`
 	// todo: 乐观锁
 }
 
 type User struct {
-	UserID     string `pg:",unique"`
-	UserName   string `pg:",unique"`  // login name
-	Nickname   string `pg:",notnull"` // show name
+	UserID     string `pg:",unique,notnull"`
+	UserName   string `pg:",unique,notnull"` // login name
+	Nickname   string `pg:",notnull"`        // show name
 	Password   string `pg:"type:varchar(64),notnull"`
-	Salt       string `pg:",notnull"`
-	IsLocked   bool   `pg:",use_zero"`
-	Permission uint8  `pg:",use_zero"`
-	CreatedBy  string
+	Salt       string `pg:"type:varchar(10),notnull"`
+	IsLocked   bool   `pg:",use_zero,notnull"`
+	Permission uint8  `pg:",use_zero,notnull"`
+	CreatedBy  string `pg:",notnull"`
 
 	Common
 }
 
 type CloudFile struct {
-	FileID           string `pg:",unique"` // sha256('user id' + timestamp), storage name
-	UploadedBy       string // user id
-	FileName         string // show name, for display
-	ExtensionName    string
-	LastModifiedTime time.Duration `pg:",use_zero"`
-	FileSize         int64         `pg:",use_zero"`
-	IsPublic         bool          `pg:",use_zero"`
-	IsDeleted        bool          `pg:",use_zero"`
+	FileID           string        `pg:",unique,notnull"` // sha256('user id' + timestamp), storage name
+	UploadedBy       string        `pg:",notnull"`        // user id
+	FileName         string        `pg:",notnull"`        // display name
+	ExtensionName    string        `pg:",notnull"`
+	LastModifiedTime time.Duration `pg:",use_zero,notnull"`
+	FileSize         int64         `pg:",use_zero,notnull"`
+	IsPublic         bool          `pg:",use_zero,notnull"`
+	IsDeleted        bool          `pg:",use_zero,notnull"`
 
 	Common
 }
 
 type ThinkingNote struct {
-	NoteID    string `pg:",unique"`
-	WriteBy   string // user id
+	NoteID    string `pg:",unique,notnull"`
+	WriteBy   string `pg:",notnull"` // user id
 	Topic     string
 	Content   string `pg:",notnull"`
-	IsPublic  bool   `pg:",use_zero"`
-	IsDeleted bool   `pg:",use_zero"`
+	IsPublic  bool   `pg:",use_zero,notnull"`
+	IsDeleted bool   `pg:",use_zero,notnull"`
+
+	Common
+}
+
+type Game struct {
+	GameID string `pg:",unique,notnull"`
+	Name   string `pg:",notnull"`          // display name
+	IsOpen bool   `pg:",use_zero,notnull"` // open for play
 
 	Common
 }
 
 type GameResult struct {
-	ResultID string        `pg:",unique"`
-	Player   string        // user id
-	Duration time.Duration `pg:",use_zero"` // unit: second
-	Result   string        // json string
+	ResultID string        `pg:",unique,notnull"`
+	GameID   string        `pg:",notnull"`
+	Player   string        `pg:",notnull"`          // user id
+	Duration time.Duration `pg:",use_zero,notnull"` // unit: second
+	Result   string        `pg:",notnull"`          // json string
 	Remark   string        // for extend
 
 	Common

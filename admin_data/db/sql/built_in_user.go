@@ -4,6 +4,7 @@ import (
 	"github.com/go-pg/pg/v10"
 	"github.com/mats9693/unnamed_plan/admin_data/db/model"
 	"github.com/mats9693/unnamed_plan/admin_data/utils"
+	"github.com/mats9693/utils/toy_server/utils"
 	"github.com/mats9693/utils/uuid"
 	"log"
 )
@@ -14,7 +15,7 @@ var users = []*model.User{
 		UserName:   "Mario",
 		Nickname:   "Mario",
 		Password:   "960319", // password text
-		Salt:       utils.RandomString(10),
+		Salt:       mutils.RandomHexString(10),
 		IsLocked:   false,
 		Permission: 10,
 		CreatedBy:  "MaTongShuai",
@@ -25,7 +26,7 @@ var users = []*model.User{
 		UserName:   "admin",
 		Nickname:   "admin",
 		Password:   "admin", // password text
-		Salt:       utils.RandomString(10),
+		Salt:       mutils.RandomHexString(10),
 		IsLocked:   false,
 		Permission: 6,
 		CreatedBy:  "MaTongShuai",

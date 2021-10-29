@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/mats9693/unnamed_plan/admin_data/config"
 	"github.com/mats9693/unnamed_plan/admin_data/http/handlers"
+	"github.com/mats9693/utils/toy_server/const"
 	"github.com/mats9693/utils/toy_server/http"
 	"github.com/mats9693/utils/toy_server/utils"
 	"os"
@@ -15,7 +16,7 @@ func init() {
 	Handlers = mhttp.NewHandlers()
 
 	// user
-	Handlers.HandleFunc("/api/login", handlers.Login)
+	Handlers.HandleFunc("/api/login", handlers.Login, mconst.SkipLimit, mconst.RefreshParams)
 	Handlers.HandleFunc("/api/user/list", handlers.ListUser)
 	Handlers.HandleFunc("/api/user/create", handlers.CreateUser)
 	Handlers.HandleFunc("/api/user/lock", handlers.LockUser)

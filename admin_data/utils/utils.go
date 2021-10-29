@@ -4,20 +4,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"github.com/pkg/errors"
-	"math/rand"
 	"strings"
 )
-
-const str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
-func RandomString(length int) string {
-	bytes := make([]byte, length)
-	for i := range bytes {
-		bytes[i] = str[rand.Intn(len(str))]
-	}
-
-	return string(bytes)
-}
 
 // CalcSHA256 calc sha256('text'[+'extension'])
 func CalcSHA256(text string, append ...string) string {

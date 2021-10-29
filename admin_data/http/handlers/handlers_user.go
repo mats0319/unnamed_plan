@@ -9,6 +9,7 @@ import (
 	"github.com/mats9693/unnamed_plan/admin_data/http/structure_defination"
 	"github.com/mats9693/unnamed_plan/admin_data/utils"
 	"github.com/mats9693/utils/toy_server/http"
+	mutils "github.com/mats9693/utils/toy_server/utils"
 	"github.com/pkg/errors"
 	"math/rand"
 	"net/http"
@@ -19,7 +20,7 @@ func init() {
 	rand.Seed(time.Now().Unix())
 }
 
-func Login(r *http.Request) string {
+func Login(r *http.Request) *mhttp.ResponseData {
 	params := &structure.LoginReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		return mhttp.ResponseWithError(errMsg)
@@ -30,10 +31,10 @@ func Login(r *http.Request) string {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	return mhttp.Response(structure.MakeLoginRes(user.UserID, user.Nickname, user.Permission))
+	return mhttp.Response(structure.MakeLoginRes(user.UserID, user.Nickname, user.Permission), user.UserID)
 }
 
-func ListUser(r *http.Request) string {
+func ListUser(r *http.Request) *mhttp.ResponseData {
 	params := &structure.ListUserReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		return mhttp.ResponseWithError(errMsg)
@@ -59,7 +60,7 @@ func ListUser(r *http.Request) string {
 	return mhttp.Response(structure.MakeListUserRes(count, userListRes))
 }
 
-func CreateUser(r *http.Request) string {
+func CreateUser(r *http.Request) *mhttp.ResponseData {
 	params := &structure.CreateUserReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		return mhttp.ResponseWithError(errMsg)
@@ -83,7 +84,7 @@ func CreateUser(r *http.Request) string {
 			Uint8("want create", params.Permission))
 	}
 
-	salt := utils.RandomString(10)
+	salt := mutils.RandomHexString(10)
 	err = dao.GetUser().Insert(&model.User{
 		UserName:   params.UserName,
 		Nickname:   params.UserName,
@@ -99,7 +100,7 @@ func CreateUser(r *http.Request) string {
 	return mhttp.Response(structure.MakeCreateUserRes(true))
 }
 
-func LockUser(r *http.Request) string {
+func LockUser(r *http.Request) *mhttp.ResponseData {
 	params := &structure.LockUserReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		return mhttp.ResponseWithError(errMsg)
@@ -142,7 +143,7 @@ func LockUser(r *http.Request) string {
 	return mhttp.Response(structure.MakeLockUserRes(true))
 }
 
-func UnlockUser(r *http.Request) string {
+func UnlockUser(r *http.Request) *mhttp.ResponseData {
 	params := &structure.UnlockUserReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		return mhttp.ResponseWithError(errMsg)
@@ -185,7 +186,7 @@ func UnlockUser(r *http.Request) string {
 	return mhttp.Response(structure.MakeUnlockUserRes(true))
 }
 
-func ModifyUserInfo(r *http.Request) string {
+func ModifyUserInfo(r *http.Request) *mhttp.ResponseData {
 	params := &structure.ModifyUserInfoReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		return mhttp.ResponseWithError(errMsg)
@@ -224,7 +225,7 @@ func ModifyUserInfo(r *http.Request) string {
 	return mhttp.Response(structure.MakeModifyUserInfoRes(true))
 }
 
-func ModifyUserPermission(r *http.Request) string {
+func ModifyUserPermission(r *http.Request) *mhttp.ResponseData {
 	params := &structure.ModifyUserPermissionReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		return mhttp.ResponseWithError(errMsg)

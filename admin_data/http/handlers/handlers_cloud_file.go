@@ -17,7 +17,7 @@ import (
 
 const backupFileSuffix = ".backup"
 
-func ListCloudFileByUploader(r *http.Request) string {
+func ListCloudFileByUploader(r *http.Request) *mhttp.ResponseData {
 	params := &structure.ListCloudFileByUploaderReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		return mhttp.ResponseWithError(errMsg)
@@ -43,7 +43,7 @@ func ListCloudFileByUploader(r *http.Request) string {
 	return mhttp.Response(structure.MakeListCloudFileByUploaderRes(count, fileListRes))
 }
 
-func ListPublicCloudFile(r *http.Request) string {
+func ListPublicCloudFile(r *http.Request) *mhttp.ResponseData {
 	params := &structure.ListPublicCloudFileReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		return mhttp.ResponseWithError(errMsg)
@@ -69,7 +69,7 @@ func ListPublicCloudFile(r *http.Request) string {
 	return mhttp.Response(structure.MakeListPublicCloudFileRes(count, fileListRes))
 }
 
-func UploadCloudFile(r *http.Request) string {
+func UploadCloudFile(r *http.Request) *mhttp.ResponseData {
 	params := &structure.UploadCloudFileReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		return mhttp.ResponseWithError(errMsg)
@@ -121,7 +121,7 @@ func UploadCloudFile(r *http.Request) string {
 	return mhttp.Response(structure.MakeUploadCloudFileRes(true))
 }
 
-func ModifyCloudFile(r *http.Request) string {
+func ModifyCloudFile(r *http.Request) *mhttp.ResponseData {
 	params := &structure.ModifyCloudFileReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		return mhttp.ResponseWithError(errMsg)
@@ -217,7 +217,7 @@ func ModifyCloudFile(r *http.Request) string {
 	return mhttp.Response(structure.MakeModifyCloudFileRes(true))
 }
 
-func DeleteCloudFile(r *http.Request) string {
+func DeleteCloudFile(r *http.Request) *mhttp.ResponseData {
 	params := &structure.DeleteCloudFileReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		return mhttp.ResponseWithError(errMsg)

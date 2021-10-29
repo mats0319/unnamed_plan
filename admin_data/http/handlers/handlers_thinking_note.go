@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func ListThinkingNoteByWriter(r *http.Request) string {
+func ListThinkingNoteByWriter(r *http.Request) *mhttp.ResponseData {
 	params := &structure.ListThinkingNoteByWriterReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		return mhttp.ResponseWithError(errMsg)
@@ -34,7 +34,7 @@ func ListThinkingNoteByWriter(r *http.Request) string {
 	return mhttp.Response(structure.MakeListThinkingNoteByWriterRes(count, noteListRes))
 }
 
-func ListPublicThinkingNote(r *http.Request) string {
+func ListPublicThinkingNote(r *http.Request) *mhttp.ResponseData {
 	params := &structure.ListPublicThinkingNoteReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		return mhttp.ResponseWithError(errMsg)
@@ -60,7 +60,7 @@ func ListPublicThinkingNote(r *http.Request) string {
 	return mhttp.Response(structure.MakeListPublicThinkingNoteRes(count, noteListRes))
 }
 
-func CreateThinkingNote(r *http.Request) string {
+func CreateThinkingNote(r *http.Request) *mhttp.ResponseData {
 	params := &structure.CreateThinkingNoteReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		return mhttp.ResponseWithError(errMsg)
@@ -86,7 +86,7 @@ func CreateThinkingNote(r *http.Request) string {
 	return mhttp.Response(structure.MakeCreateThinkingNoteRes(true))
 }
 
-func ModifyThinkingNote(r *http.Request) string {
+func ModifyThinkingNote(r *http.Request) *mhttp.ResponseData {
 	params := &structure.ModifyThinkingNoteReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		return mhttp.ResponseWithError(errMsg)
@@ -137,7 +137,7 @@ func ModifyThinkingNote(r *http.Request) string {
 	return mhttp.Response(structure.MakeModifyThinkingNoteRes(true))
 }
 
-func DeleteThinkingNote(r *http.Request) string {
+func DeleteThinkingNote(r *http.Request) *mhttp.ResponseData {
 	params := &structure.DeleteThinkingNoteReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		return mhttp.ResponseWithError(errMsg)
