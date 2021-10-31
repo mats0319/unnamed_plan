@@ -24,10 +24,10 @@ export function initInterceptors(invalidLoginHandler: () => void): void {
 
   axiosWrapper.interceptors.response.use(
     (value: AxiosResponse): AxiosResponse => {
-      if (value.data.hasOwnProperty("userID")) {
+      if (value.data && value.data.hasOwnProperty("userID")) {
         user = value.data["userID"];
       }
-      if (value.data.hasOwnProperty("token")) {
+      if (value.data && value.data.hasOwnProperty("token")) {
         token = value.data["token"];
       }
 
@@ -36,10 +36,7 @@ export function initInterceptors(invalidLoginHandler: () => void): void {
     error => {
       let isInvalidLoginError = false;
 
-      if (error.hasOwnProperty("response") &&
-        error.response.hasOwnProperty("status") &&
-        error.response.status === 401
-      ) {
+      if (error.response && error.response.status && error.response.status === 401) {
         isInvalidLoginError = true;
         invalidLoginHandler();
       }

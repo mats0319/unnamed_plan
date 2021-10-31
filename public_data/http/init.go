@@ -2,6 +2,7 @@ package http
 
 import (
 	"github.com/mats9693/unnamed_plan/admin_data/http/handlers"
+	mconst "github.com/mats9693/utils/toy_server/const"
 	"github.com/mats9693/utils/toy_server/http"
 )
 
@@ -11,7 +12,7 @@ func init() {
 	Handlers = mhttp.NewHandlers()
 
 	// user
-	Handlers.HandleFunc("/api/login", handlers.Login)
+	Handlers.HandleFunc("/api/login", handlers.Login, mconst.SkipLimit, mconst.RefreshParams)
 
 	// cloud file
 	Handlers.HandleFunc("/api/cloudFile/listByUploader", handlers.ListCloudFileByUploader)
