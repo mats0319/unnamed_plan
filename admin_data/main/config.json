@@ -27,7 +27,7 @@
       "name": "http port",
       "uid": "3b839c1f-9f1e-474b-b3da-7b5e9bc792ec",
       "jsonDev": {
-        "port": "19693",
+        "port": "9693",
         "limitMultiLogin": true,
         "keepLoginValid": 7200
       }

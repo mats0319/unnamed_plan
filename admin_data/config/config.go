@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-const UID_Config = "eed7ef1e-45b0-440e-b924-80346f341008"
+const uid_Config = "eed7ef1e-45b0-440e-b924-80346f341008"
 
 type configuration struct {
 	ARankAdminPermission uint8  `json:"ARankAdminPermission"`
@@ -19,11 +19,11 @@ type configuration struct {
 var systemConfig = &configuration{}
 
 func init() {
-	byteSlice := mconfig.GetConfig(UID_Config)
+	byteSlice := mconfig.GetConfig(uid_Config)
 
 	err := json.Unmarshal(byteSlice, systemConfig)
 	if err != nil {
-		fmt.Printf("json unmarshal failed, uid: %s, error: %v\n", UID_Config, err)
+		fmt.Printf("json unmarshal failed, uid: %s, error: %v\n", uid_Config, err)
 		os.Exit(-1)
 	}
 

@@ -1,0 +1,15 @@
+syntax = "proto3";
+package common;
+
+option go_package = "./rpc_impl";
+option optimize_for = LITE_RUNTIME;
+
+message pagination {
+  uint32 pageSize = 1;
+  uint32 pageNum = 2;
+}
+
+message err {
+  bool hasError = 1;
+  string message = 2;
+}

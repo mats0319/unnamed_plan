@@ -1,0 +1,77 @@
+syntax = "proto3";
+package cloudFile;
+
+option go_package = "./rpc_impl";
+option optimize_for = LITE_RUNTIME;
+
+import "common.proto";
+
+service ICloudFile {
+  rpc listByUploader(cloudFile.listByUploaderReq) returns (cloudFile.listByUploaderRes);
+  rpc listPublic(cloudFile.listPublicReq) returns (cloudFile.listPublicRes);
+  rpc upload(cloudFile.uploadReq) returns (common.err); // save and move file in gateway, there is a built-in file module in it
+  rpc modify(cloudFile.modifyReq) returns (common.err);
+  rpc delete(cloudFile.deleteReq) returns (common.err);
+}
+
+message cloudFile {
+  message listByUploaderReq {
+    string operatorID = 1;
+
+    common.pagination page = 15;
+  }
+
+  message listByUploaderRes {
+    uint32 total = 1;
+    repeated fileRes files = 2;
+
+    common.err err = 15;
+  }
+
+  message fileRes {
+    string fileID = 1;
+    string fileName = 2;
+    int64 lastModifiedTime = 3;
+    string fileURL = 4;
+    bool isPublic = 5;
+    int64 updateTime = 6;
+    int64 createdTime = 7;
+  }
+
+  message listPublicReq {
+    string operatorID = 1;
+
+    common.pagination page = 15;
+  }
+
+  message listPublicRes {
+    uint32 total = 1;
+    repeated fileRes files = 2;
+
+    common.err err = 15;
+  }
+
+  message uploadReq {
+    string operatorID = 1;
+    string fileName = 2;
+    string extensionName = 3;
+    int64 lastModifiedTime = 4;
+    bool isPublic = 5;
+  }
+
+  message modifyReq {
+    string operatorID = 1;
+    string fileID = 2;
+    string password = 3;
+    string fileName = 4;
+    string extensionName = 5;
+    bool isPublic = 6;
+    bool hasNewFile = 7; // if user upload a new file, use for judge if user do any modify or not
+  }
+
+  message deleteReq {
+    string operatorID = 1;
+    string password = 2;
+    string fileID = 3;
+  }
+}

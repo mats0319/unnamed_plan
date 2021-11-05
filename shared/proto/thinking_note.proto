@@ -1,0 +1,75 @@
+syntax = "proto3";
+package thinkingNote;
+
+option go_package = "./rpc_impl";
+option optimize_for = LITE_RUNTIME;
+
+import "common.proto";
+
+service IThinkingNote {
+  rpc listByWriter(thinkingNote.listByWriterReq) returns (thinkingNote.listByWriterRes);
+  rpc listPublic(thinkingNote.listPublicReq) returns (thinkingNote.listPublicRes);
+  rpc create(thinkingNote.createReq) returns (common.err);
+  rpc modify(thinkingNote.modifyReq) returns (common.err);
+  rpc delete(thinkingNote.deleteReq) returns (common.err);
+}
+
+message thinkingNote {
+  message listByWriterReq {
+    string operatorID = 1;
+
+    common.pagination page = 15;
+  }
+
+  message listByWriterRes {
+    uint32 total = 1;
+    repeated noteRes notes = 2;
+
+    common.err err = 15;
+  }
+
+  message noteRes {
+    string noteID = 1;
+    string writeBy = 2;
+    string topic = 3;
+    string content = 4;
+    bool isPublic = 5;
+    int64 updateTime = 6;
+    int64 createdTime = 7;
+  }
+
+  message listPublicReq {
+    string operatorID = 1;
+
+    common.pagination page = 15;
+  }
+
+  message listPublicRes {
+    uint32 total = 1;
+    repeated noteRes notes = 2;
+
+    common.err err = 15;
+  }
+
+  message createReq {
+    string operatorID = 1;
+    string topic = 2;
+    string content = 3;
+    bool isPublic = 4;
+  }
+
+  message modifyReq {
+    string operatorID = 1;
+    string noteID = 2;
+    string password = 3;
+    string topic = 4;
+    string content = 5;
+    bool isPublic = 6;
+  }
+
+  message deleteReq {
+    string operatorID = 1;
+    string password = 2;
+    string noteID = 3;
+  }
+}

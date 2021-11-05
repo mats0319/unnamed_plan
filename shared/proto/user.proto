@@ -1,0 +1,94 @@
+syntax = "proto3";
+package user;
+
+option go_package = "./rpc_impl";
+option optimize_for = LITE_RUNTIME;
+
+import "common.proto";
+
+service IUser {
+  // functions
+  rpc login(user.loginReq) returns (user.loginRes);
+  rpc create(user.createReq) returns (common.err);
+  rpc list(user.listReq) returns (user.listRes);
+  rpc lock(user.lockReq) returns (common.err);
+  rpc unlock(user.unlockReq) returns (common.err);
+  rpc modifyInfo(user.modifyInfoReq) returns (common.err);
+  rpc modifyPermission(user.modifyPermissionReq) returns (common.err);
+
+  // for other services
+  rpc authenticate(user.authenticateReq) returns (common.err);
+}
+
+message user {
+  message loginReq {
+    string userName = 1;
+    string password = 2;
+  }
+
+  message loginRes {
+    string userID = 1;
+    string nickname = 2;
+    string permission = 3;
+
+    common.err err = 15;
+  }
+
+  message createReq {
+    string operatorID = 1;
+    string userName = 2;
+    string password = 3;
+    uint32 permission = 4;
+  }
+
+  message listReq {
+    string operatorID = 1;
+
+    common.pagination page = 15;
+  }
+
+  message listRes {
+    uint32 total = 1;
+    repeated userRes users = 2;
+
+    common.err err = 15;
+  }
+
+  message userRes {
+    string userID = 1;
+    string userName = 2;
+    string nickname = 3;
+    bool isLocked = 4;
+    uint32 permission = 5;
+    string createdBy = 6;
+  }
+
+  message lockReq {
+    string operatorID = 1;
+    string userID = 2;
+  }
+
+  message unlockReq {
+    string operatorID = 1;
+    string userID = 2;
+  }
+
+  message modifyInfoReq {
+    string operatorID = 1;
+    string userID = 2;
+    string currPwd = 3;
+    string nickname = 4;
+    string password = 5;
+  }
+
+  message modifyPermissionReq {
+    string operatorID = 1;
+    string userID = 2;
+    uint32 permission = 3;
+  }
+
+  message authenticateReq {
+    string userID = 1;
+    string password = 2;
+  }
+}

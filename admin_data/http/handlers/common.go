@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/mats9693/unnamed_plan/admin_data/db/dao"
-	"github.com/mats9693/unnamed_plan/admin_data/db/model"
 	"github.com/mats9693/unnamed_plan/admin_data/utils"
+	"github.com/mats9693/unnamed_plan/shared/db/dao"
+	"github.com/mats9693/unnamed_plan/shared/db/model"
 	"github.com/pkg/errors"
 )
 

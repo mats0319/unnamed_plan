@@ -16,7 +16,7 @@ func init() {
 	Handlers = mhttp.NewHandlers()
 
 	// user
-	Handlers.HandleFunc("/api/login", handlers.Login, mconst.SkipLimit, mconst.RefreshParams)
+	Handlers.HandleFunc("/api/login", handlers.Login, mconst.SkipLimit, mconst.ReSetParams)
 	Handlers.HandleFunc("/api/user/list", handlers.ListUser)
 	Handlers.HandleFunc("/api/user/create", handlers.CreateUser)
 	Handlers.HandleFunc("/api/user/lock", handlers.LockUser)
