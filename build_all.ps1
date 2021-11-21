@@ -5,10 +5,25 @@ Start-Transcript "build.log" -Force
 
     Set-Location $PSScriptRoot
 
-    # admin_data
-    powershell -executionpolicy bypass -File ".\admin_data\main\build_linux.ps1"
+        # gateway service
+        powershell -executionpolicy bypass -File ".\services\gateway\main\build_linux.ps1"
 
-    Write-Output "> build admin data finished."
+        Write-Output "> build gateway service finished."
+
+        # user service
+        powershell -executionpolicy bypass -File ".\services\user\build_linux.ps1"
+
+        Write-Output "> build user service finished."
+
+        # cloud file service
+        powershell -executionpolicy bypass -File ".\services\cloud_file\build_linux.ps1"
+
+        Write-Output "> build cloud file service finished."
+
+        # thinking note service
+        powershell -executionpolicy bypass -File ".\services\thinking_note\build_linux.ps1"
+
+        Write-Output "> build thinking note service finished."
 
     ###
 

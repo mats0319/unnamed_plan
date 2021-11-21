@@ -1,7 +1,7 @@
 {
   "type": "excalidraw",
   "version": 2,
-  "source": "https://excalidraw.com",
+  "source": "https://excalidraw-jetbrains-plugin",
   "elements": [
     {
       "id": "wd_645OTFKS9buxRnpNpY",
@@ -176,10 +176,10 @@
     {
       "id": "xp6yGNFtNOjhppBopSjTv",
       "type": "arrow",
-      "x": 639.6245107935667,
-      "y": 289.7872903515546,
-      "width": 0.08739454692158688,
-      "height": 65.8347041937979,
+      "x": 639.5329426809524,
+      "y": 289.7906411225241,
+      "width": 0.2153632961213816,
+      "height": 65.82991986910935,
       "angle": 6.2570044315708895,
       "strokeColor": "#000000",
       "backgroundColor": "#ced4da",
@@ -191,8 +191,8 @@
       "groupIds": [],
       "strokeSharpness": "round",
       "seed": 1338098009,
-      "version": 175,
-      "versionNonce": 541957177,
+      "version": 179,
+      "versionNonce": 548802999,
       "isDeleted": false,
       "boundElementIds": null,
       "points": [
@@ -201,8 +201,8 @@
           0
         ],
         [
-          -0.08739454692158688,
-          65.8347041937979
+          -0.2153632961213816,
+          65.82991986910935
         ]
       ],
       "lastCommittedPoint": null,
@@ -554,8 +554,8 @@
       "groupIds": [],
       "strokeSharpness": "round",
       "seed": 19994393,
-      "version": 36,
-      "versionNonce": 1687524057,
+      "version": 40,
+      "versionNonce": 1771619031,
       "isDeleted": false,
       "boundElementIds": null,
       "points": [
@@ -588,7 +588,7 @@
       "x": 1072,
       "y": 662,
       "width": 315,
-      "height": 146,
+      "height": 145.9999999999999,
       "angle": 0,
       "strokeColor": "#000000",
       "backgroundColor": "#ced4da",
@@ -600,8 +600,8 @@
       "groupIds": [],
       "strokeSharpness": "round",
       "seed": 909165273,
-      "version": 182,
-      "versionNonce": 1694066009,
+      "version": 184,
+      "versionNonce": 728414745,
       "isDeleted": false,
       "boundElementIds": null,
       "points": [
@@ -615,7 +615,7 @@
         ],
         [
           -353,
-          -57
+          -56.999999999999886
         ]
       ],
       "lastCommittedPoint": null,
@@ -636,6 +636,5 @@
   "appState": {
     "gridSize": null,
     "viewBackgroundColor": "#ffffff"
-  },
-  "files": {}
+  }
 }

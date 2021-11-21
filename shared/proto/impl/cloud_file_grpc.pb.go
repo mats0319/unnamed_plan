@@ -18,11 +18,11 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ICloudFileClient interface {
-	ListByUploader(ctx context.Context, in *CloudFileListByUploaderReq, opts ...grpc.CallOption) (*CloudFileListByUploaderRes, error)
-	ListPublic(ctx context.Context, in *CloudFileListPublicReq, opts ...grpc.CallOption) (*CloudFileListPublicRes, error)
-	Upload(ctx context.Context, in *CloudFileUploadReq, opts ...grpc.CallOption) (*Err, error)
-	Modify(ctx context.Context, in *CloudFileModifyReq, opts ...grpc.CallOption) (*Err, error)
-	Delete(ctx context.Context, in *CloudFileDeleteReq, opts ...grpc.CallOption) (*Err, error)
+	ListByUploader(ctx context.Context, in *CloudFile_ListByUploaderReq, opts ...grpc.CallOption) (*CloudFile_ListByUploaderRes, error)
+	ListPublic(ctx context.Context, in *CloudFile_ListPublicReq, opts ...grpc.CallOption) (*CloudFile_ListPublicRes, error)
+	Upload(ctx context.Context, in *CloudFile_UploadReq, opts ...grpc.CallOption) (*CloudFile_UploadRes, error)
+	Modify(ctx context.Context, in *CloudFile_ModifyReq, opts ...grpc.CallOption) (*CloudFile_ModifyRes, error)
+	Delete(ctx context.Context, in *CloudFile_DeleteReq, opts ...grpc.CallOption) (*CloudFile_DeleteRes, error)
 }
 
 type iCloudFileClient struct {
@@ -33,45 +33,45 @@ func NewICloudFileClient(cc grpc.ClientConnInterface) ICloudFileClient {
 	return &iCloudFileClient{cc}
 }
 
-func (c *iCloudFileClient) ListByUploader(ctx context.Context, in *CloudFileListByUploaderReq, opts ...grpc.CallOption) (*CloudFileListByUploaderRes, error) {
-	out := new(CloudFileListByUploaderRes)
-	err := c.cc.Invoke(ctx, "/cloudFile.ICloudFile/listByUploader", in, out, opts...)
+func (c *iCloudFileClient) ListByUploader(ctx context.Context, in *CloudFile_ListByUploaderReq, opts ...grpc.CallOption) (*CloudFile_ListByUploaderRes, error) {
+	out := new(CloudFile_ListByUploaderRes)
+	err := c.cc.Invoke(ctx, "/cloudFile.ICloudFile/ListByUploader", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *iCloudFileClient) ListPublic(ctx context.Context, in *CloudFileListPublicReq, opts ...grpc.CallOption) (*CloudFileListPublicRes, error) {
-	out := new(CloudFileListPublicRes)
-	err := c.cc.Invoke(ctx, "/cloudFile.ICloudFile/listPublic", in, out, opts...)
+func (c *iCloudFileClient) ListPublic(ctx context.Context, in *CloudFile_ListPublicReq, opts ...grpc.CallOption) (*CloudFile_ListPublicRes, error) {
+	out := new(CloudFile_ListPublicRes)
+	err := c.cc.Invoke(ctx, "/cloudFile.ICloudFile/ListPublic", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *iCloudFileClient) Upload(ctx context.Context, in *CloudFileUploadReq, opts ...grpc.CallOption) (*Err, error) {
-	out := new(Err)
-	err := c.cc.Invoke(ctx, "/cloudFile.ICloudFile/upload", in, out, opts...)
+func (c *iCloudFileClient) Upload(ctx context.Context, in *CloudFile_UploadReq, opts ...grpc.CallOption) (*CloudFile_UploadRes, error) {
+	out := new(CloudFile_UploadRes)
+	err := c.cc.Invoke(ctx, "/cloudFile.ICloudFile/Upload", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *iCloudFileClient) Modify(ctx context.Context, in *CloudFileModifyReq, opts ...grpc.CallOption) (*Err, error) {
-	out := new(Err)
-	err := c.cc.Invoke(ctx, "/cloudFile.ICloudFile/modify", in, out, opts...)
+func (c *iCloudFileClient) Modify(ctx context.Context, in *CloudFile_ModifyReq, opts ...grpc.CallOption) (*CloudFile_ModifyRes, error) {
+	out := new(CloudFile_ModifyRes)
+	err := c.cc.Invoke(ctx, "/cloudFile.ICloudFile/Modify", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *iCloudFileClient) Delete(ctx context.Context, in *CloudFileDeleteReq, opts ...grpc.CallOption) (*Err, error) {
-	out := new(Err)
-	err := c.cc.Invoke(ctx, "/cloudFile.ICloudFile/delete", in, out, opts...)
+func (c *iCloudFileClient) Delete(ctx context.Context, in *CloudFile_DeleteReq, opts ...grpc.CallOption) (*CloudFile_DeleteRes, error) {
+	out := new(CloudFile_DeleteRes)
+	err := c.cc.Invoke(ctx, "/cloudFile.ICloudFile/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -82,11 +82,11 @@ func (c *iCloudFileClient) Delete(ctx context.Context, in *CloudFileDeleteReq, o
 // All implementations must embed UnimplementedICloudFileServer
 // for forward compatibility
 type ICloudFileServer interface {
-	ListByUploader(context.Context, *CloudFileListByUploaderReq) (*CloudFileListByUploaderRes, error)
-	ListPublic(context.Context, *CloudFileListPublicReq) (*CloudFileListPublicRes, error)
-	Upload(context.Context, *CloudFileUploadReq) (*Err, error)
-	Modify(context.Context, *CloudFileModifyReq) (*Err, error)
-	Delete(context.Context, *CloudFileDeleteReq) (*Err, error)
+	ListByUploader(context.Context, *CloudFile_ListByUploaderReq) (*CloudFile_ListByUploaderRes, error)
+	ListPublic(context.Context, *CloudFile_ListPublicReq) (*CloudFile_ListPublicRes, error)
+	Upload(context.Context, *CloudFile_UploadReq) (*CloudFile_UploadRes, error)
+	Modify(context.Context, *CloudFile_ModifyReq) (*CloudFile_ModifyRes, error)
+	Delete(context.Context, *CloudFile_DeleteReq) (*CloudFile_DeleteRes, error)
 	mustEmbedUnimplementedICloudFileServer()
 }
 
@@ -94,19 +94,19 @@ type ICloudFileServer interface {
 type UnimplementedICloudFileServer struct {
 }
 
-func (UnimplementedICloudFileServer) ListByUploader(context.Context, *CloudFileListByUploaderReq) (*CloudFileListByUploaderRes, error) {
+func (UnimplementedICloudFileServer) ListByUploader(context.Context, *CloudFile_ListByUploaderReq) (*CloudFile_ListByUploaderRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListByUploader not implemented")
 }
-func (UnimplementedICloudFileServer) ListPublic(context.Context, *CloudFileListPublicReq) (*CloudFileListPublicRes, error) {
+func (UnimplementedICloudFileServer) ListPublic(context.Context, *CloudFile_ListPublicReq) (*CloudFile_ListPublicRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListPublic not implemented")
 }
-func (UnimplementedICloudFileServer) Upload(context.Context, *CloudFileUploadReq) (*Err, error) {
+func (UnimplementedICloudFileServer) Upload(context.Context, *CloudFile_UploadReq) (*CloudFile_UploadRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Upload not implemented")
 }
-func (UnimplementedICloudFileServer) Modify(context.Context, *CloudFileModifyReq) (*Err, error) {
+func (UnimplementedICloudFileServer) Modify(context.Context, *CloudFile_ModifyReq) (*CloudFile_ModifyRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Modify not implemented")
 }
-func (UnimplementedICloudFileServer) Delete(context.Context, *CloudFileDeleteReq) (*Err, error) {
+func (UnimplementedICloudFileServer) Delete(context.Context, *CloudFile_DeleteReq) (*CloudFile_DeleteRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
 func (UnimplementedICloudFileServer) mustEmbedUnimplementedICloudFileServer() {}
@@ -123,7 +123,7 @@ func RegisterICloudFileServer(s grpc.ServiceRegistrar, srv ICloudFileServer) {
 }
 
 func _ICloudFile_ListByUploader_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CloudFileListByUploaderReq)
+	in := new(CloudFile_ListByUploaderReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -132,16 +132,16 @@ func _ICloudFile_ListByUploader_Handler(srv interface{}, ctx context.Context, de
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cloudFile.ICloudFile/listByUploader",
+		FullMethod: "/cloudFile.ICloudFile/ListByUploader",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ICloudFileServer).ListByUploader(ctx, req.(*CloudFileListByUploaderReq))
+		return srv.(ICloudFileServer).ListByUploader(ctx, req.(*CloudFile_ListByUploaderReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ICloudFile_ListPublic_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CloudFileListPublicReq)
+	in := new(CloudFile_ListPublicReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -150,16 +150,16 @@ func _ICloudFile_ListPublic_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cloudFile.ICloudFile/listPublic",
+		FullMethod: "/cloudFile.ICloudFile/ListPublic",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ICloudFileServer).ListPublic(ctx, req.(*CloudFileListPublicReq))
+		return srv.(ICloudFileServer).ListPublic(ctx, req.(*CloudFile_ListPublicReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ICloudFile_Upload_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CloudFileUploadReq)
+	in := new(CloudFile_UploadReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -168,16 +168,16 @@ func _ICloudFile_Upload_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cloudFile.ICloudFile/upload",
+		FullMethod: "/cloudFile.ICloudFile/Upload",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ICloudFileServer).Upload(ctx, req.(*CloudFileUploadReq))
+		return srv.(ICloudFileServer).Upload(ctx, req.(*CloudFile_UploadReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ICloudFile_Modify_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CloudFileModifyReq)
+	in := new(CloudFile_ModifyReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -186,16 +186,16 @@ func _ICloudFile_Modify_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cloudFile.ICloudFile/modify",
+		FullMethod: "/cloudFile.ICloudFile/Modify",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ICloudFileServer).Modify(ctx, req.(*CloudFileModifyReq))
+		return srv.(ICloudFileServer).Modify(ctx, req.(*CloudFile_ModifyReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ICloudFile_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CloudFileDeleteReq)
+	in := new(CloudFile_DeleteReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -204,10 +204,10 @@ func _ICloudFile_Delete_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cloudFile.ICloudFile/delete",
+		FullMethod: "/cloudFile.ICloudFile/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ICloudFileServer).Delete(ctx, req.(*CloudFileDeleteReq))
+		return srv.(ICloudFileServer).Delete(ctx, req.(*CloudFile_DeleteReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -220,23 +220,23 @@ var ICloudFile_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ICloudFileServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "listByUploader",
+			MethodName: "ListByUploader",
 			Handler:    _ICloudFile_ListByUploader_Handler,
 		},
 		{
-			MethodName: "listPublic",
+			MethodName: "ListPublic",
 			Handler:    _ICloudFile_ListPublic_Handler,
 		},
 		{
-			MethodName: "upload",
+			MethodName: "Upload",
 			Handler:    _ICloudFile_Upload_Handler,
 		},
 		{
-			MethodName: "modify",
+			MethodName: "Modify",
 			Handler:    _ICloudFile_Modify_Handler,
 		},
 		{
-			MethodName: "delete",
+			MethodName: "Delete",
 			Handler:    _ICloudFile_Delete_Handler,
 		},
 	},

@@ -11,4 +11,6 @@
 
 然后，在程序中就可以使用```shared_ui```表示```shared/ui```路径了
 
-## excalidraw
+## [excalidraw](https://excalidraw.com/)
+
+```.excalidraw```文件查看方式：将文件导入在线工具

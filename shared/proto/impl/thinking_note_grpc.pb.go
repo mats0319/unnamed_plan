@@ -18,11 +18,11 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type IThinkingNoteClient interface {
-	ListByWriter(ctx context.Context, in *ThinkingNoteListByWriterReq, opts ...grpc.CallOption) (*ThinkingNoteListByWriterRes, error)
-	ListPublic(ctx context.Context, in *ThinkingNoteListPublicReq, opts ...grpc.CallOption) (*ThinkingNoteListPublicRes, error)
-	Create(ctx context.Context, in *ThinkingNoteCreateReq, opts ...grpc.CallOption) (*Err, error)
-	Modify(ctx context.Context, in *ThinkingNoteModifyReq, opts ...grpc.CallOption) (*Err, error)
-	Delete(ctx context.Context, in *ThinkingNoteDeleteReq, opts ...grpc.CallOption) (*Err, error)
+	ListByWriter(ctx context.Context, in *ThinkingNote_ListByWriterReq, opts ...grpc.CallOption) (*ThinkingNote_ListByWriterRes, error)
+	ListPublic(ctx context.Context, in *ThinkingNote_ListPublicReq, opts ...grpc.CallOption) (*ThinkingNote_ListPublicRes, error)
+	Create(ctx context.Context, in *ThinkingNote_CreateReq, opts ...grpc.CallOption) (*ThinkingNote_CreateRes, error)
+	Modify(ctx context.Context, in *ThinkingNote_ModifyReq, opts ...grpc.CallOption) (*ThinkingNote_ModifyRes, error)
+	Delete(ctx context.Context, in *ThinkingNote_DeleteReq, opts ...grpc.CallOption) (*ThinkingNote_DeleteRes, error)
 }
 
 type iThinkingNoteClient struct {
@@ -33,45 +33,45 @@ func NewIThinkingNoteClient(cc grpc.ClientConnInterface) IThinkingNoteClient {
 	return &iThinkingNoteClient{cc}
 }
 
-func (c *iThinkingNoteClient) ListByWriter(ctx context.Context, in *ThinkingNoteListByWriterReq, opts ...grpc.CallOption) (*ThinkingNoteListByWriterRes, error) {
-	out := new(ThinkingNoteListByWriterRes)
-	err := c.cc.Invoke(ctx, "/thinkingNote.IThinkingNote/listByWriter", in, out, opts...)
+func (c *iThinkingNoteClient) ListByWriter(ctx context.Context, in *ThinkingNote_ListByWriterReq, opts ...grpc.CallOption) (*ThinkingNote_ListByWriterRes, error) {
+	out := new(ThinkingNote_ListByWriterRes)
+	err := c.cc.Invoke(ctx, "/thinkingNote.IThinkingNote/ListByWriter", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *iThinkingNoteClient) ListPublic(ctx context.Context, in *ThinkingNoteListPublicReq, opts ...grpc.CallOption) (*ThinkingNoteListPublicRes, error) {
-	out := new(ThinkingNoteListPublicRes)
-	err := c.cc.Invoke(ctx, "/thinkingNote.IThinkingNote/listPublic", in, out, opts...)
+func (c *iThinkingNoteClient) ListPublic(ctx context.Context, in *ThinkingNote_ListPublicReq, opts ...grpc.CallOption) (*ThinkingNote_ListPublicRes, error) {
+	out := new(ThinkingNote_ListPublicRes)
+	err := c.cc.Invoke(ctx, "/thinkingNote.IThinkingNote/ListPublic", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *iThinkingNoteClient) Create(ctx context.Context, in *ThinkingNoteCreateReq, opts ...grpc.CallOption) (*Err, error) {
-	out := new(Err)
-	err := c.cc.Invoke(ctx, "/thinkingNote.IThinkingNote/create", in, out, opts...)
+func (c *iThinkingNoteClient) Create(ctx context.Context, in *ThinkingNote_CreateReq, opts ...grpc.CallOption) (*ThinkingNote_CreateRes, error) {
+	out := new(ThinkingNote_CreateRes)
+	err := c.cc.Invoke(ctx, "/thinkingNote.IThinkingNote/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *iThinkingNoteClient) Modify(ctx context.Context, in *ThinkingNoteModifyReq, opts ...grpc.CallOption) (*Err, error) {
-	out := new(Err)
-	err := c.cc.Invoke(ctx, "/thinkingNote.IThinkingNote/modify", in, out, opts...)
+func (c *iThinkingNoteClient) Modify(ctx context.Context, in *ThinkingNote_ModifyReq, opts ...grpc.CallOption) (*ThinkingNote_ModifyRes, error) {
+	out := new(ThinkingNote_ModifyRes)
+	err := c.cc.Invoke(ctx, "/thinkingNote.IThinkingNote/Modify", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *iThinkingNoteClient) Delete(ctx context.Context, in *ThinkingNoteDeleteReq, opts ...grpc.CallOption) (*Err, error) {
-	out := new(Err)
-	err := c.cc.Invoke(ctx, "/thinkingNote.IThinkingNote/delete", in, out, opts...)
+func (c *iThinkingNoteClient) Delete(ctx context.Context, in *ThinkingNote_DeleteReq, opts ...grpc.CallOption) (*ThinkingNote_DeleteRes, error) {
+	out := new(ThinkingNote_DeleteRes)
+	err := c.cc.Invoke(ctx, "/thinkingNote.IThinkingNote/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -82,11 +82,11 @@ func (c *iThinkingNoteClient) Delete(ctx context.Context, in *ThinkingNoteDelete
 // All implementations must embed UnimplementedIThinkingNoteServer
 // for forward compatibility
 type IThinkingNoteServer interface {
-	ListByWriter(context.Context, *ThinkingNoteListByWriterReq) (*ThinkingNoteListByWriterRes, error)
-	ListPublic(context.Context, *ThinkingNoteListPublicReq) (*ThinkingNoteListPublicRes, error)
-	Create(context.Context, *ThinkingNoteCreateReq) (*Err, error)
-	Modify(context.Context, *ThinkingNoteModifyReq) (*Err, error)
-	Delete(context.Context, *ThinkingNoteDeleteReq) (*Err, error)
+	ListByWriter(context.Context, *ThinkingNote_ListByWriterReq) (*ThinkingNote_ListByWriterRes, error)
+	ListPublic(context.Context, *ThinkingNote_ListPublicReq) (*ThinkingNote_ListPublicRes, error)
+	Create(context.Context, *ThinkingNote_CreateReq) (*ThinkingNote_CreateRes, error)
+	Modify(context.Context, *ThinkingNote_ModifyReq) (*ThinkingNote_ModifyRes, error)
+	Delete(context.Context, *ThinkingNote_DeleteReq) (*ThinkingNote_DeleteRes, error)
 	mustEmbedUnimplementedIThinkingNoteServer()
 }
 
@@ -94,19 +94,19 @@ type IThinkingNoteServer interface {
 type UnimplementedIThinkingNoteServer struct {
 }
 
-func (UnimplementedIThinkingNoteServer) ListByWriter(context.Context, *ThinkingNoteListByWriterReq) (*ThinkingNoteListByWriterRes, error) {
+func (UnimplementedIThinkingNoteServer) ListByWriter(context.Context, *ThinkingNote_ListByWriterReq) (*ThinkingNote_ListByWriterRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListByWriter not implemented")
 }
-func (UnimplementedIThinkingNoteServer) ListPublic(context.Context, *ThinkingNoteListPublicReq) (*ThinkingNoteListPublicRes, error) {
+func (UnimplementedIThinkingNoteServer) ListPublic(context.Context, *ThinkingNote_ListPublicReq) (*ThinkingNote_ListPublicRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListPublic not implemented")
 }
-func (UnimplementedIThinkingNoteServer) Create(context.Context, *ThinkingNoteCreateReq) (*Err, error) {
+func (UnimplementedIThinkingNoteServer) Create(context.Context, *ThinkingNote_CreateReq) (*ThinkingNote_CreateRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedIThinkingNoteServer) Modify(context.Context, *ThinkingNoteModifyReq) (*Err, error) {
+func (UnimplementedIThinkingNoteServer) Modify(context.Context, *ThinkingNote_ModifyReq) (*ThinkingNote_ModifyRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Modify not implemented")
 }
-func (UnimplementedIThinkingNoteServer) Delete(context.Context, *ThinkingNoteDeleteReq) (*Err, error) {
+func (UnimplementedIThinkingNoteServer) Delete(context.Context, *ThinkingNote_DeleteReq) (*ThinkingNote_DeleteRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
 func (UnimplementedIThinkingNoteServer) mustEmbedUnimplementedIThinkingNoteServer() {}
@@ -123,7 +123,7 @@ func RegisterIThinkingNoteServer(s grpc.ServiceRegistrar, srv IThinkingNoteServe
 }
 
 func _IThinkingNote_ListByWriter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ThinkingNoteListByWriterReq)
+	in := new(ThinkingNote_ListByWriterReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -132,16 +132,16 @@ func _IThinkingNote_ListByWriter_Handler(srv interface{}, ctx context.Context, d
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/thinkingNote.IThinkingNote/listByWriter",
+		FullMethod: "/thinkingNote.IThinkingNote/ListByWriter",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IThinkingNoteServer).ListByWriter(ctx, req.(*ThinkingNoteListByWriterReq))
+		return srv.(IThinkingNoteServer).ListByWriter(ctx, req.(*ThinkingNote_ListByWriterReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _IThinkingNote_ListPublic_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ThinkingNoteListPublicReq)
+	in := new(ThinkingNote_ListPublicReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -150,16 +150,16 @@ func _IThinkingNote_ListPublic_Handler(srv interface{}, ctx context.Context, dec
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/thinkingNote.IThinkingNote/listPublic",
+		FullMethod: "/thinkingNote.IThinkingNote/ListPublic",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IThinkingNoteServer).ListPublic(ctx, req.(*ThinkingNoteListPublicReq))
+		return srv.(IThinkingNoteServer).ListPublic(ctx, req.(*ThinkingNote_ListPublicReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _IThinkingNote_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ThinkingNoteCreateReq)
+	in := new(ThinkingNote_CreateReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -168,16 +168,16 @@ func _IThinkingNote_Create_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/thinkingNote.IThinkingNote/create",
+		FullMethod: "/thinkingNote.IThinkingNote/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IThinkingNoteServer).Create(ctx, req.(*ThinkingNoteCreateReq))
+		return srv.(IThinkingNoteServer).Create(ctx, req.(*ThinkingNote_CreateReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _IThinkingNote_Modify_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ThinkingNoteModifyReq)
+	in := new(ThinkingNote_ModifyReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -186,16 +186,16 @@ func _IThinkingNote_Modify_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/thinkingNote.IThinkingNote/modify",
+		FullMethod: "/thinkingNote.IThinkingNote/Modify",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IThinkingNoteServer).Modify(ctx, req.(*ThinkingNoteModifyReq))
+		return srv.(IThinkingNoteServer).Modify(ctx, req.(*ThinkingNote_ModifyReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _IThinkingNote_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ThinkingNoteDeleteReq)
+	in := new(ThinkingNote_DeleteReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -204,10 +204,10 @@ func _IThinkingNote_Delete_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/thinkingNote.IThinkingNote/delete",
+		FullMethod: "/thinkingNote.IThinkingNote/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IThinkingNoteServer).Delete(ctx, req.(*ThinkingNoteDeleteReq))
+		return srv.(IThinkingNoteServer).Delete(ctx, req.(*ThinkingNote_DeleteReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -220,23 +220,23 @@ var IThinkingNote_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*IThinkingNoteServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "listByWriter",
+			MethodName: "ListByWriter",
 			Handler:    _IThinkingNote_ListByWriter_Handler,
 		},
 		{
-			MethodName: "listPublic",
+			MethodName: "ListPublic",
 			Handler:    _IThinkingNote_ListPublic_Handler,
 		},
 		{
-			MethodName: "create",
+			MethodName: "Create",
 			Handler:    _IThinkingNote_Create_Handler,
 		},
 		{
-			MethodName: "modify",
+			MethodName: "Modify",
 			Handler:    _IThinkingNote_Modify_Handler,
 		},
 		{
-			MethodName: "delete",
+			MethodName: "Delete",
 			Handler:    _IThinkingNote_Delete_Handler,
 		},
 	},

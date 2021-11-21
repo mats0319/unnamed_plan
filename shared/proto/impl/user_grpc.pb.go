@@ -19,15 +19,15 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type IUserClient interface {
 	// functions
-	Login(ctx context.Context, in *UserLoginReq, opts ...grpc.CallOption) (*UserLoginRes, error)
-	Create(ctx context.Context, in *UserCreateReq, opts ...grpc.CallOption) (*Err, error)
-	List(ctx context.Context, in *UserListReq, opts ...grpc.CallOption) (*UserListRes, error)
-	Lock(ctx context.Context, in *UserLockReq, opts ...grpc.CallOption) (*Err, error)
-	Unlock(ctx context.Context, in *UserUnlockReq, opts ...grpc.CallOption) (*Err, error)
-	ModifyInfo(ctx context.Context, in *UserModifyInfoReq, opts ...grpc.CallOption) (*Err, error)
-	ModifyPermission(ctx context.Context, in *UserModifyPermissionReq, opts ...grpc.CallOption) (*Err, error)
+	Login(ctx context.Context, in *User_LoginReq, opts ...grpc.CallOption) (*User_LoginRes, error)
+	List(ctx context.Context, in *User_ListReq, opts ...grpc.CallOption) (*User_ListRes, error)
+	Create(ctx context.Context, in *User_CreateReq, opts ...grpc.CallOption) (*User_CreateRes, error)
+	Lock(ctx context.Context, in *User_LockReq, opts ...grpc.CallOption) (*User_LockRes, error)
+	Unlock(ctx context.Context, in *User_UnlockReq, opts ...grpc.CallOption) (*User_UnlockRes, error)
+	ModifyInfo(ctx context.Context, in *User_ModifyInfoReq, opts ...grpc.CallOption) (*User_ModifyInfoRes, error)
+	ModifyPermission(ctx context.Context, in *User_ModifyPermissionReq, opts ...grpc.CallOption) (*User_ModifyPermissionRes, error)
 	// for other services
-	Authenticate(ctx context.Context, in *UserAuthenticateReq, opts ...grpc.CallOption) (*Err, error)
+	Authenticate(ctx context.Context, in *User_AuthenticateReq, opts ...grpc.CallOption) (*User_AuthenticateRes, error)
 }
 
 type iUserClient struct {
@@ -38,72 +38,72 @@ func NewIUserClient(cc grpc.ClientConnInterface) IUserClient {
 	return &iUserClient{cc}
 }
 
-func (c *iUserClient) Login(ctx context.Context, in *UserLoginReq, opts ...grpc.CallOption) (*UserLoginRes, error) {
-	out := new(UserLoginRes)
-	err := c.cc.Invoke(ctx, "/user.IUser/login", in, out, opts...)
+func (c *iUserClient) Login(ctx context.Context, in *User_LoginReq, opts ...grpc.CallOption) (*User_LoginRes, error) {
+	out := new(User_LoginRes)
+	err := c.cc.Invoke(ctx, "/user.IUser/Login", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *iUserClient) Create(ctx context.Context, in *UserCreateReq, opts ...grpc.CallOption) (*Err, error) {
-	out := new(Err)
-	err := c.cc.Invoke(ctx, "/user.IUser/create", in, out, opts...)
+func (c *iUserClient) List(ctx context.Context, in *User_ListReq, opts ...grpc.CallOption) (*User_ListRes, error) {
+	out := new(User_ListRes)
+	err := c.cc.Invoke(ctx, "/user.IUser/List", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *iUserClient) List(ctx context.Context, in *UserListReq, opts ...grpc.CallOption) (*UserListRes, error) {
-	out := new(UserListRes)
-	err := c.cc.Invoke(ctx, "/user.IUser/list", in, out, opts...)
+func (c *iUserClient) Create(ctx context.Context, in *User_CreateReq, opts ...grpc.CallOption) (*User_CreateRes, error) {
+	out := new(User_CreateRes)
+	err := c.cc.Invoke(ctx, "/user.IUser/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *iUserClient) Lock(ctx context.Context, in *UserLockReq, opts ...grpc.CallOption) (*Err, error) {
-	out := new(Err)
-	err := c.cc.Invoke(ctx, "/user.IUser/lock", in, out, opts...)
+func (c *iUserClient) Lock(ctx context.Context, in *User_LockReq, opts ...grpc.CallOption) (*User_LockRes, error) {
+	out := new(User_LockRes)
+	err := c.cc.Invoke(ctx, "/user.IUser/Lock", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *iUserClient) Unlock(ctx context.Context, in *UserUnlockReq, opts ...grpc.CallOption) (*Err, error) {
-	out := new(Err)
-	err := c.cc.Invoke(ctx, "/user.IUser/unlock", in, out, opts...)
+func (c *iUserClient) Unlock(ctx context.Context, in *User_UnlockReq, opts ...grpc.CallOption) (*User_UnlockRes, error) {
+	out := new(User_UnlockRes)
+	err := c.cc.Invoke(ctx, "/user.IUser/Unlock", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *iUserClient) ModifyInfo(ctx context.Context, in *UserModifyInfoReq, opts ...grpc.CallOption) (*Err, error) {
-	out := new(Err)
-	err := c.cc.Invoke(ctx, "/user.IUser/modifyInfo", in, out, opts...)
+func (c *iUserClient) ModifyInfo(ctx context.Context, in *User_ModifyInfoReq, opts ...grpc.CallOption) (*User_ModifyInfoRes, error) {
+	out := new(User_ModifyInfoRes)
+	err := c.cc.Invoke(ctx, "/user.IUser/ModifyInfo", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *iUserClient) ModifyPermission(ctx context.Context, in *UserModifyPermissionReq, opts ...grpc.CallOption) (*Err, error) {
-	out := new(Err)
-	err := c.cc.Invoke(ctx, "/user.IUser/modifyPermission", in, out, opts...)
+func (c *iUserClient) ModifyPermission(ctx context.Context, in *User_ModifyPermissionReq, opts ...grpc.CallOption) (*User_ModifyPermissionRes, error) {
+	out := new(User_ModifyPermissionRes)
+	err := c.cc.Invoke(ctx, "/user.IUser/ModifyPermission", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *iUserClient) Authenticate(ctx context.Context, in *UserAuthenticateReq, opts ...grpc.CallOption) (*Err, error) {
-	out := new(Err)
-	err := c.cc.Invoke(ctx, "/user.IUser/authenticate", in, out, opts...)
+func (c *iUserClient) Authenticate(ctx context.Context, in *User_AuthenticateReq, opts ...grpc.CallOption) (*User_AuthenticateRes, error) {
+	out := new(User_AuthenticateRes)
+	err := c.cc.Invoke(ctx, "/user.IUser/Authenticate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -115,15 +115,15 @@ func (c *iUserClient) Authenticate(ctx context.Context, in *UserAuthenticateReq,
 // for forward compatibility
 type IUserServer interface {
 	// functions
-	Login(context.Context, *UserLoginReq) (*UserLoginRes, error)
-	Create(context.Context, *UserCreateReq) (*Err, error)
-	List(context.Context, *UserListReq) (*UserListRes, error)
-	Lock(context.Context, *UserLockReq) (*Err, error)
-	Unlock(context.Context, *UserUnlockReq) (*Err, error)
-	ModifyInfo(context.Context, *UserModifyInfoReq) (*Err, error)
-	ModifyPermission(context.Context, *UserModifyPermissionReq) (*Err, error)
+	Login(context.Context, *User_LoginReq) (*User_LoginRes, error)
+	List(context.Context, *User_ListReq) (*User_ListRes, error)
+	Create(context.Context, *User_CreateReq) (*User_CreateRes, error)
+	Lock(context.Context, *User_LockReq) (*User_LockRes, error)
+	Unlock(context.Context, *User_UnlockReq) (*User_UnlockRes, error)
+	ModifyInfo(context.Context, *User_ModifyInfoReq) (*User_ModifyInfoRes, error)
+	ModifyPermission(context.Context, *User_ModifyPermissionReq) (*User_ModifyPermissionRes, error)
 	// for other services
-	Authenticate(context.Context, *UserAuthenticateReq) (*Err, error)
+	Authenticate(context.Context, *User_AuthenticateReq) (*User_AuthenticateRes, error)
 	mustEmbedUnimplementedIUserServer()
 }
 
@@ -131,28 +131,28 @@ type IUserServer interface {
 type UnimplementedIUserServer struct {
 }
 
-func (UnimplementedIUserServer) Login(context.Context, *UserLoginReq) (*UserLoginRes, error) {
+func (UnimplementedIUserServer) Login(context.Context, *User_LoginReq) (*User_LoginRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedIUserServer) Create(context.Context, *UserCreateReq) (*Err, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
-}
-func (UnimplementedIUserServer) List(context.Context, *UserListReq) (*UserListRes, error) {
+func (UnimplementedIUserServer) List(context.Context, *User_ListReq) (*User_ListRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
-func (UnimplementedIUserServer) Lock(context.Context, *UserLockReq) (*Err, error) {
+func (UnimplementedIUserServer) Create(context.Context, *User_CreateReq) (*User_CreateRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+}
+func (UnimplementedIUserServer) Lock(context.Context, *User_LockReq) (*User_LockRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Lock not implemented")
 }
-func (UnimplementedIUserServer) Unlock(context.Context, *UserUnlockReq) (*Err, error) {
+func (UnimplementedIUserServer) Unlock(context.Context, *User_UnlockReq) (*User_UnlockRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Unlock not implemented")
 }
-func (UnimplementedIUserServer) ModifyInfo(context.Context, *UserModifyInfoReq) (*Err, error) {
+func (UnimplementedIUserServer) ModifyInfo(context.Context, *User_ModifyInfoReq) (*User_ModifyInfoRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ModifyInfo not implemented")
 }
-func (UnimplementedIUserServer) ModifyPermission(context.Context, *UserModifyPermissionReq) (*Err, error) {
+func (UnimplementedIUserServer) ModifyPermission(context.Context, *User_ModifyPermissionReq) (*User_ModifyPermissionRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ModifyPermission not implemented")
 }
-func (UnimplementedIUserServer) Authenticate(context.Context, *UserAuthenticateReq) (*Err, error) {
+func (UnimplementedIUserServer) Authenticate(context.Context, *User_AuthenticateReq) (*User_AuthenticateRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Authenticate not implemented")
 }
 func (UnimplementedIUserServer) mustEmbedUnimplementedIUserServer() {}
@@ -169,7 +169,7 @@ func RegisterIUserServer(s grpc.ServiceRegistrar, srv IUserServer) {
 }
 
 func _IUser_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserLoginReq)
+	in := new(User_LoginReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -178,34 +178,16 @@ func _IUser_Login_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.IUser/login",
+		FullMethod: "/user.IUser/Login",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IUserServer).Login(ctx, req.(*UserLoginReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _IUser_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserCreateReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(IUserServer).Create(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/user.IUser/create",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IUserServer).Create(ctx, req.(*UserCreateReq))
+		return srv.(IUserServer).Login(ctx, req.(*User_LoginReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _IUser_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserListReq)
+	in := new(User_ListReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -214,16 +196,34 @@ func _IUser_List_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.IUser/list",
+		FullMethod: "/user.IUser/List",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IUserServer).List(ctx, req.(*UserListReq))
+		return srv.(IUserServer).List(ctx, req.(*User_ListReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IUser_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(User_CreateReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IUserServer).Create(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.IUser/Create",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IUserServer).Create(ctx, req.(*User_CreateReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _IUser_Lock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserLockReq)
+	in := new(User_LockReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -232,16 +232,16 @@ func _IUser_Lock_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.IUser/lock",
+		FullMethod: "/user.IUser/Lock",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IUserServer).Lock(ctx, req.(*UserLockReq))
+		return srv.(IUserServer).Lock(ctx, req.(*User_LockReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _IUser_Unlock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserUnlockReq)
+	in := new(User_UnlockReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -250,16 +250,16 @@ func _IUser_Unlock_Handler(srv interface{}, ctx context.Context, dec func(interf
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.IUser/unlock",
+		FullMethod: "/user.IUser/Unlock",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IUserServer).Unlock(ctx, req.(*UserUnlockReq))
+		return srv.(IUserServer).Unlock(ctx, req.(*User_UnlockReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _IUser_ModifyInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserModifyInfoReq)
+	in := new(User_ModifyInfoReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -268,16 +268,16 @@ func _IUser_ModifyInfo_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.IUser/modifyInfo",
+		FullMethod: "/user.IUser/ModifyInfo",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IUserServer).ModifyInfo(ctx, req.(*UserModifyInfoReq))
+		return srv.(IUserServer).ModifyInfo(ctx, req.(*User_ModifyInfoReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _IUser_ModifyPermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserModifyPermissionReq)
+	in := new(User_ModifyPermissionReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -286,16 +286,16 @@ func _IUser_ModifyPermission_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.IUser/modifyPermission",
+		FullMethod: "/user.IUser/ModifyPermission",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IUserServer).ModifyPermission(ctx, req.(*UserModifyPermissionReq))
+		return srv.(IUserServer).ModifyPermission(ctx, req.(*User_ModifyPermissionReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _IUser_Authenticate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserAuthenticateReq)
+	in := new(User_AuthenticateReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -304,10 +304,10 @@ func _IUser_Authenticate_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.IUser/authenticate",
+		FullMethod: "/user.IUser/Authenticate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IUserServer).Authenticate(ctx, req.(*UserAuthenticateReq))
+		return srv.(IUserServer).Authenticate(ctx, req.(*User_AuthenticateReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -320,35 +320,35 @@ var IUser_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*IUserServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "login",
+			MethodName: "Login",
 			Handler:    _IUser_Login_Handler,
 		},
 		{
-			MethodName: "create",
-			Handler:    _IUser_Create_Handler,
-		},
-		{
-			MethodName: "list",
+			MethodName: "List",
 			Handler:    _IUser_List_Handler,
 		},
 		{
-			MethodName: "lock",
+			MethodName: "Create",
+			Handler:    _IUser_Create_Handler,
+		},
+		{
+			MethodName: "Lock",
 			Handler:    _IUser_Lock_Handler,
 		},
 		{
-			MethodName: "unlock",
+			MethodName: "Unlock",
 			Handler:    _IUser_Unlock_Handler,
 		},
 		{
-			MethodName: "modifyInfo",
+			MethodName: "ModifyInfo",
 			Handler:    _IUser_ModifyInfo_Handler,
 		},
 		{
-			MethodName: "modifyPermission",
+			MethodName: "ModifyPermission",
 			Handler:    _IUser_ModifyPermission_Handler,
 		},
 		{
-			MethodName: "authenticate",
+			MethodName: "Authenticate",
 			Handler:    _IUser_Authenticate_Handler,
 		},
 	},

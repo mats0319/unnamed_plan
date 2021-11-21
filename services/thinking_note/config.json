@@ -1,0 +1,25 @@
+{
+  "level": "dev",
+  "config": [
+    {
+      "name": "config",
+      "uid": "5d71f9af-63f5-44c5-9ef0-403bcd1ad381",
+      "jsonDev": {
+        "address": "127.0.0.1:39693",
+        "userServerAddress": "127.0.0.1:19693"
+      }
+    },
+    {
+      "name": "db",
+      "uid": "658e06f7-71d5-4ada-b715-8c1a4489e5d2",
+      "jsonDev": {
+        "addr": "106.75.174.54:5432",
+        "user": "mario_test",
+        "password": "123456",
+        "dbName": "unnamed_plan_test",
+        "timeout": 3,
+        "showSQL": true
+      }
+    }
+  ]
+}

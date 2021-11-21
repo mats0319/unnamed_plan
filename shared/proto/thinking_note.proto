@@ -7,69 +7,74 @@ option optimize_for = LITE_RUNTIME;
 import "common.proto";
 
 service IThinkingNote {
-  rpc listByWriter(thinkingNote.listByWriterReq) returns (thinkingNote.listByWriterRes);
-  rpc listPublic(thinkingNote.listPublicReq) returns (thinkingNote.listPublicRes);
-  rpc create(thinkingNote.createReq) returns (common.err);
-  rpc modify(thinkingNote.modifyReq) returns (common.err);
-  rpc delete(thinkingNote.deleteReq) returns (common.err);
+  rpc ListByWriter(ThinkingNote.ListByWriterReq) returns (ThinkingNote.ListByWriterRes);
+  rpc ListPublic(ThinkingNote.ListPublicReq) returns (ThinkingNote.ListPublicRes);
+  rpc Create(ThinkingNote.CreateReq) returns (ThinkingNote.CreateRes);
+  rpc Modify(ThinkingNote.ModifyReq) returns (ThinkingNote.ModifyRes);
+  rpc Delete(ThinkingNote.DeleteReq) returns (ThinkingNote.DeleteRes);
 }
 
-message thinkingNote {
-  message listByWriterReq {
-    string operatorID = 1;
-
-    common.pagination page = 15;
-  }
-
-  message listByWriterRes {
-    uint32 total = 1;
-    repeated noteRes notes = 2;
-
-    common.err err = 15;
-  }
-
-  message noteRes {
-    string noteID = 1;
-    string writeBy = 2;
+message ThinkingNote {
+  message Data {
+    string note_id = 1;
+    string write_by = 2;
     string topic = 3;
     string content = 4;
-    bool isPublic = 5;
-    int64 updateTime = 6;
-    int64 createdTime = 7;
+    bool is_public = 5;
+    int64 update_time = 6;
+    int64 created_time = 7;
   }
 
-  message listPublicReq {
-    string operatorID = 1;
+  message ListByWriterReq {
+    string operator_id = 1;
 
-    common.pagination page = 15;
+    common.Pagination page = 15;
   }
 
-  message listPublicRes {
+  message ListByWriterRes {
     uint32 total = 1;
-    repeated noteRes notes = 2;
-
-    common.err err = 15;
+    repeated Data notes = 2;
   }
 
-  message createReq {
-    string operatorID = 1;
+  message ListPublicReq {
+    string operator_id = 1;
+
+    common.Pagination page = 15;
+  }
+
+  message ListPublicRes {
+    uint32 total = 1;
+    repeated Data notes = 2;
+  }
+
+  message CreateReq {
+    string operator_id = 1;
     string topic = 2;
     string content = 3;
-    bool isPublic = 4;
+    bool is_public = 4;
   }
 
-  message modifyReq {
-    string operatorID = 1;
-    string noteID = 2;
+  message CreateRes {
+  }
+
+  message ModifyReq {
+    string operator_id = 1;
+    string note_id = 2;
     string password = 3;
     string topic = 4;
     string content = 5;
-    bool isPublic = 6;
+    bool is_public = 6;
   }
 
-  message deleteReq {
-    string operatorID = 1;
+  message ModifyRes {
+  }
+
+  message DeleteReq {
+    string operator_id = 1;
     string password = 2;
-    string noteID = 3;
+    string note_id = 3;
+  }
+
+  message DeleteRes {
   }
 }

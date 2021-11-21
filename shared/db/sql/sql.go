@@ -20,7 +20,9 @@ var dbConf = &pg.Options{
 
 func main() {
 	db := pg.Connect(dbConf)
-	defer db.Close()
+	defer func() {
+		_ = db.Close()
+	}()
 
 	models := []interface{}{
 		(*model.User)(nil),
