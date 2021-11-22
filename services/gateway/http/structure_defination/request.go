@@ -1,7 +1,7 @@
 package structure
 
 import (
-	"github.com/mats9693/unnamed_plan/services/utils"
+	"github.com/mats9693/unnamed_plan/shared/utils"
 	"mime/multipart"
 	"net/http"
 	"strconv"

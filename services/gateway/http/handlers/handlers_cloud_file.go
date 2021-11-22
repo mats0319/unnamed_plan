@@ -5,6 +5,7 @@ import (
 	"github.com/mats9693/unnamed_plan/services/gateway/http/structure_defination"
 	"github.com/mats9693/unnamed_plan/services/gateway/rpc"
 	"github.com/mats9693/unnamed_plan/shared/proto/impl"
+	mconst "github.com/mats9693/utils/toy_server/const"
 	"github.com/mats9693/utils/toy_server/http"
 	"net/http"
 	"time"
@@ -27,7 +28,7 @@ func ListCloudFileByUploader(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	return mhttp.Response(structure.MakeListCloudFileByUploaderRes(int(res.Total), filesRPCToHTTP(res.Files...)))
+	return mhttp.Response(structure.MakeListCloudFileByUploaderRes(res.Total, filesRPCToHTTP(res.Files...)))
 }
 
 func ListPublicCloudFile(r *http.Request) *mhttp.ResponseData {
@@ -47,7 +48,7 @@ func ListPublicCloudFile(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	return mhttp.Response(structure.MakeListPublicCloudFileRes(int(res.Total), filesRPCToHTTP(res.Files...)))
+	return mhttp.Response(structure.MakeListPublicCloudFileRes(res.Total, filesRPCToHTTP(res.Files...)))
 }
 
 func UploadCloudFile(r *http.Request) *mhttp.ResponseData {
@@ -69,7 +70,7 @@ func UploadCloudFile(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	return mhttp.Response("")
+	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
 func ModifyCloudFile(r *http.Request) *mhttp.ResponseData {
@@ -93,7 +94,7 @@ func ModifyCloudFile(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	return mhttp.Response("")
+	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
 func DeleteCloudFile(r *http.Request) *mhttp.ResponseData {
@@ -111,7 +112,7 @@ func DeleteCloudFile(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	return mhttp.Response(structure.MakeDeleteCloudFileRes(true))
+	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
 func filesRPCToHTTP(data ...*rpc_impl.CloudFile_Data) []*structure.FileRes {

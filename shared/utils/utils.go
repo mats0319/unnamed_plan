@@ -40,3 +40,7 @@ func ErrorsToString(errs ...error) string {
 
 	return res
 }
+
+func NewError(data string) error {
+	return errors.New(data)
+}

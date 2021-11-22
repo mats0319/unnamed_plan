@@ -5,6 +5,7 @@ import (
 	"github.com/mats9693/unnamed_plan/services/gateway/http/structure_defination"
 	"github.com/mats9693/unnamed_plan/services/gateway/rpc"
 	"github.com/mats9693/unnamed_plan/shared/proto/impl"
+	mconst "github.com/mats9693/utils/toy_server/const"
 	"github.com/mats9693/utils/toy_server/http"
 	"math/rand"
 	"net/http"
@@ -29,7 +30,7 @@ func Login(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	return mhttp.Response(structure.MakeLoginRes(res.UserId, res.Nickname, uint8(res.Permission)), res.UserId)
+	return mhttp.Response(structure.MakeLoginRes(res.UserId, res.Nickname, res.Permission), res.UserId)
 }
 
 func ListUser(r *http.Request) *mhttp.ResponseData {
@@ -49,7 +50,7 @@ func ListUser(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	return mhttp.Response(structure.MakeListUserRes(int(res.Total), usersRPCToHTTP(res.Users...)))
+	return mhttp.Response(structure.MakeListUserRes(res.Total, usersRPCToHTTP(res.Users...)))
 }
 
 func CreateUser(r *http.Request) *mhttp.ResponseData {
@@ -68,7 +69,7 @@ func CreateUser(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	return mhttp.Response("")
+	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
 func LockUser(r *http.Request) *mhttp.ResponseData {
@@ -85,7 +86,7 @@ func LockUser(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	return mhttp.Response("")
+	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
 func UnlockUser(r *http.Request) *mhttp.ResponseData {
@@ -102,7 +103,7 @@ func UnlockUser(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	return mhttp.Response("")
+	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
 func ModifyUserInfo(r *http.Request) *mhttp.ResponseData {
@@ -122,7 +123,7 @@ func ModifyUserInfo(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	return mhttp.Response("")
+	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
 func ModifyUserPermission(r *http.Request) *mhttp.ResponseData {
@@ -140,7 +141,7 @@ func ModifyUserPermission(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	return mhttp.Response("")
+	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
 func usersRPCToHTTP(data ...*rpc_impl.User_Data) []*structure.UserRes {
@@ -151,7 +152,7 @@ func usersRPCToHTTP(data ...*rpc_impl.User_Data) []*structure.UserRes {
 			UserName:   data[i].UserName,
 			Nickname:   data[i].Nickname,
 			IsLocked:   data[i].IsLocked,
-			Permission: uint8(data[i].Permission),
+			Permission: data[i].Permission,
 			CreatedBy:  data[i].CreatedBy,
 		})
 	}

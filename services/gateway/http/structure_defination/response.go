@@ -2,7 +2,7 @@ package structure
 
 // user
 
-func MakeLoginRes(userID string, nickname string, permission uint8) interface{} {
+func MakeLoginRes(userID string, nickname string, permission uint32) interface{} {
 	return &struct {
 		*UserID
 		*Nickname
@@ -14,7 +14,7 @@ func MakeLoginRes(userID string, nickname string, permission uint8) interface{} 
 	}
 }
 
-func MakeListUserRes(total int, users []*UserRes) interface{} {
+func MakeListUserRes(total uint32, users []*UserRes) interface{} {
 	return &struct {
 		*Total
 		*Users
@@ -26,7 +26,7 @@ func MakeListUserRes(total int, users []*UserRes) interface{} {
 
 // cloud file
 
-func MakeListCloudFileByUploaderRes(total int, files []*FileRes) interface{} {
+func MakeListCloudFileByUploaderRes(total uint32, files []*FileRes) interface{} {
 	return &struct {
 		*Total
 		*Files
@@ -36,43 +36,19 @@ func MakeListCloudFileByUploaderRes(total int, files []*FileRes) interface{} {
 	}
 }
 
-func MakeListPublicCloudFileRes(total int, files []*FileRes) interface{} {
+func MakeListPublicCloudFileRes(total uint32, files []*FileRes) interface{} {
 	return &struct {
 		*Total
 		*Files
 	}{
 		&Total{Total: total},
 		&Files{Files: files},
-	}
-}
-
-func MakeUploadCloudFileRes(isSuccess bool) interface{} {
-	return &struct {
-		*IsSuccess
-	}{
-		&IsSuccess{IsSuccess: isSuccess},
-	}
-}
-
-func MakeModifyCloudFileRes(isSuccess bool) interface{} {
-	return &struct {
-		*IsSuccess
-	}{
-		&IsSuccess{IsSuccess: isSuccess},
-	}
-}
-
-func MakeDeleteCloudFileRes(isSuccess bool) interface{} {
-	return &struct {
-		*IsSuccess
-	}{
-		&IsSuccess{IsSuccess: isSuccess},
 	}
 }
 
 // note
 
-func MakeListThinkingNoteByWriterRes(total int, notes []*NoteRes) interface{} {
+func MakeListThinkingNoteByWriterRes(total uint32, notes []*NoteRes) interface{} {
 	return &struct {
 		*Total
 		*Notes
@@ -82,36 +58,12 @@ func MakeListThinkingNoteByWriterRes(total int, notes []*NoteRes) interface{} {
 	}
 }
 
-func MakeListPublicThinkingNoteRes(total int, notes []*NoteRes) interface{} {
+func MakeListPublicThinkingNoteRes(total uint32, notes []*NoteRes) interface{} {
 	return &struct {
 		*Total
 		*Notes
 	}{
 		&Total{Total: total},
 		&Notes{Notes: notes},
-	}
-}
-
-func MakeCreateThinkingNoteRes(isSuccess bool) interface{} {
-	return &struct {
-		*IsSuccess
-	}{
-		&IsSuccess{IsSuccess: isSuccess},
-	}
-}
-
-func MakeModifyThinkingNoteRes(isSuccess bool) interface{} {
-	return &struct {
-		*IsSuccess
-	}{
-		&IsSuccess{IsSuccess: isSuccess},
-	}
-}
-
-func MakeDeleteThinkingNoteRes(isSuccess bool) interface{} {
-	return &struct {
-		*IsSuccess
-	}{
-		&IsSuccess{IsSuccess: isSuccess},
 	}
 }

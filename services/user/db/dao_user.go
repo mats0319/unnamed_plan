@@ -40,7 +40,7 @@ func (u *User) Query(condition string, param ...interface{}) (users []*model.Use
 	return
 }
 
-// QueryPageByPermission 获取用户列表，要求目标用户权限等级不高于指定用户（通过userID指定），分页，按照权限等级降序
+// QueryPageByPermission 获取用户列表，要求目标用户权限等级不高于指定用户（通过userID指定），分页，按照权限等级降序，查询结果不包含指定用户
 /**
 Core: sub-query
 	select *

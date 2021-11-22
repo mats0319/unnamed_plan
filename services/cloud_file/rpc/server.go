@@ -4,13 +4,11 @@ import (
 	"context"
 	"github.com/mats9693/unnamed_plan/services/cloud_file/config"
 	"github.com/mats9693/unnamed_plan/services/cloud_file/db"
-	"github.com/mats9693/unnamed_plan/services/utils"
 	"github.com/mats9693/unnamed_plan/shared/db/model"
-	"github.com/mats9693/unnamed_plan/shared/errors"
 	"github.com/mats9693/unnamed_plan/shared/proto/client"
 	"github.com/mats9693/unnamed_plan/shared/proto/impl"
+	"github.com/mats9693/unnamed_plan/shared/utils"
 	"github.com/mats9693/utils/toy_server/utils"
-	"github.com/pkg/errors"
 	"os"
 	"strconv"
 	"time"
@@ -41,7 +39,7 @@ func GetCloudFileServer(userServerTarget string) (*cloudFileServerImpl, error) {
 
 func (c *cloudFileServerImpl) ListByUploader(_ context.Context, req *rpc_impl.CloudFile_ListByUploaderReq) (*rpc_impl.CloudFile_ListByUploaderRes, error) {
 	if len(req.OperatorId) < 1 || req.GetPage() == nil || req.GetPage().PageSize < 1 || req.GetPage().PageNum < 1 {
-		return nil, errors.New(merrors.Error_InvalidParams)
+		return nil, utils.NewError(utils.Error_InvalidParams)
 	}
 
 	pageSize := int(req.GetPage().PageSize)
@@ -60,7 +58,7 @@ func (c *cloudFileServerImpl) ListByUploader(_ context.Context, req *rpc_impl.Cl
 
 func (c *cloudFileServerImpl) ListPublic(_ context.Context, req *rpc_impl.CloudFile_ListPublicReq) (*rpc_impl.CloudFile_ListPublicRes, error) {
 	if len(req.OperatorId) < 1 || req.GetPage() == nil || req.GetPage().PageSize < 1 || req.GetPage().PageNum < 1 {
-		return nil, errors.New(merrors.Error_InvalidParams)
+		return nil, utils.NewError(utils.Error_InvalidParams)
 	}
 
 	pageSize := int(req.GetPage().PageSize)
@@ -78,22 +76,24 @@ func (c *cloudFileServerImpl) ListPublic(_ context.Context, req *rpc_impl.CloudF
 }
 
 func (c *cloudFileServerImpl) Upload(_ context.Context, req *rpc_impl.CloudFile_UploadReq) (*rpc_impl.CloudFile_UploadRes, error) {
-	if len(req.OperatorId) < 1 || len(req.FileName) < 1 || len(req.ExtensionName) < 1 || req.LastModifiedTime < 1 {
-		return nil, errors.New(merrors.Error_InvalidParams)
+	if len(req.OperatorId) < 1 || len(req.FileName) < 1 || len(req.ExtensionName) < 1 ||
+		req.FileSize < 1 || req.LastModifiedTime < 1 {
+		return nil, utils.NewError(utils.Error_InvalidParams)
 	}
 
-	// make sure target directory structure exist
 	dir := spliceFileDir(req.IsPublic, req.OperatorId)
-	err := os.MkdirAll(dir, 0755)
-	if err != nil {
-		return nil, err
+	// make sure private path exist, public path has checked in init
+	if !req.IsPublic {
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			return nil, err
+		}
 	}
 
 	// save file
 	fileID := utils.CalcSHA256(req.OperatorId + time.Now().GoString())
 	absolutePath := spliceFilePath(dir, fileID, req.ExtensionName)
 
-	err = saveFile(req.File, absolutePath)
+	err := os.WriteFile(absolutePath, req.File, 0755)
 	if err != nil {
 		return nil, err
 	}
@@ -109,8 +109,8 @@ func (c *cloudFileServerImpl) Upload(_ context.Context, req *rpc_impl.CloudFile_
 		IsPublic:         req.IsPublic,
 	})
 	if err != nil {
-		_ = os.Remove(absolutePath)
-		return nil, err
+		err2 := os.Remove(absolutePath)
+		return nil, utils.NewError(utils.ErrorsToString(err, err2))
 	}
 
 	return &rpc_impl.CloudFile_UploadRes{}, nil
@@ -118,7 +118,7 @@ func (c *cloudFileServerImpl) Upload(_ context.Context, req *rpc_impl.CloudFile_
 
 func (c *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFile_ModifyReq) (*rpc_impl.CloudFile_ModifyRes, error) {
 	if len(req.OperatorId) < 1 || len(req.FileId) < 1 || len(req.Password) < 1 {
-		return nil, errors.New(merrors.Error_InvalidParams)
+		return nil, utils.NewError(utils.Error_InvalidParams)
 	}
 
 	_, err := c.UserClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
@@ -135,7 +135,7 @@ func (c *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFil
 	}
 
 	if len(req.FileName)+len(req.ExtensionName) < 1 && fileRecord.IsPublic == req.IsPublic && len(req.File) < 1 {
-		return nil, errors.New(merrors.Error_NoValidModification)
+		return nil, utils.NewError(utils.Error_NoValidModification)
 	}
 
 	updateColumns := make([]string, 0, 5)
@@ -144,13 +144,12 @@ func (c *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFil
 	if len(req.File) > 0 {
 		// make sure private dir exist, only when old file is public
 		if fileRecord.IsPublic {
-			err = os.MkdirAll(spliceFileDir(false, req.OperatorId), 0755)
-			if err != nil {
+			if err = os.MkdirAll(spliceFileDir(false, req.OperatorId), 0755); err != nil {
 				return nil, err
 			}
 		}
 
-		// backup old file, may implicitly include move file
+		// backup old file, may implicitly move file from public path to private path
 		oldPath := spliceFilePath(spliceFileDir(fileRecord.IsPublic, req.OperatorId), fileRecord.FileID, req.ExtensionName)
 		privPath := spliceFilePath(spliceFileDir(false, req.OperatorId), fileRecord.FileID, req.ExtensionName)
 
@@ -161,17 +160,17 @@ func (c *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFil
 
 		// save new file
 		absolutePath := spliceFilePath(spliceFileDir(req.IsPublic, req.OperatorId), fileRecord.FileID, req.ExtensionName)
-		err = saveFile(req.File, absolutePath)
+		err = os.WriteFile(absolutePath, req.File, 0755)
 		if err != nil {
 			return nil, err
 		}
 
-		// update db record: file last modified time and file size
-		fileRecord.LastModifiedTime = time.Duration(req.LastModifiedTime)
-		updateColumns = append(updateColumns, model.CloudFile_LastModifiedTime)
-
+		// update db record: file size and file last modified time
 		fileRecord.FileSize = req.FileSize
 		updateColumns = append(updateColumns, model.CloudFile_FileSize)
+
+		fileRecord.LastModifiedTime = time.Duration(req.LastModifiedTime)
+		updateColumns = append(updateColumns, model.CloudFile_LastModifiedTime)
 	}
 
 	if len(req.FileName) > 0 {
@@ -196,7 +195,7 @@ func (c *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFil
 			absolutePath := spliceFilePath(dir, fileRecord.FileID, req.ExtensionName)
 			errMsg += utils.ErrorsToString(os.Remove(absolutePath))
 		}
-		return nil, errors.New(errMsg)
+		return nil, utils.NewError(errMsg)
 	}
 
 	return &rpc_impl.CloudFile_ModifyRes{}, nil
@@ -204,7 +203,7 @@ func (c *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFil
 
 func (c *cloudFileServerImpl) Delete(ctx context.Context, req *rpc_impl.CloudFile_DeleteReq) (*rpc_impl.CloudFile_DeleteRes, error) {
 	if len(req.OperatorId) < 1 || len(req.Password) < 1 || len(req.FileId) < 1 {
-		return nil, errors.New(merrors.Error_InvalidParams)
+		return nil, utils.NewError(utils.Error_InvalidParams)
 	}
 
 	_, err := c.UserClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
@@ -215,24 +214,22 @@ func (c *cloudFileServerImpl) Delete(ctx context.Context, req *rpc_impl.CloudFil
 		return nil, err
 	}
 
-	err = db.GetCloudFile().UpdateColumnsByFileID(&model.CloudFile{
-		FileID:    req.FileId,
-		IsDeleted: true,
-	}, model.CloudFile_IsDeleted)
+	fileRecord, err := db.GetCloudFile().QueryFirst(model.CloudFile_FileID+" = ?", req.FileId)
+	if err != nil {
+		return nil, err
+	}
+
+	if fileRecord.IsDeleted {
+		return nil, utils.NewError(utils.Error_FileAlreadyDeleted)
+	}
+
+	fileRecord.IsDeleted = true
+	err = db.GetCloudFile().UpdateColumnsByFileID(fileRecord, model.CloudFile_IsDeleted)
 	if err != nil {
 		return nil, err
 	}
 	
 	return &rpc_impl.CloudFile_DeleteRes{}, nil
-}
-
-func saveFile(fileContent []byte, absolutePath string) (err error) {
-	err = os.WriteFile(absolutePath, fileContent, 0744)
-	if err != nil {
-		return
-	}
-
-	return
 }
 
 func getValidBackupFileName(absolutePath string) string {

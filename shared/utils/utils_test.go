@@ -31,7 +31,7 @@ func TestJSONMarshalLevel(t *testing.T) {
 	}
 
 	wrapperByte, _ := json.Marshal(wrapper)
-	fmt.Println("> wrapper: " + string(wrapperByte))
+	fmt.Println("> wrapper: ", string(wrapperByte))
 
 	// > wrapper: {"InnerIns":{"name":"wrapper"},"name":"direct","pwd":"123"}
 }

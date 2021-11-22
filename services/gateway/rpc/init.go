@@ -3,9 +3,9 @@ package rpc
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mats9693/unnamed_plan/services/utils"
 	"github.com/mats9693/unnamed_plan/shared/proto/client"
 	"github.com/mats9693/unnamed_plan/shared/proto/impl"
+	"github.com/mats9693/unnamed_plan/shared/utils"
 	"github.com/mats9693/utils/toy_server/config"
 	"os"
 )

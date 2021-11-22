@@ -28,11 +28,7 @@ const (
 // common
 
 type Total struct {
-	Total int `json:"total"`
-}
-
-type IsSuccess struct {
-	IsSuccess bool `json:"isSuccess"`
+	Total uint32 `json:"total"`
 }
 
 // user
@@ -46,7 +42,7 @@ type Nickname struct {
 }
 
 type Permission struct {
-	Permission uint8 `json:"permission"`
+	Permission uint32 `json:"permission"`
 }
 
 type Users struct {
@@ -58,7 +54,7 @@ type UserRes struct {
 	UserName   string `json:"userName"`
 	Nickname   string `json:"nickname"`
 	IsLocked   bool   `json:"isLocked"`
-	Permission uint8  `json:"permission"`
+	Permission uint32  `json:"permission"`
 	CreatedBy  string `json:"createdBy"`
 }
 
