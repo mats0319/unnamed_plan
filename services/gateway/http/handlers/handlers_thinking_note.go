@@ -5,6 +5,7 @@ import (
 	"github.com/mats9693/unnamed_plan/services/gateway/http/structure_defination"
 	"github.com/mats9693/unnamed_plan/services/gateway/rpc"
 	"github.com/mats9693/unnamed_plan/shared/proto/impl"
+	"github.com/mats9693/utils/toy_server/const"
 	"github.com/mats9693/utils/toy_server/http"
 	"net/http"
 	"time"
@@ -27,7 +28,7 @@ func ListThinkingNoteByWriter(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	return mhttp.Response(structure.MakeListThinkingNoteByWriterRes(int(res.Total), notesRPCToHTTP(res.Notes...)))
+	return mhttp.Response(structure.MakeListThinkingNoteByWriterRes(res.Total, notesRPCToHTTP(res.Notes...)))
 }
 
 func ListPublicThinkingNote(r *http.Request) *mhttp.ResponseData {
@@ -47,7 +48,7 @@ func ListPublicThinkingNote(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	return mhttp.Response(structure.MakeListPublicThinkingNoteRes(int(res.Total), notesRPCToHTTP(res.Notes...)))
+	return mhttp.Response(structure.MakeListPublicThinkingNoteRes(res.Total, notesRPCToHTTP(res.Notes...)))
 }
 
 func CreateThinkingNote(r *http.Request) *mhttp.ResponseData {
@@ -66,7 +67,7 @@ func CreateThinkingNote(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	return mhttp.Response("")
+	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
 func ModifyThinkingNote(r *http.Request) *mhttp.ResponseData {
@@ -87,7 +88,7 @@ func ModifyThinkingNote(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	return mhttp.Response("")
+	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
 func DeleteThinkingNote(r *http.Request) *mhttp.ResponseData {
@@ -105,14 +106,10 @@ func DeleteThinkingNote(r *http.Request) *mhttp.ResponseData {
 		 return mhttp.ResponseWithError(err.Error())
 	}
 
-	return mhttp.Response("")
+	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
 func notesRPCToHTTP(data ...*rpc_impl.ThinkingNote_Data) []*structure.NoteRes {
-	if len(data) < 1 {
-		return []*structure.NoteRes{}
-	}
-
 	res := make([]*structure.NoteRes, 0, len(data))
 	for i := range data {
 		res = append(res, &structure.NoteRes{

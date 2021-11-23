@@ -3,6 +3,7 @@ package db
 import (
 	"github.com/go-pg/pg/v10/orm"
 	"github.com/mats9693/unnamed_plan/shared/db/model"
+	"github.com/mats9693/unnamed_plan/shared/utils"
 	"github.com/mats9693/utils/toy_server/db"
 	"github.com/mats9693/utils/uuid"
 	"time"
@@ -108,7 +109,7 @@ func (tn *ThinkNote) Insert(data *model.ThinkingNote) error {
 }
 
 // UpdateColumnsByNoteID 仅可操作未删除的笔记
-func (tn *ThinkNote) UpdateColumnsByNoteID(data *model.ThinkingNote, columns ...string) (err error) {
+func (tn *ThinkNote) UpdateColumnsByNoteID(data *model.ThinkingNote, columns ...string) error {
 	data.UpdateTime = time.Duration(time.Now().Unix())
 
 	return mdb.WithTx(func(conn orm.DB) error {
@@ -117,9 +118,16 @@ func (tn *ThinkNote) UpdateColumnsByNoteID(data *model.ThinkingNote, columns ...
 			query.Column(columns[i])
 		}
 
-		_, err = query.Where(model.ThinkingNote_IsDeleted+" = ?", false).
+		res, err := query.Where(model.ThinkingNote_IsDeleted+" = ?", false).
 			Where(model.ThinkingNote_NoteID + " = ?" + model.ThinkingNote_NoteID).Update()
+		if err != nil {
+			return err
+		}
 
-		return err
+		if res.RowsAffected() < 0 {
+			return utils.NewError(utils.Error_NoteAlreadyDeleted)
+		}
+
+		return nil
 	})
 }

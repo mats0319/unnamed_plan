@@ -87,7 +87,7 @@ func (t *thinkingNoteServerImpl) Create(_ context.Context, req *rpc_impl.Thinkin
 }
 
 func (t *thinkingNoteServerImpl) Modify(ctx context.Context, req *rpc_impl.ThinkingNote_ModifyReq) (*rpc_impl.ThinkingNote_ModifyRes, error) {
-	if len(req.OperatorId) < 1 || len(req.NoteId) < 1 {
+	if len(req.OperatorId) < 1 || len(req.NoteId) < 1 || len(req.Password) < 1 || len(req.Content) < 1 {
 		return nil, utils.NewError(utils.Error_InvalidParams)
 	}
 
@@ -107,18 +107,18 @@ func (t *thinkingNoteServerImpl) Modify(ctx context.Context, req *rpc_impl.Think
 		return nil, utils.NewError(utils.Error_ModifyOthersThinkingNote)
 	}
 
-	if len(req.Topic)+len(req.Content) < 1 && noteRecord.IsPublic == req.IsPublic {
+	if req.Topic == noteRecord.Topic && req.Content == noteRecord.Content && req.IsPublic == noteRecord.IsPublic {
 		return nil, utils.NewError(utils.Error_NoValidModification)
 	}
 
 	updateColumns := make([]string, 0, 3)
+
+	noteRecord.Content = req.Content
+	updateColumns = append(updateColumns, model.ThinkingNote_Content)
+
 	if len(req.Topic) > 0 {
 		noteRecord.Topic = req.Topic
 		updateColumns = append(updateColumns, model.ThinkingNote_Topic)
-	}
-	if len(req.Content) > 0 {
-		noteRecord.Content = req.Content
-		updateColumns = append(updateColumns, model.ThinkingNote_Content)
 	}
 	if noteRecord.IsPublic != req.IsPublic {
 		noteRecord.IsPublic = req.IsPublic

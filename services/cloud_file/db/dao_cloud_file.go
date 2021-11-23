@@ -3,6 +3,7 @@ package db
 import (
 	"github.com/go-pg/pg/v10/orm"
 	"github.com/mats9693/unnamed_plan/shared/db/model"
+	"github.com/mats9693/unnamed_plan/shared/utils"
 	"github.com/mats9693/utils/toy_server/db"
 	"time"
 )
@@ -103,7 +104,7 @@ func (cf *CloudFile) Insert(cloudFile *model.CloudFile) error {
 }
 
 // UpdateColumnsByFileID 仅可操作未删除的文件
-func (cf *CloudFile) UpdateColumnsByFileID(data *model.CloudFile, columns ...string) (err error) {
+func (cf *CloudFile) UpdateColumnsByFileID(data *model.CloudFile, columns ...string) error {
 	data.UpdateTime = time.Duration(time.Now().Unix())
 
 	return mdb.WithTx(func(conn orm.DB) error {
@@ -112,9 +113,16 @@ func (cf *CloudFile) UpdateColumnsByFileID(data *model.CloudFile, columns ...str
 			query.Column(columns[i])
 		}
 
-		_, err = query.Where(model.CloudFile_IsDeleted+" = ?", false).
+		res, err := query.Where(model.CloudFile_IsDeleted+" = ?", false).
 			Where(model.CloudFile_FileID + " = ?" + model.CloudFile_FileID).Update()
+		if err != nil {
+			return err
+		}
 
-		return err
+		if res.RowsAffected() < 0 {
+			return utils.NewError(utils.Error_FileAlreadyDeleted)
+		}
+
+		return nil
 	})
 }
