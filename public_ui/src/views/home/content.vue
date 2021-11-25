@@ -29,7 +29,12 @@ import { Component, Vue } from "vue-property-decorator";
 @Component
 export default class Content extends Vue {
   private mounted() {
-    // placeholder
+    // 多登检查未通过（异地登录或超时），退出登录并返回到首页（此处仅执行退出登录逻辑）
+    if (this.$route.params.exit && this.$route.params.exit.length > 0) {
+      this.$store.state.isLogin = false;
+
+      sessionStorage.removeItem("auth");
+    }
   }
 }
 </script>

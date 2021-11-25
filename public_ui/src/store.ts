@@ -9,5 +9,8 @@ export default new Vuex.Store({
     userID: "",
     nickname: "",
     permission: 0,
+
+    cloudFilePageType: "", // 0: list by uploader, 1: list public
+    thinkingNotePageType: "", // 0: list by writer, 1: list public
   }
 })

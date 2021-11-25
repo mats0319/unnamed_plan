@@ -2,7 +2,7 @@ const CompressionPlugin = require("compression-webpack-plugin");
 
 module.exports = {
   publicPath: "./",
-  outputDir: "dist_mobile",
+  outputDir: "dist_public_mobile",
   assetsDir: "assets",
   productionSourceMap: false,
   pages: {

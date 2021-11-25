@@ -8,14 +8,14 @@
           <span>随想<i class="el-icon-arrow-down  el-icon--right" /></span>
 
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item
-              @click.native="linkTo('/thinking-note/list-by-writer','thinkingNoteListByWriter')"
+            <el-dropdown-item @click.native="linkTo('/thinking-note/list-by-writer',
+            'thinkingNoteListByWriter', 'thinkingNotePageType', '0')"
             >
               我记录的随想
             </el-dropdown-item>
 
-            <el-dropdown-item
-              @click.native="linkTo('/thinking-note/list-public', 'thinkingNoteListPublic')"
+            <el-dropdown-item @click.native="linkTo('/thinking-note/list-public',
+             'thinkingNoteListPublic', 'thinkingNotePageType', '1')"
             >
               公开的随想
             </el-dropdown-item>
@@ -28,14 +28,14 @@
           <span>云文件<i class="el-icon-arrow-down  el-icon--right" /></span>
 
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item
-              @click.native="linkTo('/cloud-file/list-by-uploader','cloudFileListByUploader')"
+            <el-dropdown-item @click.native="linkTo('/cloud-file/list-by-uploader',
+            'cloudFileListByUploader', 'cloudFilePageType', '0')"
             >
               我上传的文件
             </el-dropdown-item>
 
-            <el-dropdown-item
-              @click.native="linkTo('/cloud-file/list-public', 'cloudFileListPublic')"
+            <el-dropdown-item @click.native="linkTo('/cloud-file/list-public',
+             'cloudFileListPublic', 'cloudFilePageType', '1')"
             >
               公开的文件
             </el-dropdown-item>
@@ -142,8 +142,12 @@ export default class Top extends Vue {
     this.linkTo("/", "home");
   }
 
-  private linkTo(path: string, name: string): void {
+  private linkTo(path: string, name: string, paramKey?: string, paramValue?: string): void {
     if (location.href.split("#")[1] !== path) {
+      if (paramKey && paramValue) {
+        this.$store.state[paramKey] = paramValue;
+      }
+
       this.$router.push({ name: name });
     }
   }

@@ -1,9 +1,9 @@
 <template>
-  <div class="cloud-file-list-public">
+  <div class="list-cloud-file-by-uploader">
     <el-table :data="cloudFiles" height="calc(94vh - 20rem - 32px)" stripe highlight-current-row>
       <el-table-column label="文件名" min-width="2">
         <template slot-scope="scope">
-          <div class="cflp-file-name">
+          <div class="cflbu-file-name">
             <a :href="scope.row.fileURL" target="_blank">{{ scope.row.fileName }}</a>
           </div>
         </template>
@@ -39,12 +39,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import { CloudFile, generateCloudFileURL } from "shared_ui/ts/data";
 import cloudFileAxios from "shared_ui/ts/axios_wrapper/cloud_file";
 
 @Component
-export default class ListPublicCloudFile extends Vue {
+export default class ListCloudFileByUploader extends Vue {
   private cloudFiles: Array<CloudFile> = new Array<CloudFile>();
 
   private total = 0;
@@ -59,7 +59,18 @@ export default class ListPublicCloudFile extends Vue {
     this.total = 0;
     this.cloudFiles = [];
 
-    cloudFileAxios.listPublic(this.$store.state.userID, this.pageSize, currPage ? currPage : 1)
+    let axiosResPromise;
+
+    switch (this.$store.state.cloudFilePageType) {
+      case "0":
+        axiosResPromise = cloudFileAxios.listByUploader(this.$store.state.userID, this.pageSize, currPage ? currPage : 1)
+        break;
+      case "1":
+        axiosResPromise = cloudFileAxios.listPublic(this.$store.state.userID, this.pageSize, currPage ? currPage : 1)
+        break;
+    }
+
+    axiosResPromise
       .then(response => {
         if (response.data["hasError"]) {
           throw response.data["data"];
@@ -86,23 +97,38 @@ export default class ListPublicCloudFile extends Vue {
         }
       })
       .catch(err => {
-        this.$message.error("获取公开文件列表失败，错误：" + err);
+        let errMsg = "";
+        switch (this.$store.state.cloudFilePageType) {
+          case "0":
+            errMsg = "获取当前用户上传的文件列表失败，错误："
+            break;
+          case "1":
+            errMsg = "获取公开的文件列表失败，错误："
+            break;
+        }
+
+        this.$message.error(errMsg + err);
       })
+  }
+
+  @Watch("$store.state.cloudFilePageType")
+  private watchPageType(): void {
+    this.list();
   }
 }
 </script>
 
 <style lang="scss">
-.cloud-file-list-public {
+.list-cloud-file-by-uploader {
   padding: 3vh 10vw;
 
-  .cflp-file-name {
+  .cflbu-file-name {
     a {
       color: darkgray;
     }
   }
 
-  .cflp-file-name:hover {
+  .cflbu-file-name:hover {
     a {
       color: lightgray;
     }

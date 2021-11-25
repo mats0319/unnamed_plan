@@ -27,7 +27,7 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button type="info" plain @click="beforeCreate">创建新用户</el-button>
+        <el-button type="info" plain @click="beforeCreateUser">创建新用户</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -73,13 +73,14 @@ export default class UserCreate extends Vue {
       })
   }
 
-  private beforeCreate(): void {
+  // beforeCreate 是vue的生命周期钩子函数，不要用这个名字
+  private beforeCreateUser(): void {
     let isAllowed = true;
     let errMsg = "";
-    if (this.userName.length < 1) {
+    if (!this.userName || this.userName.length < 1) {
       isAllowed = false;
       errMsg = "请填写新用户的用户名";
-    } else if (this.password.length < 1) {
+    } else if (!this.password || this.password.length < 1) {
       isAllowed = false;
       errMsg = "请填写新用户的密码";
     }

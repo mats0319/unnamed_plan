@@ -21,7 +21,7 @@ Vue.filter("displayTime", displayTime);
 import { initInterceptors } from "shared_ui/ts/axios_wrapper/config";
 
 initInterceptors((): void => {
-  router.replace({ name: "home" });
+  router.replace({ name: "home", params: { exit: "1" } });
 })
 
 new Vue({

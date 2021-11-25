@@ -6,7 +6,7 @@ Start-Transcript "build.log" -Force
     Set-Location $PSScriptRoot
 
         # gateway service
-        powershell -executionpolicy bypass -File ".\services\gateway\main\build_linux.ps1"
+        powershell -executionpolicy bypass -File ".\services\gateway\build_linux.ps1"
 
         Write-Output "> build gateway service finished."
 

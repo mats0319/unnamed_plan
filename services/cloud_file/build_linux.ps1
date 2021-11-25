@@ -7,13 +7,13 @@ $path = Get-Location
 
 Set-Location $PSScriptRoot
 
-    if (Test-Path "../cloud_file_service") {
-        Remove-Item "../cloud_file_service"
+    if (Test-Path "../build/service_cloud_file") {
+        Remove-Item "../build/service_cloud_file"
     }
 
-    go build -o "cloud_file_service"
+    go build -o "service_cloud_file"
 
-    Move-Item "cloud_file_service" -Destination "../cloud_file_service"
+    Move-Item "service_cloud_file" -Destination "../build/service_cloud_file"
 
 Set-Location $path
 

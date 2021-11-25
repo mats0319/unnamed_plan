@@ -18,25 +18,25 @@ const routes: Array<RouteConfig> = [
         path: "cloud-file/list-by-uploader",
         name: "cloudFileListByUploader",
         meta: { needLogin: true },
-        component: () => import("@/views/cloud_file/list_by_uploader.vue")
+        component: () => import("@/views/cloud_file/list.vue")
       },
       {
         path: "cloud-file/list-public",
         name: "cloudFileListPublic",
         meta: { needLogin: true },
-        component: () => import("@/views/cloud_file/list_public.vue")
+        component: () => import("@/views/cloud_file/list.vue")
       },
       {
         path: "thinking-note/list-by-writer",
         name: "thinkingNoteListByWriter",
         meta: { needLogin: true },
-        component: () => import("@/views/thinking_note/list_by_writer.vue")
+        component: () => import("@/views/thinking_note/list.vue")
       },
       {
         path: "thinking-note/list-public",
         name: "thinkingNoteListPublic",
         meta: { needLogin: true },
-        component: () => import("@/views/thinking_note/list_public.vue")
+        component: () => import("@/views/thinking_note/list.vue")
       }
     ]
   },

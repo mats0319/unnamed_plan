@@ -1,6 +1,6 @@
 .DS_Store
 node_modules
-/dist_mobile
+/dist_public_mobile
 
 
 # local env files

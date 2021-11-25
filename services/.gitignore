@@ -1,6 +1,0 @@
-**/*.exe
-
-./gateway_service
-./user_service
-./cloud_file_service
-./thinking_note_service
