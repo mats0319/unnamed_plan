@@ -60,12 +60,7 @@ export default class CreateThinkingNote extends Vue {
           throw response.data["data"];
         }
 
-        const payload = JSON.parse(response.data["data"] as string);
-        if (payload.isSuccess) {
-          this.$message.success("记录随想成功");
-        } else {
-          this.$message.error("记录随想失败");
-        }
+        this.$message.success("记录随想成功");
       })
       .catch(err => {
         this.$message.error("记录随想失败，错误：" + err);
@@ -73,7 +68,7 @@ export default class CreateThinkingNote extends Vue {
   }
 
   private beforeCreateThinkingNote(): void {
-    // null topic is allowed
+    // null topic is valid
     if (this.content.length < 1) {
       this.$message.info("请输入随想内容");
       return;

@@ -65,14 +65,11 @@ export default class UserModifyInfo extends Vue {
           throw response.data["data"];
         }
 
-        const payload = JSON.parse(response.data["data"] as string);
-        if (payload.isSuccess) {
-          this.$message.success("修改用户信息成功");
-        } else {
-          this.$message.error("修改用户信息失败");
-        }
+        this.$message.success("修改用户信息成功");
 
         if (this.newPassword.length > 0) {
+          this.newPassword = "";
+
           this.$store.state.isLogin = false;
 
           sessionStorage.removeItem("auth");

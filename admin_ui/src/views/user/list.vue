@@ -144,20 +144,19 @@ export default class UserList extends Vue {
   }
 
   private lockOrUnlockUser(userID: string, wantLock: boolean): void {
-    let promise = wantLock ? userAxios.lock(this.$store.state.userID, userID) : userAxios.unlock(this.$store.state.userID, userID);
-    promise.then(response => {
+    let axiosResPromise = wantLock ?
+      userAxios.lock(this.$store.state.userID, userID) :
+      userAxios.unlock(this.$store.state.userID, userID);
+
+    axiosResPromise
+      .then(response => {
         if (response.data["hasError"]) {
           throw response.data["data"];
         }
 
-        const payload = JSON.parse(response.data["data"] as string);
-        if (payload.isSuccess) {
-          this.$message.success(wantLock ? "锁定用户成功" : "解锁用户成功");
+        this.$message.success(wantLock ? "锁定用户成功" : "解锁用户成功");
 
-          this.listUsers(this.pageNum);
-        } else {
-          this.$message.error(wantLock ? "锁定用户失败" : "解锁用户失败");
-        }
+        this.listUsers(this.pageNum);
       })
       .catch(err => {
         this.$message.error(wantLock ? "锁定用户失败" : "解锁用户失败" + "，错误：" + err);
@@ -171,14 +170,9 @@ export default class UserList extends Vue {
           throw response.data["data"];
         }
 
-        const payload = JSON.parse(response.data["data"] as string);
-        if (payload.isSuccess) {
-          this.$message.success("修改用户权限成功");
+        this.$message.success("修改用户权限成功");
 
-          this.listUsers(this.pageNum);
-        } else {
-          this.$message.error("修改用户权限失败");
-        }
+        this.listUsers(this.pageNum);
       })
       .catch(err => {
         this.$message.error("修改用户权限失败，错误：" + err);

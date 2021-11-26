@@ -66,12 +66,7 @@ export default class UploadCloudFile extends Vue {
           throw response.data["data"];
         }
 
-        const payload = JSON.parse(response.data["data"] as string);
-        if (payload.isSuccess) {
-          this.$message.success("上传文件成功");
-        } else {
-          this.$message.error("上传文件失败");
-        }
+        this.$message.success("上传文件成功");
       })
       .catch(err => {
         this.$message.error("上传文件失败，错误：" + err);

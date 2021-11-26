@@ -222,14 +222,9 @@ export default class ListThinkingNoteByWriter extends Vue {
           throw response.data["data"];
         }
 
-        const payload = JSON.parse(response.data["data"] as string);
-        if (payload.isSuccess) {
-          this.$message.success("修改随想成功");
+        this.$message.success("修改随想成功");
 
-          this.list(this.pageNum);
-        } else {
-          this.$message.error("修改随想失败");
-        }
+        this.list(this.pageNum);
       })
       .catch(err => {
         this.$message.error("修改随想失败，错误：" + err);
@@ -246,14 +241,9 @@ export default class ListThinkingNoteByWriter extends Vue {
           throw response.data["data"];
         }
 
-        const payload = JSON.parse(response.data["data"] as string);
-        if (payload.isSuccess) {
-          this.$message.success("删除随想成功");
+        this.$message.success("删除随想成功");
 
-          this.list(this.pageNum);
-        } else {
-          this.$message.error("删除随想失败");
-        }
+        this.list(this.pageNum);
       })
       .catch(err => {
         this.$message.error("删除随想失败，错误：" + err);

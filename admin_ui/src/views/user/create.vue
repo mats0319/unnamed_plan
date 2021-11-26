@@ -58,15 +58,10 @@ export default class UserCreate extends Vue {
           throw response.data["data"];
         }
 
-        const payload = JSON.parse(response.data["data"] as string);
-        if (payload.isSuccess) {
-          this.$message.success("创建新用户成功");
+        this.$message.success("创建新用户成功");
 
-          this.userName = "";
-          this.permission = 0;
-        } else {
-          this.$message.error("创建新用户失败");
-        }
+        this.userName = "";
+        this.permission = 0;
       })
       .catch(err => {
         this.$message.error("创建新用户失败，错误：" + err);

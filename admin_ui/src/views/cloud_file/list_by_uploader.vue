@@ -161,7 +161,7 @@ export default class listByUploader extends Vue {
   private total = 0;
   private pageSize = 10;
   private pageNum = 1;
-  
+
   private modifyDialogController = false;
   private oldFileName = "";
   private extensionName = "";
@@ -224,28 +224,24 @@ export default class listByUploader extends Vue {
       return;
     }
 
-    let promise;
+    let axiosResPromise;
     if (this.fileList && this.fileList.item(0)) {
-      promise = cloudFileAxios.modify(this.$store.state.userID, this.fileID, this.password, this.fileName, this.isPublic,
-        this.lastModifiedTime, this.fileList.item(0) as File, this.extensionName);
+      axiosResPromise = cloudFileAxios.modify(this.$store.state.userID, this.fileID, this.password, this.fileName,
+        this.isPublic, this.lastModifiedTime, this.fileList.item(0) as File, this.extensionName);
     } else {
-      promise = cloudFileAxios.modify(this.$store.state.userID, this.fileID, this.password, this.fileName, this.isPublic,
-        this.lastModifiedTime);
+      axiosResPromise = cloudFileAxios.modify(this.$store.state.userID, this.fileID, this.password, this.fileName,
+        this.isPublic, this.lastModifiedTime);
     }
 
-    promise.then(response => {
+    axiosResPromise
+      .then(response => {
         if (response.data.hasError) {
           throw response.data.data;
         }
 
-        const payload = JSON.parse(response.data.data as string);
-        if (payload.isSuccess) {
-          this.$message.success("修改文件成功");
+        this.$message.success("修改文件成功");
 
-          this.list(this.pageNum);
-        } else {
-          this.$message.error("修改文件失败");
-        }
+        this.list(this.pageNum);
       })
       .catch(err => {
         this.$message.error("修改文件失败，错误：" + err);
@@ -263,14 +259,9 @@ export default class listByUploader extends Vue {
           throw response.data["data"];
         }
 
-        const payload = JSON.parse(response.data["data"] as string);
-        if (payload.isSuccess) {
-          this.$message.success("删除文件成功");
+        this.$message.success("删除文件成功");
 
-          this.list(this.pageNum);
-        } else {
-          this.$message.error("删除文件失败");
-        }
+        this.list(this.pageNum);
       })
       .catch(err => {
         this.$message.error("删除文件失败，错误：" + err);
