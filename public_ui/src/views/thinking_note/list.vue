@@ -95,14 +95,15 @@ export default class ListThinkingNoteByWriter extends Vue {
         let errMsg = "";
         switch (this.$store.state.thinkingNotePageType) {
           case "0":
-            errMsg = "获取当前用户记录的随想列表失败，错误："
+            errMsg = "获取当前用户记录的随想列表失败"
             break;
           case "1":
-            errMsg = "获取公开的随想列表失败，错误："
+            errMsg = "获取公开的随想列表失败"
             break;
         }
 
-        this.$message.error(errMsg + err);
+        this.$message.error(errMsg);
+        console.log("> get thinking note failed.", err)
       })
   }
 

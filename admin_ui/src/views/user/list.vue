@@ -139,7 +139,8 @@ export default class UserList extends Vue {
         }
       })
       .catch(err => {
-        this.$message.error("获取用户列表失败，错误：" + err);
+        this.$message.error("获取用户列表失败");
+        console.log("> get user list failed.", err);
       });
   }
 
@@ -159,7 +160,8 @@ export default class UserList extends Vue {
         this.listUsers(this.pageNum);
       })
       .catch(err => {
-        this.$message.error(wantLock ? "锁定用户失败" : "解锁用户失败" + "，错误：" + err);
+        this.$message.error(wantLock ? "锁定用户失败" : "解锁用户失败");
+        console.log("> " + wantLock ? "lock" : "unlock" + " user failed.", err);
       });
   }
 
@@ -175,7 +177,8 @@ export default class UserList extends Vue {
         this.listUsers(this.pageNum);
       })
       .catch(err => {
-        this.$message.error("修改用户权限失败，错误：" + err);
+        this.$message.error("修改用户权限失败");
+        console.log("> modify user permission failed.", err);
       });
   }
 

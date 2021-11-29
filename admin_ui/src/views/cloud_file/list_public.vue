@@ -86,7 +86,8 @@ export default class ListPublic extends Vue {
         }
       })
       .catch(err => {
-        this.$message.error("获取公开文件列表失败，错误：" + err);
+        this.$message.error("获取公开文件列表失败");
+        console.log("> get public cloud file failed.", err);
       })
   }
 }

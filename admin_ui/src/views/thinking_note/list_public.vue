@@ -82,7 +82,8 @@ export default class ListPublicThinkingNote extends Vue {
         }
       })
       .catch(err => {
-        this.$message.error("获取当前用户记录的随想列表失败，错误：" + err);
+        this.$message.error("获取当前用户记录的随想列表失败");
+        console.log("> get thinking note by writer failed.", err);
       });
   }
 }

@@ -53,7 +53,8 @@ export default class Login extends Vue {
         this.$router.push({ name: "home" });
       })
       .catch(err => {
-        this.$message.error("登录失败，错误：" + err);
+        this.$message.error("登录失败");
+        console.log("> login failed.", err);
       })
       .finally(() => {
         this.password = "";

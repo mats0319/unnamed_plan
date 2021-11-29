@@ -127,7 +127,8 @@ export default class Top extends Vue {
         this.loginDialogController = false;
       })
       .catch(err => {
-        this.$message.error("登录失败，错误：" + err);
+        this.$message.error("登录失败");
+        console.log("> login failed.", err)
       })
       .finally(() => {
         this.password = "";

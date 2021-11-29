@@ -60,3 +60,6 @@ Start-Transcript "build.log" -Force
     Write-Output "> build finished."
 
 Stop-Transcript
+
+# windows not allow run ps script:
+# (admin start)Set-ExecutionPolicy RemoteSigned

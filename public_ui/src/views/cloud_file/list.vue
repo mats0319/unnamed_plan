@@ -100,14 +100,15 @@ export default class ListCloudFileByUploader extends Vue {
         let errMsg = "";
         switch (this.$store.state.cloudFilePageType) {
           case "0":
-            errMsg = "获取当前用户上传的文件列表失败，错误："
+            errMsg = "获取当前用户上传的文件列表失败"
             break;
           case "1":
-            errMsg = "获取公开的文件列表失败，错误："
+            errMsg = "获取公开的文件列表失败"
             break;
         }
 
-        this.$message.error(errMsg + err);
+        this.$message.error(errMsg);
+        console.log("> get cloud file failed.", err)
       })
   }
 

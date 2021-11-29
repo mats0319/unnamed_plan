@@ -206,7 +206,8 @@ export default class ListThinkingNoteByWriter extends Vue {
         }
       })
       .catch(err => {
-        this.$message.error("获取当前用户记录的随想列表失败，错误：" + err);
+        this.$message.error("获取当前用户记录的随想列表失败");
+        console.log("> get thinking note by writer failed.", err);
       });
   }
 
@@ -227,7 +228,8 @@ export default class ListThinkingNoteByWriter extends Vue {
         this.list(this.pageNum);
       })
       .catch(err => {
-        this.$message.error("修改随想失败，错误：" + err);
+        this.$message.error("修改随想失败");
+        console.log("> modify thinking note failed.", err);
       })
       .finally(() => {
         this.password = "";
@@ -246,7 +248,8 @@ export default class ListThinkingNoteByWriter extends Vue {
         this.list(this.pageNum);
       })
       .catch(err => {
-        this.$message.error("删除随想失败，错误：" + err);
+        this.$message.error("删除随想失败");
+        console.log("> delete thinking note failed.", err);
       })
       .finally(() => {
         this.password = "";

@@ -78,7 +78,8 @@ export default class UserModifyInfo extends Vue {
         }
       })
       .catch(err => {
-        this.$message.error("修改用户信息失败，错误：" + err);
+        this.$message.error("修改用户信息失败");
+        console.log("> modify user info failed.", err);
       })
       .finally(() => {
         this.currPassword = "";

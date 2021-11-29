@@ -6,7 +6,7 @@ class UserAxios {
     const data: FormData = new FormData();
     data.append("operatorID", operatorID);
     data.append("userName", userName);
-    data.append("password", password);
+    data.append("password", calcSHA256(password));
     data.append("permission", permission.toString());
     return axiosWrapper.post("/api/user/create", data);
   }

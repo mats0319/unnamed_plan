@@ -214,7 +214,8 @@ export default class listByUploader extends Vue {
         }
       })
       .catch(err => {
-        this.$message.error("获取当前用户上传的文件列表失败，错误：" + err);
+        this.$message.error("获取当前用户上传的文件列表失败");
+        console.log("> get cloud file by uploader failed.", err);
       })
   }
 
@@ -244,7 +245,8 @@ export default class listByUploader extends Vue {
         this.list(this.pageNum);
       })
       .catch(err => {
-        this.$message.error("修改文件失败，错误：" + err);
+        this.$message.error("修改文件失败");
+        console.log("> modify file failed.", err);
       })
       .finally(() => {
         this.modifyDialogController = false;
@@ -264,7 +266,8 @@ export default class listByUploader extends Vue {
         this.list(this.pageNum);
       })
       .catch(err => {
-        this.$message.error("删除文件失败，错误：" + err);
+        this.$message.error("删除文件失败");
+        console.log("> delete cloud file failed.", err);
       })
       .finally(() => {
         this.deleteDialogController = false;

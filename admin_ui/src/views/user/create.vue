@@ -35,7 +35,6 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { calcSHA256 } from "shared_ui/ts/utils";
 import userAxios from "shared_ui/ts/axios_wrapper/user";
 
 @Component
@@ -49,10 +48,7 @@ export default class UserCreate extends Vue {
   }
 
   private createUser(): void {
-    const pwd = calcSHA256(this.password);
-    this.password = "";
-
-    userAxios.create(this.$store.state.userID, this.userName, pwd, this.permission)
+    userAxios.create(this.$store.state.userID, this.userName, this.password, this.permission)
       .then(response => {
         if (response.data["hasError"]) {
           throw response.data["data"];
@@ -64,7 +60,11 @@ export default class UserCreate extends Vue {
         this.permission = 0;
       })
       .catch(err => {
-        this.$message.error("创建新用户失败，错误：" + err);
+        this.$message.error("创建新用户失败");
+        console.log("> create new user failed.", err);
+      })
+      .finally(() => {
+        this.password = "";
       })
   }
 

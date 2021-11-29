@@ -63,7 +63,8 @@ export default class CreateThinkingNote extends Vue {
         this.$message.success("记录随想成功");
       })
       .catch(err => {
-        this.$message.error("记录随想失败，错误：" + err);
+        this.$message.error("记录随想失败");
+        console.log("> create thinking note failed.", err);
       })
   }
 
