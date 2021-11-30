@@ -26,7 +26,7 @@ func TestJSONMarshalLevel(t *testing.T) {
 		Password string `json:"pwd"`
 	}{
 		InnerIns: Inner{Name: "wrapper"},
-		Inner: &Inner{Name: "direct"},
+		Inner:    &Inner{Name: "direct"},
 		Password: "123",
 	}
 

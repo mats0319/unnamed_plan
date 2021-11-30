@@ -7,12 +7,12 @@ export const axiosWrapper: AxiosInstance = axios.create({
 });
 
 //@ts-ignore-next-line
-let sign = process.env.VUE_APP_axios_unnamed_plan_sign as string;
+let sign = process.env.VUE_APP_axios_source_sign as string;
 
 export function initInterceptors(invalidLoginHandler: () => void): void {
   axiosWrapper.interceptors.request.use(
     (value: AxiosRequestConfig): AxiosRequestConfig => {
-      value.headers.common["Unnamed-Plan"] = sign;
+      value.headers.common["Unnamed-Plan-Source"] = sign;
       value.headers.common["Unnamed-Plan-User"] = sessionStorage.getItem("user"); // 使用session storage防刷新
       value.headers.common["Unnamed-Plan-Token"] = sessionStorage.getItem("token");
 

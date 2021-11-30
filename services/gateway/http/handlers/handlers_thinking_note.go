@@ -19,7 +19,7 @@ func ListThinkingNoteByWriter(r *http.Request) *mhttp.ResponseData {
 
 	res, err := rpc.GetRPCClient().ThinkingNoteClient.ListByWriter(context.Background(), &rpc_impl.ThinkingNote_ListByWriterReq{
 		OperatorId: params.OperatorID,
-		Page:       &rpc_impl.Pagination{
+		Page: &rpc_impl.Pagination{
 			PageSize: uint32(params.PageSize),
 			PageNum:  uint32(params.PageNum),
 		},
@@ -39,7 +39,7 @@ func ListPublicThinkingNote(r *http.Request) *mhttp.ResponseData {
 
 	res, err := rpc.GetRPCClient().ThinkingNoteClient.ListPublic(context.Background(), &rpc_impl.ThinkingNote_ListPublicReq{
 		OperatorId: params.OperatorID,
-		Page:       &rpc_impl.Pagination{
+		Page: &rpc_impl.Pagination{
 			PageSize: uint32(params.PageSize),
 			PageNum:  uint32(params.PageNum),
 		},
@@ -103,7 +103,7 @@ func DeleteThinkingNote(r *http.Request) *mhttp.ResponseData {
 		NoteId:     params.NoteID,
 	})
 	if err != nil {
-		 return mhttp.ResponseWithError(err.Error())
+		return mhttp.ResponseWithError(err.Error())
 	}
 
 	return mhttp.Response(mconst.EmptyHTTPRes)

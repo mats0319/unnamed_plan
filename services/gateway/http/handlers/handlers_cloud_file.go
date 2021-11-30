@@ -19,7 +19,7 @@ func ListCloudFileByUploader(r *http.Request) *mhttp.ResponseData {
 
 	res, err := rpc.GetRPCClient().CloudFileClient.ListByUploader(context.Background(), &rpc_impl.CloudFile_ListByUploaderReq{
 		OperatorId: params.OperatorID,
-		Page:       &rpc_impl.Pagination{
+		Page: &rpc_impl.Pagination{
 			PageSize: uint32(params.PageSize),
 			PageNum:  uint32(params.PageNum),
 		},
@@ -39,7 +39,7 @@ func ListPublicCloudFile(r *http.Request) *mhttp.ResponseData {
 
 	res, err := rpc.GetRPCClient().CloudFileClient.ListPublic(context.Background(), &rpc_impl.CloudFile_ListPublicReq{
 		OperatorId: params.OperatorID,
-		Page:       &rpc_impl.Pagination{
+		Page: &rpc_impl.Pagination{
 			PageSize: uint32(params.PageSize),
 			PageNum:  uint32(params.PageNum),
 		},

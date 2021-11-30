@@ -207,10 +207,10 @@ func (s *userServerImpl) ModifyPermission(_ context.Context, req *rpc_impl.User_
 		return nil, err
 	}
 
-    permission := uint8(req.Permission)
+	permission := uint8(req.Permission)
 	if users[0].Permission < config.GetConfig().SRankAdminPermission ||
 		users[1].Permission >= config.GetConfig().SRankAdminPermission ||
-        permission >= config.GetConfig().SRankAdminPermission {
+		permission >= config.GetConfig().SRankAdminPermission {
 		return nil, utils.NewError(utils.Error_PermissionDenied)
 	}
 

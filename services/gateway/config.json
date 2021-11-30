@@ -7,7 +7,9 @@
       "jsonDev": {
         "port": "9693",
         "limitMultiLogin": true,
-        "keepLoginValid": 7200
+        "keepLoginValid": 7200,
+        "sources": ["public ui", "admin ui"],
+        "unlimitedSources": ["public mobile"]
       }
     },
     {
