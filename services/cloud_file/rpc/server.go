@@ -34,7 +34,7 @@ func GetCloudFileServer(userServerTarget string) (*cloudFileServerImpl, error) {
 
 	cloudFileServerImplIns.UserClient = userClient
 
-	return cloudFileServerImplIns,nil
+	return cloudFileServerImplIns, nil
 }
 
 func (c *cloudFileServerImpl) ListByUploader(_ context.Context, req *rpc_impl.CloudFile_ListByUploaderReq) (*rpc_impl.CloudFile_ListByUploaderRes, error) {
@@ -215,13 +215,13 @@ func (c *cloudFileServerImpl) Delete(ctx context.Context, req *rpc_impl.CloudFil
 	}
 
 	err = db.GetCloudFile().UpdateColumnsByFileID(&model.CloudFile{
-		FileID: req.FileId,
+		FileID:    req.FileId,
 		IsDeleted: true,
 	}, model.CloudFile_IsDeleted)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return &rpc_impl.CloudFile_DeleteRes{}, nil
 }
 

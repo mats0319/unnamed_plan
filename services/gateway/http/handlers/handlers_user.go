@@ -41,7 +41,7 @@ func ListUser(r *http.Request) *mhttp.ResponseData {
 
 	res, err := rpc.GetRPCClient().UserClient.List(context.Background(), &rpc_impl.User_ListReq{
 		OperatorId: params.OperatorID,
-		Page:       &rpc_impl.Pagination{
+		Page: &rpc_impl.Pagination{
 			PageSize: uint32(params.PageSize),
 			PageNum:  uint32(params.PageNum),
 		},

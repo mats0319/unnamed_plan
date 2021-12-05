@@ -20,14 +20,14 @@ var thinkingNoteServerImplIns = &thinkingNoteServerImpl{}
 var _ rpc_impl.IThinkingNoteServer = (*thinkingNoteServerImpl)(nil)
 
 func GetThinkingNoteServer(userServerTarget string) (*thinkingNoteServerImpl, error) {
-    userClient, err := client.ConnectUserServer(userServerTarget)
-    if err != nil {
-        return nil, err
-    }
+	userClient, err := client.ConnectUserServer(userServerTarget)
+	if err != nil {
+		return nil, err
+	}
 
-    thinkingNoteServerImplIns.UserClient = userClient
+	thinkingNoteServerImplIns.UserClient = userClient
 
-	return thinkingNoteServerImplIns,nil
+	return thinkingNoteServerImplIns, nil
 }
 
 func (t *thinkingNoteServerImpl) ListByWriter(_ context.Context, req *rpc_impl.ThinkingNote_ListByWriterReq) (*rpc_impl.ThinkingNote_ListByWriterRes, error) {
@@ -92,9 +92,9 @@ func (t *thinkingNoteServerImpl) Modify(ctx context.Context, req *rpc_impl.Think
 	}
 
 	_, err := t.UserClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
-        UserId:   req.OperatorId,
-        Password: req.Password,
-    })
+		UserId:   req.OperatorId,
+		Password: req.Password,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -134,25 +134,25 @@ func (t *thinkingNoteServerImpl) Modify(ctx context.Context, req *rpc_impl.Think
 }
 
 func (t *thinkingNoteServerImpl) Delete(ctx context.Context, req *rpc_impl.ThinkingNote_DeleteReq) (*rpc_impl.ThinkingNote_DeleteRes, error) {
-    if len(req.OperatorId) < 1 || len(req.Password) < 1 || len(req.NoteId) < 1 {
-        return nil, utils.NewError(utils.Error_InvalidParams)
-    }
+	if len(req.OperatorId) < 1 || len(req.Password) < 1 || len(req.NoteId) < 1 {
+		return nil, utils.NewError(utils.Error_InvalidParams)
+	}
 
 	_, err := t.UserClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
 		UserId:   req.OperatorId,
 		Password: req.Password,
 	})
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    err = db.GetThinkingNote().UpdateColumnsByNoteID(&model.ThinkingNote{
-        NoteID:    req.NoteId,
-        IsDeleted: true,
-    }, model.ThinkingNote_IsDeleted)
-    if err != nil {
-        return nil, err
-    }
+	err = db.GetThinkingNote().UpdateColumnsByNoteID(&model.ThinkingNote{
+		NoteID:    req.NoteId,
+		IsDeleted: true,
+	}, model.ThinkingNote_IsDeleted)
+	if err != nil {
+		return nil, err
+	}
 
 	return &rpc_impl.ThinkingNote_DeleteRes{}, nil
 }

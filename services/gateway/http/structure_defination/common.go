@@ -21,7 +21,7 @@ const (
 	params_File             = "file"
 	params_FileID           = "fileID"
 
-	params_Topic = "topic"
+	params_Topic   = "topic"
 	params_Content = "content"
 )
 
@@ -54,7 +54,7 @@ type UserRes struct {
 	UserName   string `json:"userName"`
 	Nickname   string `json:"nickname"`
 	IsLocked   bool   `json:"isLocked"`
-	Permission uint32  `json:"permission"`
+	Permission uint32 `json:"permission"`
 	CreatedBy  string `json:"createdBy"`
 }
 
