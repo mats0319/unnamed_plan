@@ -1,8 +1,6 @@
 .idea
 *.log
-go.sum
-
 *.exe
 
-# ignore build linux exec files
-services/build/service_*
+services/build/
+services/go.sum

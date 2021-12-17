@@ -1,11 +1,11 @@
 package db
 
 import (
-	"github.com/go-pg/pg/v10/orm"
-	"github.com/mats9693/unnamed_plan/shared/db/model"
-	"github.com/mats9693/utils/toy_server/db"
-	"github.com/mats9693/utils/uuid"
-	"time"
+    "github.com/go-pg/pg/v10/orm"
+    "github.com/mats9693/unnamed_plan/services/shared/db/model"
+    "github.com/mats9693/utils/toy_server/db"
+    "github.com/mats9693/utils/uuid"
+    "time"
 )
 
 type User model.User
@@ -13,31 +13,31 @@ type User model.User
 var userIns = &User{}
 
 func GetUser() *User {
-	return userIns
+    return userIns
 }
 
 func (u *User) QueryOneInUnlocked(condition string, param ...interface{}) (user *model.User, err error) {
-	user = &model.User{}
+    user = &model.User{}
 
-	err = mdb.WithNoTx(func(conn orm.DB) error {
-		return conn.Model(user).Where(model.User_IsLocked+" = ?", false).Where(condition, param...).First()
-	})
-	if err != nil {
-		user = nil
-	}
+    err = mdb.WithNoTx(func(conn orm.DB) error {
+        return conn.Model(user).Where(model.User_IsLocked+" = ?", false).Where(condition, param...).First()
+    })
+    if err != nil {
+        user = nil
+    }
 
-	return
+    return
 }
 
 func (u *User) Query(condition string, param ...interface{}) (users []*model.User, err error) {
-	err = mdb.WithNoTx(func(conn orm.DB) error {
-		return conn.Model(&users).Where(condition, param...).Select()
-	})
-	if err != nil {
-		users = nil
-	}
+    err = mdb.WithNoTx(func(conn orm.DB) error {
+        return conn.Model(&users).Where(condition, param...).Select()
+    })
+    if err != nil {
+        users = nil
+    }
 
-	return
+    return
 }
 
 // QueryPageByPermission 获取用户列表，要求目标用户权限等级不高于指定用户（通过userID指定），分页，按照权限等级降序，查询结果不包含指定用户
@@ -52,53 +52,53 @@ Core: sub-query
 	) and user_id != 'user id';
 */
 func (u *User) QueryPageByPermission(
-	pageSize int,
-	pageNum int,
-	userID string,
+    pageSize int,
+    pageNum int,
+    userID string,
 ) (users []*model.User, count int, err error) {
-	err = mdb.WithNoTx(func(conn orm.DB) error {
-		permission := conn.Model((*model.User)(nil)).Column(model.User_Permission).Where(model.User_UserID+" = ?", userID)
+    err = mdb.WithNoTx(func(conn orm.DB) error {
+        permission := conn.Model((*model.User)(nil)).Column(model.User_Permission).Where(model.User_UserID+" = ?", userID)
 
-		count, err = conn.Model(&users).Where(model.User_Permission+" <= (?)", permission).
-			Where(model.User_UserID+" != ?", userID).
-			Order(model.User_Permission + " DESC").
-			Offset((pageNum - 1) * pageSize).Limit(pageSize).SelectAndCount()
+        count, err = conn.Model(&users).Where(model.User_Permission+" <= (?)", permission).
+            Where(model.User_UserID+" != ?", userID).
+            Order(model.User_Permission + " DESC").
+            Offset((pageNum - 1) * pageSize).Limit(pageSize).SelectAndCount()
 
-		return err
-	})
-	if err != nil {
-		users = nil
-		count = 0
-	}
+        return err
+    })
+    if err != nil {
+        users = nil
+        count = 0
+    }
 
-	return
+    return
 }
 
 func (u *User) Insert(user *model.User) (err error) {
-	if len(user.ID) < 1 {
-		user.Common = model.NewCommon()
-	}
+    if len(user.ID) < 1 {
+        user.Common = model.NewCommon()
+    }
 
-	if len(user.UserID) < 1 {
-		user.UserID = uuid.New()
-	}
+    if len(user.UserID) < 1 {
+        user.UserID = uuid.New()
+    }
 
-	return mdb.WithTx(func(conn orm.DB) error {
-		_, err = conn.Model(user).Insert()
-		return err
-	})
+    return mdb.WithTx(func(conn orm.DB) error {
+        _, err = conn.Model(user).Insert()
+        return err
+    })
 }
 
 func (u *User) UpdateColumnsByUserID(data *model.User, columns ...string) (err error) {
-	data.UpdateTime = time.Duration(time.Now().Unix())
+    data.UpdateTime = time.Duration(time.Now().Unix())
 
-	return mdb.WithTx(func(conn orm.DB) error {
-		query := conn.Model(data).Column(model.Common_UpdateTime)
-		for i := range columns {
-			query.Column(columns[i])
-		}
+    return mdb.WithTx(func(conn orm.DB) error {
+        query := conn.Model(data).Column(model.Common_UpdateTime)
+        for i := range columns {
+            query.Column(columns[i])
+        }
 
-		_, err = query.Where(model.User_UserID + " = ?" + model.User_UserID).Update()
-		return err
-	})
+        _, err = query.Where(model.User_UserID + " = ?" + model.User_UserID).Update()
+        return err
+    })
 }

@@ -8,7 +8,7 @@
         "port": "9693",
         "limitMultiLogin": true,
         "keepLoginValid": 7200,
-        "sources": ["public ui", "admin ui"],
+        "sources": ["public web", "admin web"],
         "unlimitedSources": ["public mobile"]
       }
     },

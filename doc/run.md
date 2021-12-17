@@ -2,15 +2,12 @@
 
 ## npm link
 
-用户界面的公共资源位于```shared/ui```，各用户界面通过```npm link```与之建立联系，执行步骤：
+用户界面的公共资源位于```ui/shared```，各用户界面通过```npm link```与之建立联系，执行步骤：
 
-1. ```cd shared/ui```
+1. ```cd ui/shared```
 2. ```npm link```/```npm run create-link```，注册公共资源库
-3. ```cd admin_ui```
-4. ```npm link shared_ui```/```npm run link```，链接公共资源库，其中```shared_ui```是公共资源库名称
+3. ```cd ui/admin_web```
+4. ```npm link shared```/```npm run link```，链接公共资源库
+   1. ```shared```是公共资源库名称，定义于资源库```package.json```
 
-然后，在程序中就可以使用```shared_ui```表示```shared/ui```路径了
-
-## [excalidraw](https://excalidraw.com/)
-
-```.excalidraw```文件查看方式：将文件导入在线工具
+然后，在程序中就可以使用```shared```表示```ui/shared```路径了
