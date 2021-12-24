@@ -5,6 +5,8 @@ import (
     "github.com/mats9693/unnamed_plan/services/shared/proto/impl"
     "github.com/mats9693/unnamed_plan/services/thinking_note/config"
     "github.com/mats9693/unnamed_plan/services/thinking_note/rpc"
+    "github.com/mats9693/utils/toy_server/log"
+    "go.uber.org/zap"
     "google.golang.org/grpc"
     "net"
 )
@@ -12,24 +14,24 @@ import (
 func main() {
     listener, err := net.Listen("tcp", config.GetConfig().Address)
     if err != nil {
-        fmt.Printf("listen on %s failed, error: %v\n", config.GetConfig().Address, err)
+        mlog.Logger().Error(fmt.Sprintf("listen on %s failed", config.GetConfig().Address), zap.Error(err))
         return
     }
 
     server := grpc.NewServer()
     thinkingNoteServer, err := rpc.GetThinkingNoteServer(config.GetConfig().UserServerAddress)
     if err != nil {
-        fmt.Println("init thinking note server failed, error:", err)
+        mlog.Logger().Error("init thinking note server failed", zap.Error(err))
         return
     }
     rpc_impl.RegisterIThinkingNoteServer(server, thinkingNoteServer)
 
-    fmt.Println("> Listening at :", config.GetConfig().Address)
+    mlog.Logger().Info("> Listening at : "+ config.GetConfig().Address)
 
     // Serve is blocked
     err = server.Serve(listener)
     if err != nil {
-        fmt.Printf("serve on %s failed, error: %v\n", config.GetConfig().Address, err)
+        mlog.Logger().Error(fmt.Sprintf("serve on %s failed", config.GetConfig().Address), zap.Error(err))
         return
     }
 }

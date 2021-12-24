@@ -7,6 +7,8 @@ import (
     "github.com/mats9693/unnamed_plan/services/shared/proto/impl"
     "github.com/mats9693/utils/toy_server/const"
     "github.com/mats9693/utils/toy_server/http"
+    "github.com/mats9693/utils/toy_server/log"
+    "go.uber.org/zap"
     "net/http"
     "time"
 )
@@ -14,6 +16,7 @@ import (
 func ListThinkingNoteByWriter(r *http.Request) *mhttp.ResponseData {
     params := &structure.ListThinkingNoteByWriterReqParams{}
     if errMsg := params.Decode(r); len(errMsg) > 0 {
+        mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
         return mhttp.ResponseWithError(errMsg)
     }
 
@@ -25,6 +28,7 @@ func ListThinkingNoteByWriter(r *http.Request) *mhttp.ResponseData {
         },
     })
     if err != nil {
+        mlog.Logger().Error("list thinking note by writer failed", zap.Error(err))
         return mhttp.ResponseWithError(err.Error())
     }
 
@@ -34,6 +38,7 @@ func ListThinkingNoteByWriter(r *http.Request) *mhttp.ResponseData {
 func ListPublicThinkingNote(r *http.Request) *mhttp.ResponseData {
     params := &structure.ListPublicThinkingNoteReqParams{}
     if errMsg := params.Decode(r); len(errMsg) > 0 {
+        mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
         return mhttp.ResponseWithError(errMsg)
     }
 
@@ -45,6 +50,7 @@ func ListPublicThinkingNote(r *http.Request) *mhttp.ResponseData {
         },
     })
     if err != nil {
+        mlog.Logger().Error("list public thinking note failed", zap.Error(err))
         return mhttp.ResponseWithError(err.Error())
     }
 
@@ -54,6 +60,7 @@ func ListPublicThinkingNote(r *http.Request) *mhttp.ResponseData {
 func CreateThinkingNote(r *http.Request) *mhttp.ResponseData {
     params := &structure.CreateThinkingNoteReqParams{}
     if errMsg := params.Decode(r); len(errMsg) > 0 {
+        mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
         return mhttp.ResponseWithError(errMsg)
     }
 
@@ -64,6 +71,7 @@ func CreateThinkingNote(r *http.Request) *mhttp.ResponseData {
         IsPublic:   params.IsPublic,
     })
     if err != nil {
+        mlog.Logger().Error("create thinking note failed", zap.Error(err))
         return mhttp.ResponseWithError(err.Error())
     }
 
@@ -73,6 +81,7 @@ func CreateThinkingNote(r *http.Request) *mhttp.ResponseData {
 func ModifyThinkingNote(r *http.Request) *mhttp.ResponseData {
     params := &structure.ModifyThinkingNoteReqParams{}
     if errMsg := params.Decode(r); len(errMsg) > 0 {
+        mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
         return mhttp.ResponseWithError(errMsg)
     }
 
@@ -85,6 +94,7 @@ func ModifyThinkingNote(r *http.Request) *mhttp.ResponseData {
         IsPublic:   params.IsPublic,
     })
     if err != nil {
+        mlog.Logger().Error("modify thinking note failed", zap.Error(err))
         return mhttp.ResponseWithError(err.Error())
     }
 
@@ -94,6 +104,7 @@ func ModifyThinkingNote(r *http.Request) *mhttp.ResponseData {
 func DeleteThinkingNote(r *http.Request) *mhttp.ResponseData {
     params := &structure.DeleteThinkingNoteReqParams{}
     if errMsg := params.Decode(r); len(errMsg) > 0 {
+        mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
         return mhttp.ResponseWithError(errMsg)
     }
 
@@ -103,6 +114,7 @@ func DeleteThinkingNote(r *http.Request) *mhttp.ResponseData {
         NoteId:     params.NoteID,
     })
     if err != nil {
+        mlog.Logger().Error("delete thinking note failed", zap.Error(err))
         return mhttp.ResponseWithError(err.Error())
     }
 

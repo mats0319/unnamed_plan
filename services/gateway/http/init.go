@@ -6,31 +6,35 @@ import (
 	"github.com/mats9693/utils/toy_server/http"
 )
 
-var Handlers *mhttp.Handlers
+var handlersIns *mhttp.Handlers
+
+func GetHandler() *mhttp.Handlers {
+	return handlersIns
+}
 
 func init() {
-	Handlers = mhttp.NewHandlers()
+	handlersIns = mhttp.NewHandlers()
 
 	// user
-	Handlers.HandleFunc("/api/login", handlers.Login, mconst.SkipLimit, mconst.ReSetParams)
-	Handlers.HandleFunc("/api/user/list", handlers.ListUser)
-	Handlers.HandleFunc("/api/user/create", handlers.CreateUser)
-	Handlers.HandleFunc("/api/user/lock", handlers.LockUser)
-	Handlers.HandleFunc("/api/user/unlock", handlers.UnlockUser)
-	Handlers.HandleFunc("/api/user/modifyInfo", handlers.ModifyUserInfo)
-	Handlers.HandleFunc("/api/user/modifyPermission", handlers.ModifyUserPermission)
+	handlersIns.HandleFunc("/api/login", handlers.Login, mconst.SkipLimit, mconst.ReSetParams)
+	handlersIns.HandleFunc("/api/user/list", handlers.ListUser)
+	handlersIns.HandleFunc("/api/user/create", handlers.CreateUser)
+	handlersIns.HandleFunc("/api/user/lock", handlers.LockUser)
+	handlersIns.HandleFunc("/api/user/unlock", handlers.UnlockUser)
+	handlersIns.HandleFunc("/api/user/modifyInfo", handlers.ModifyUserInfo)
+	handlersIns.HandleFunc("/api/user/modifyPermission", handlers.ModifyUserPermission)
 
 	// cloud file
-	Handlers.HandleFunc("/api/cloudFile/listByUploader", handlers.ListCloudFileByUploader)
-	Handlers.HandleFunc("/api/cloudFile/listPublic", handlers.ListPublicCloudFile)
-	Handlers.HandleFunc("/api/cloudFile/upload", handlers.UploadCloudFile)
-	Handlers.HandleFunc("/api/cloudFile/modify", handlers.ModifyCloudFile)
-	Handlers.HandleFunc("/api/cloudFile/delete", handlers.DeleteCloudFile)
+	handlersIns.HandleFunc("/api/cloudFile/listByUploader", handlers.ListCloudFileByUploader)
+	handlersIns.HandleFunc("/api/cloudFile/listPublic", handlers.ListPublicCloudFile)
+	handlersIns.HandleFunc("/api/cloudFile/upload", handlers.UploadCloudFile)
+	handlersIns.HandleFunc("/api/cloudFile/modify", handlers.ModifyCloudFile)
+	handlersIns.HandleFunc("/api/cloudFile/delete", handlers.DeleteCloudFile)
 
 	// thinking note
-	Handlers.HandleFunc("/api/thinkingNote/listByWriter", handlers.ListThinkingNoteByWriter)
-	Handlers.HandleFunc("/api/thinkingNote/listPublic", handlers.ListPublicThinkingNote)
-	Handlers.HandleFunc("/api/thinkingNote/create", handlers.CreateThinkingNote)
-	Handlers.HandleFunc("/api/thinkingNote/modify", handlers.ModifyThinkingNote)
-	Handlers.HandleFunc("/api/thinkingNote/delete", handlers.DeleteThinkingNote)
+	handlersIns.HandleFunc("/api/thinkingNote/listByWriter", handlers.ListThinkingNoteByWriter)
+	handlersIns.HandleFunc("/api/thinkingNote/listPublic", handlers.ListPublicThinkingNote)
+	handlersIns.HandleFunc("/api/thinkingNote/create", handlers.CreateThinkingNote)
+	handlersIns.HandleFunc("/api/thinkingNote/modify", handlers.ModifyThinkingNote)
+	handlersIns.HandleFunc("/api/thinkingNote/delete", handlers.DeleteThinkingNote)
 }

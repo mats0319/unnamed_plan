@@ -4,17 +4,18 @@
     {
       "name": "config",
       "uid": "76175dee-ffee-4198-8f97-94dfd4f960fd",
-      "jsonDev": {
+      "json": {
         "address": "127.0.0.1:29693",
         "userServerAddress": "127.0.0.1:19693",
-        "cloudFileRootPath": "F:/gopath/src/github.com/mats9693/unnamed_plan/services/cloud_file/cloud_file/",
+        "cloudFileRootPath": "",
         "cloudFilePublicDir": "public"
       }
     },
     {
       "name": "db",
       "uid": "658e06f7-71d5-4ada-b715-8c1a4489e5d2",
-      "jsonDev": {
+      "json": {
+        "db": "postgresql",
         "addr": "106.75.174.54:5432",
         "user": "mario_test",
         "password": "123456",

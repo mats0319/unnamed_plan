@@ -4,7 +4,7 @@
     {
       "name": "http port",
       "uid": "3b839c1f-9f1e-474b-b3da-7b5e9bc792ec",
-      "jsonDev": {
+      "json": {
         "port": "9693",
         "limitMultiLogin": true,
         "keepLoginValid": 7200,
@@ -15,7 +15,7 @@
     {
       "name": "rpc client",
       "uid": "1cd10cb8-ecf5-4855-a886-76b148ed104a",
-      "jsonDev": {
+      "json": {
         "userClientTarget": "127.0.0.1:19693",
         "cloudFileClientTarget": "127.0.0.1:29693",
         "thinkingNoteClientTarget": "127.0.0.1:39693"

@@ -2,17 +2,16 @@ package rpc
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/mats9693/unnamed_plan/services/shared/proto/client"
 	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
 	"github.com/mats9693/unnamed_plan/services/shared/utils"
 	"github.com/mats9693/utils/toy_server/config"
+	"github.com/mats9693/utils/toy_server/log"
+	"go.uber.org/zap"
 	"os"
 )
 
 const uid_RPCClient = "1cd10cb8-ecf5-4855-a886-76b148ed104a"
-
-var rpcClientIns = &rpcClient{}
 
 type rpcClient struct {
 	conf *rpcClientConfig
@@ -28,13 +27,19 @@ type rpcClientConfig struct {
 	ThinkingNoteClientTarget string `json:"thinkingNoteClientTarget"`
 }
 
+var rpcClientIns = &rpcClient{}
+
+func GetRPCClient() *rpcClient {
+	return rpcClientIns
+}
+
 func init() {
 	byteSlice := mconfig.GetConfig(uid_RPCClient)
 
 	rpcClientConfigIns := &rpcClientConfig{}
 	err := json.Unmarshal(byteSlice, rpcClientConfigIns)
 	if err != nil {
-		fmt.Printf("json unmarshal failed, uid: %s, error: %v\n", uid_RPCClient, err)
+		mlog.Logger().Error("json unmarshal failed", zap.String("uid", uid_RPCClient), zap.Error(err))
 		os.Exit(-1)
 	}
 
@@ -45,7 +50,8 @@ func init() {
 	thinkingNoteClient, err3 := client.ConnectThinkingNoteServer(rpcClientIns.conf.ThinkingNoteClientTarget)
 
 	if err != nil || err2 != nil || err3 != nil {
-		fmt.Println("establish connection with services failed, error:", utils.ErrorsToString(err, err2, err3))
+		mlog.Logger().Error("establish connection with services failed",
+			zap.String("err msg", utils.ErrorsToString(err, err2, err3)))
 		os.Exit(-1)
 	}
 
@@ -53,9 +59,5 @@ func init() {
 	rpcClientIns.CloudFileClient = cloudFileClient
 	rpcClientIns.ThinkingNoteClient = thinkingNoteClient
 
-	fmt.Println("> RPC client init finish.")
-}
-
-func GetRPCClient() *rpcClient {
-	return rpcClientIns
+	mlog.Logger().Info("> RPC client init finish.")
 }

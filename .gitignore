@@ -3,4 +3,5 @@
 *.exe
 
 services/build/
+services/cloud_file/files/
 services/go.sum

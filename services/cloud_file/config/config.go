@@ -2,8 +2,9 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/mats9693/utils/toy_server/config"
+	mlog "github.com/mats9693/utils/toy_server/log"
+	"go.uber.org/zap"
 	"os"
 )
 
@@ -23,11 +24,11 @@ func init() {
 
 	err := json.Unmarshal(byteSlice, cloudFileServiceConfigIns)
 	if err != nil {
-		fmt.Printf("json unmarshal failed, uid: %s, error: %v\n", uid_CloudFileServiceConfig, err)
+		mlog.Logger().Error("json unmarshal failed", zap.String("uid", uid_CloudFileServiceConfig), zap.Error(err))
 		os.Exit(-1)
 	}
 
-	fmt.Println("> User service config init finish.")
+	mlog.Logger().Info("> Cloud file service config init finish.")
 }
 
 func GetConfig() *cloudFileServiceConfig {

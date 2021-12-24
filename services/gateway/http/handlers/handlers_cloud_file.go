@@ -7,6 +7,8 @@ import (
     "github.com/mats9693/unnamed_plan/services/shared/proto/impl"
     "github.com/mats9693/utils/toy_server/const"
     "github.com/mats9693/utils/toy_server/http"
+    "github.com/mats9693/utils/toy_server/log"
+    "go.uber.org/zap"
     "net/http"
     "time"
 )
@@ -14,6 +16,7 @@ import (
 func ListCloudFileByUploader(r *http.Request) *mhttp.ResponseData {
     params := &structure.ListCloudFileByUploaderReqParams{}
     if errMsg := params.Decode(r); len(errMsg) > 0 {
+        mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
         return mhttp.ResponseWithError(errMsg)
     }
 
@@ -25,6 +28,7 @@ func ListCloudFileByUploader(r *http.Request) *mhttp.ResponseData {
         },
     })
     if err != nil {
+        mlog.Logger().Error("list cloud file by uploader failed", zap.Error(err))
         return mhttp.ResponseWithError(err.Error())
     }
 
@@ -34,6 +38,7 @@ func ListCloudFileByUploader(r *http.Request) *mhttp.ResponseData {
 func ListPublicCloudFile(r *http.Request) *mhttp.ResponseData {
     params := &structure.ListPublicCloudFileReqParams{}
     if errMsg := params.Decode(r); len(errMsg) > 0 {
+        mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
         return mhttp.ResponseWithError(errMsg)
     }
 
@@ -45,6 +50,7 @@ func ListPublicCloudFile(r *http.Request) *mhttp.ResponseData {
         },
     })
     if err != nil {
+        mlog.Logger().Error("list public cloud file failed", zap.Error(err))
         return mhttp.ResponseWithError(err.Error())
     }
 
@@ -54,6 +60,7 @@ func ListPublicCloudFile(r *http.Request) *mhttp.ResponseData {
 func UploadCloudFile(r *http.Request) *mhttp.ResponseData {
     params := &structure.UploadCloudFileReqParams{}
     if errMsg := params.Decode(r); len(errMsg) > 0 {
+        mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
         return mhttp.ResponseWithError(errMsg)
     }
 
@@ -67,6 +74,7 @@ func UploadCloudFile(r *http.Request) *mhttp.ResponseData {
         IsPublic:         params.IsPublic,
     })
     if err != nil {
+        mlog.Logger().Error("upload cloud file failed", zap.Error(err))
         return mhttp.ResponseWithError(err.Error())
     }
 
@@ -76,6 +84,7 @@ func UploadCloudFile(r *http.Request) *mhttp.ResponseData {
 func ModifyCloudFile(r *http.Request) *mhttp.ResponseData {
     params := &structure.ModifyCloudFileReqParams{}
     if errMsg := params.Decode(r); len(errMsg) > 0 {
+        mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
         return mhttp.ResponseWithError(errMsg)
     }
 
@@ -91,6 +100,7 @@ func ModifyCloudFile(r *http.Request) *mhttp.ResponseData {
         LastModifiedTime: int64(params.LastModifiedTime),
     })
     if err != nil {
+        mlog.Logger().Error("modify cloud file failed", zap.Error(err))
         return mhttp.ResponseWithError(err.Error())
     }
 
@@ -100,6 +110,7 @@ func ModifyCloudFile(r *http.Request) *mhttp.ResponseData {
 func DeleteCloudFile(r *http.Request) *mhttp.ResponseData {
     params := &structure.DeleteCloudFileReqParams{}
     if errMsg := params.Decode(r); len(errMsg) > 0 {
+        mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
         return mhttp.ResponseWithError(errMsg)
     }
 
@@ -109,6 +120,7 @@ func DeleteCloudFile(r *http.Request) *mhttp.ResponseData {
         FileId:     params.FileID,
     })
     if err != nil {
+        mlog.Logger().Error("delete cloud file failed", zap.Error(err))
         return mhttp.ResponseWithError(err.Error())
     }
 

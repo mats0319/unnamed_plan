@@ -38,7 +38,7 @@ func (t *thinkingNoteServerImpl) ListByWriter(_ context.Context, req *rpc_impl.T
     pageSize := int(req.GetPage().PageSize)
     pageNum := int(req.GetPage().PageNum)
 
-    notes, count, err := db.GetThinkingNote().QueryPageByWriter(pageSize, pageNum, req.OperatorId)
+    notes, count, err := db.GetThinkingNoteDao().QueryPageByWriter(pageSize, pageNum, req.OperatorId)
     if err != nil {
         return nil, err
     }
@@ -57,7 +57,7 @@ func (t *thinkingNoteServerImpl) ListPublic(_ context.Context, req *rpc_impl.Thi
     pageSize := int(req.GetPage().PageSize)
     pageNum := int(req.GetPage().PageNum)
 
-    notes, count, err := db.GetThinkingNote().QueryPageInPublic(pageSize, pageNum, req.OperatorId)
+    notes, count, err := db.GetThinkingNoteDao().QueryPageInPublic(pageSize, pageNum, req.OperatorId)
     if err != nil {
         return nil, err
     }
@@ -73,7 +73,7 @@ func (t *thinkingNoteServerImpl) Create(_ context.Context, req *rpc_impl.Thinkin
         return nil, utils.NewError(utils.Error_InvalidParams)
     }
 
-    err := db.GetThinkingNote().Insert(&model.ThinkingNote{
+    err := db.GetThinkingNoteDao().Insert(&model.ThinkingNote{
         WriteBy:  req.OperatorId,
         Topic:    req.Topic,
         Content:  req.Content,
@@ -99,7 +99,7 @@ func (t *thinkingNoteServerImpl) Modify(ctx context.Context, req *rpc_impl.Think
         return nil, err
     }
 
-    noteRecord, err := db.GetThinkingNote().QueryFirst(model.ThinkingNote_NoteID+" = ?", req.NoteId)
+    noteRecord, err := db.GetThinkingNoteDao().QueryOne(req.NoteId)
     if err != nil {
         return nil, err
     }
@@ -125,7 +125,7 @@ func (t *thinkingNoteServerImpl) Modify(ctx context.Context, req *rpc_impl.Think
         updateColumns = append(updateColumns, model.ThinkingNote_IsPublic)
     }
 
-    err = db.GetThinkingNote().UpdateColumnsByNoteID(noteRecord, updateColumns...)
+    err = db.GetThinkingNoteDao().UpdateColumnsByNoteID(noteRecord, updateColumns...)
     if err != nil {
         return nil, err
     }
@@ -146,7 +146,7 @@ func (t *thinkingNoteServerImpl) Delete(ctx context.Context, req *rpc_impl.Think
         return nil, err
     }
 
-    err = db.GetThinkingNote().UpdateColumnsByNoteID(&model.ThinkingNote{
+    err = db.GetThinkingNoteDao().UpdateColumnsByNoteID(&model.ThinkingNote{
         NoteID:    req.NoteId,
         IsDeleted: true,
     }, model.ThinkingNote_IsDeleted)

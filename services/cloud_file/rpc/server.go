@@ -45,7 +45,7 @@ func (c *cloudFileServerImpl) ListByUploader(_ context.Context, req *rpc_impl.Cl
     pageSize := int(req.GetPage().PageSize)
     pageNum := int(req.GetPage().PageNum)
 
-    files, count, err := db.GetCloudFile().QueryPageByUploader(pageSize, pageNum, req.OperatorId)
+    files, count, err := db.GetCloudFileDao().QueryPageByUploader(pageSize, pageNum, req.OperatorId)
     if err != nil {
         return nil, err
     }
@@ -64,7 +64,7 @@ func (c *cloudFileServerImpl) ListPublic(_ context.Context, req *rpc_impl.CloudF
     pageSize := int(req.GetPage().PageSize)
     pageNum := int(req.GetPage().PageNum)
 
-    files, count, err := db.GetCloudFile().QueryPageInPublic(pageSize, pageNum, req.OperatorId)
+    files, count, err := db.GetCloudFileDao().QueryPageInPublic(pageSize, pageNum, req.OperatorId)
     if err != nil {
         return nil, err
     }
@@ -99,7 +99,7 @@ func (c *cloudFileServerImpl) Upload(_ context.Context, req *rpc_impl.CloudFile_
     }
 
     // save db, if failed, remove file
-    err = db.GetCloudFile().Insert(&model.CloudFile{
+    err = db.GetCloudFileDao().Insert(&model.CloudFile{
         UploadedBy:       req.OperatorId,
         FileID:           fileID,
         FileName:         req.FileName,
@@ -129,7 +129,7 @@ func (c *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFil
         return nil, err
     }
 
-    fileRecord, err := db.GetCloudFile().QueryFirst(model.CloudFile_FileID+" = ?", req.FileId)
+    fileRecord, err := db.GetCloudFileDao().QueryOne(req.FileId)
     if err != nil {
         return nil, err
     }
@@ -187,7 +187,7 @@ func (c *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFil
     }
 
     // update db record, if update failed and have new file, remove file
-    err = db.GetCloudFile().UpdateColumnsByFileID(fileRecord, updateColumns...)
+    err = db.GetCloudFileDao().UpdateColumnsByFileID(fileRecord, updateColumns...)
     if err != nil {
         errMsg := err.Error()
         if len(req.File) > 0 {
@@ -214,7 +214,7 @@ func (c *cloudFileServerImpl) Delete(ctx context.Context, req *rpc_impl.CloudFil
         return nil, err
     }
 
-    err = db.GetCloudFile().UpdateColumnsByFileID(&model.CloudFile{
+    err = db.GetCloudFileDao().UpdateColumnsByFileID(&model.CloudFile{
         FileID:    req.FileId,
         IsDeleted: true,
     }, model.CloudFile_IsDeleted)

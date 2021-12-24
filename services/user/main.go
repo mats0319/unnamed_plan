@@ -1,30 +1,32 @@
 package main
 
 import (
-    "fmt"
-    "github.com/mats9693/unnamed_plan/services/shared/proto/impl"
-    "github.com/mats9693/unnamed_plan/services/user/config"
-    "github.com/mats9693/unnamed_plan/services/user/rpc"
-    "google.golang.org/grpc"
-    "net"
+	"fmt"
+	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
+	"github.com/mats9693/unnamed_plan/services/user/config"
+	"github.com/mats9693/unnamed_plan/services/user/rpc"
+	"github.com/mats9693/utils/toy_server/log"
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
+	"net"
 )
 
 func main() {
-    listener, err := net.Listen("tcp", config.GetConfig().Address)
-    if err != nil {
-        fmt.Printf("listen on %s failed, error: %v\n", config.GetConfig().Address, err)
-        return
-    }
+	listener, err := net.Listen("tcp", config.GetConfig().Address)
+	if err != nil {
+		mlog.Logger().Error(fmt.Sprintf("listen on %s failed", config.GetConfig().Address), zap.Error(err))
+		return
+	}
 
-    server := grpc.NewServer()
-    rpc_impl.RegisterIUserServer(server, rpc.GetUserServer())
+	server := grpc.NewServer()
+	rpc_impl.RegisterIUserServer(server, rpc.GetUserServer())
 
-    fmt.Println("> Listening at :", config.GetConfig().Address)
+	mlog.Logger().Info("> Listening at : " + config.GetConfig().Address)
 
-    // Serve is blocked
-    err = server.Serve(listener)
-    if err != nil {
-        fmt.Printf("serve on %s failed, error: %v\n", config.GetConfig().Address, err)
-        return
-    }
+	// Serve is blocked
+	err = server.Serve(listener)
+	if err != nil {
+		mlog.Logger().Error(fmt.Sprintf("serve on %s failed", config.GetConfig().Address), zap.Error(err))
+		return
+	}
 }
