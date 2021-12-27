@@ -15,7 +15,7 @@ func GetUserDao() dao.UserDao {
 }
 
 func init() {
-    switch mdb.DB().GetDB() {
+    switch mdb.DB().GetDBMSName() {
     case mconst.DB_PostgreSQL:
         userDaoIns = &dao.UserPostgresql{}
     default:

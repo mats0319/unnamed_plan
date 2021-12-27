@@ -15,7 +15,7 @@ func GetCloudFileDao() dao.CloudFileDao {
 }
 
 func init() {
-    switch mdb.DB().GetDB() {
+    switch mdb.DB().GetDBMSName() {
     case mconst.DB_PostgreSQL:
         cloudFileDaoIns = &dao.CloudFilePostgresql{}
     default:

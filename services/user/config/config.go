@@ -3,7 +3,7 @@ package config
 import (
 	"encoding/json"
 	"github.com/mats9693/utils/toy_server/config"
-	mlog "github.com/mats9693/utils/toy_server/log"
+	"github.com/mats9693/utils/toy_server/log"
 	"go.uber.org/zap"
 	"os"
 )

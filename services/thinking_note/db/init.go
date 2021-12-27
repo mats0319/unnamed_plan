@@ -15,7 +15,7 @@ func GetThinkingNoteDao() dao.ThinkingNoteDao {
 }
 
 func init() {
-    switch mdb.DB().GetDB() {
+    switch mdb.DB().GetDBMSName() {
     case mconst.DB_PostgreSQL:
         thinkingNoteDaoIns = &dao.ThinkNotePostgresql{}
     default:

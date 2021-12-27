@@ -14,11 +14,11 @@
       "name": "db",
       "uid": "658e06f7-71d5-4ada-b715-8c1a4489e5d2",
       "json": {
-        "db": "postgresql",
+        "DBMSName": "postgresql",
         "addr": "106.75.174.54:5432",
+        "dbName": "unnamed_plan_test",
         "user": "mario_test",
         "password": "123456",
-        "dbName": "unnamed_plan_test",
         "timeout": 3,
         "showSQL": true
       }
