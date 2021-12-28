@@ -7,7 +7,7 @@
       "json": {
         "port": "9693",
         "limitMultiLogin": true,
-        "keepLoginValid": 7200,
+        "keepTokenValid": 7200,
         "sources": ["public web", "admin web"],
         "unlimitedSources": ["public mobile"]
       }
