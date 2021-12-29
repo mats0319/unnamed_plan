@@ -15,7 +15,7 @@
       "name": "db",
       "uid": "658e06f7-71d5-4ada-b715-8c1a4489e5d2",
       "json": {
-        "DBMSName": "postgresql",
+        "DBMS": "postgresql",
         "addr": "106.75.174.54:5432",
         "dbName": "unnamed_plan_test",
         "user": "mario_test",
