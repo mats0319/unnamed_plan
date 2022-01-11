@@ -3,12 +3,12 @@ package rpc
 import (
     "context"
     "fmt"
+    "github.com/mats9693/unnamed_plan/services/shared/const"
     "github.com/mats9693/unnamed_plan/services/shared/db/model"
     "github.com/mats9693/unnamed_plan/services/shared/proto/impl"
     "github.com/mats9693/unnamed_plan/services/shared/utils"
     "github.com/mats9693/unnamed_plan/services/user/config"
     "github.com/mats9693/unnamed_plan/services/user/db"
-    "github.com/mats9693/utils/toy_server/utils"
     "github.com/pkg/errors"
 )
 
@@ -26,7 +26,7 @@ func GetUserServer() *userServerImpl {
 
 func (s *userServerImpl) Login(_ context.Context, req *rpc_impl.User_LoginReq) (*rpc_impl.User_LoginRes, error) {
     if len(req.UserName) < 1 || len(req.Password) < 1 {
-        return nil, utils.NewError(utils.Error_InvalidParams)
+        return nil, utils.NewError(mconst.Error_InvalidParams)
     }
 
     user, err := db.GetUserDao().QueryOneByUserName(req.UserName)
@@ -35,7 +35,7 @@ func (s *userServerImpl) Login(_ context.Context, req *rpc_impl.User_LoginReq) (
     }
 
     if user.Password != utils.CalcSHA256(req.Password, user.Salt) {
-        return nil, utils.NewError(utils.Error_InvalidAccountOrPassword)
+        return nil, utils.NewError(mconst.Error_InvalidAccountOrPassword)
     }
 
     return &rpc_impl.User_LoginRes{
@@ -47,7 +47,7 @@ func (s *userServerImpl) Login(_ context.Context, req *rpc_impl.User_LoginReq) (
 
 func (s *userServerImpl) List(_ context.Context, req *rpc_impl.User_ListReq) (*rpc_impl.User_ListRes, error) {
     if len(req.OperatorId) < 1 || req.GetPage() == nil || req.GetPage().PageSize < 1 || req.GetPage().PageNum < 1 {
-        return nil, utils.NewError(utils.Error_InvalidParams)
+        return nil, utils.NewError(mconst.Error_InvalidParams)
     }
 
     pageSize := int(req.GetPage().PageSize)
@@ -66,7 +66,7 @@ func (s *userServerImpl) List(_ context.Context, req *rpc_impl.User_ListReq) (*r
 
 func (s *userServerImpl) Create(_ context.Context, req *rpc_impl.User_CreateReq) (*rpc_impl.User_CreateRes, error) {
     if len(req.OperatorId) < 1 || len(req.UserName) < 1 || len(req.Password) < 1 {
-        return nil, utils.NewError(utils.Error_InvalidParams)
+        return nil, utils.NewError(mconst.Error_InvalidParams)
     }
 
     operator, err := db.GetUserDao().QueryOne(req.OperatorId)
@@ -76,10 +76,10 @@ func (s *userServerImpl) Create(_ context.Context, req *rpc_impl.User_CreateReq)
 
     permission := uint8(req.Permission)
     if operator.Permission < config.GetConfig().ARankAdminPermission || operator.Permission <= permission {
-        return nil, utils.NewError(utils.Error_PermissionDenied)
+        return nil, utils.NewError(mconst.Error_PermissionDenied)
     }
 
-    salt := mutils.RandomHexString(10)
+    salt := utils.RandomHexString(10)
     err = db.GetUserDao().Insert(&model.User{
         UserName:   req.UserName,
         Nickname:   req.UserName,
@@ -97,7 +97,7 @@ func (s *userServerImpl) Create(_ context.Context, req *rpc_impl.User_CreateReq)
 
 func (s *userServerImpl) Lock(_ context.Context, req *rpc_impl.User_LockReq) (*rpc_impl.User_LockRes, error) {
     if len(req.OperatorId) < 1 || len(req.UserId) < 1 {
-        return nil, utils.NewError(utils.Error_InvalidParams)
+        return nil, utils.NewError(mconst.Error_InvalidParams)
     }
 
     users, err := db.GetUserDao().Query([]string{req.OperatorId, req.UserId})
@@ -111,10 +111,10 @@ func (s *userServerImpl) Lock(_ context.Context, req *rpc_impl.User_LockReq) (*r
     }
 
     if users[1].IsLocked {
-        return nil, utils.NewError(utils.Error_UserAlreadyLocked)
+        return nil, utils.NewError(mconst.Error_UserAlreadyLocked)
     }
     if users[0].Permission < config.GetConfig().ARankAdminPermission || users[0].Permission <= users[1].Permission {
-        return nil, utils.NewError(utils.Error_PermissionDenied)
+        return nil, utils.NewError(mconst.Error_PermissionDenied)
     }
 
     users[1].IsLocked = true
@@ -129,7 +129,7 @@ func (s *userServerImpl) Lock(_ context.Context, req *rpc_impl.User_LockReq) (*r
 
 func (s *userServerImpl) Unlock(_ context.Context, req *rpc_impl.User_UnlockReq) (*rpc_impl.User_UnlockRes, error) {
     if len(req.OperatorId) < 1 || len(req.UserId) < 1 {
-        return nil, utils.NewError(utils.Error_InvalidParams)
+        return nil, utils.NewError(mconst.Error_InvalidParams)
     }
 
     users, err := db.GetUserDao().Query([]string{req.OperatorId, req.UserId})
@@ -143,10 +143,10 @@ func (s *userServerImpl) Unlock(_ context.Context, req *rpc_impl.User_UnlockReq)
     }
 
     if !users[1].IsLocked {
-        return nil, utils.NewError(utils.Error_UserAlreadyUnlocked)
+        return nil, utils.NewError(mconst.Error_UserAlreadyUnlocked)
     }
     if users[0].Permission < config.GetConfig().ARankAdminPermission || users[0].Permission <= users[1].Permission {
-        return nil, utils.NewError(utils.Error_PermissionDenied)
+        return nil, utils.NewError(mconst.Error_PermissionDenied)
     }
 
     users[1].IsLocked = false
@@ -161,11 +161,11 @@ func (s *userServerImpl) Unlock(_ context.Context, req *rpc_impl.User_UnlockReq)
 
 func (s *userServerImpl) ModifyInfo(_ context.Context, req *rpc_impl.User_ModifyInfoReq) (*rpc_impl.User_ModifyInfoRes, error) {
     if len(req.OperatorId) < 1 || len(req.UserId) < 1 || req.OperatorId != req.UserId {
-        return nil, utils.NewError(utils.Error_InvalidParams)
+        return nil, utils.NewError(mconst.Error_InvalidParams)
     }
 
     if len(req.Nickname)+len(req.Password) < 1 {
-        return nil, utils.NewError(utils.Error_NoValidModification)
+        return nil, utils.NewError(mconst.Error_NoValidModification)
     }
 
     user, err := verifyPwdByUserID(req.UserId, req.CurrPwd)
@@ -193,7 +193,7 @@ func (s *userServerImpl) ModifyInfo(_ context.Context, req *rpc_impl.User_Modify
 
 func (s *userServerImpl) ModifyPermission(_ context.Context, req *rpc_impl.User_ModifyPermissionReq) (*rpc_impl.User_ModifyPermissionRes, error) {
     if len(req.OperatorId) < 1 || len(req.UserId) < 1 {
-        return nil, utils.NewError(utils.Error_InvalidParams)
+        return nil, utils.NewError(mconst.Error_InvalidParams)
     }
 
     users, err := db.GetUserDao().Query([]string{req.OperatorId, req.UserId})
@@ -210,7 +210,7 @@ func (s *userServerImpl) ModifyPermission(_ context.Context, req *rpc_impl.User_
     if users[0].Permission < config.GetConfig().SRankAdminPermission ||
         users[1].Permission >= config.GetConfig().SRankAdminPermission ||
         permission >= config.GetConfig().SRankAdminPermission {
-        return nil, utils.NewError(utils.Error_PermissionDenied)
+        return nil, utils.NewError(mconst.Error_PermissionDenied)
     }
 
     users[1].Permission = permission
@@ -225,12 +225,12 @@ func (s *userServerImpl) ModifyPermission(_ context.Context, req *rpc_impl.User_
 
 func (s *userServerImpl) Authenticate(_ context.Context, req *rpc_impl.User_AuthenticateReq) (*rpc_impl.User_AuthenticateRes, error) {
     if len(req.UserId) < 1 || len(req.Password) < 1 {
-        return nil, utils.NewError(utils.Error_InvalidParams)
+        return nil, utils.NewError(mconst.Error_InvalidParams)
     }
 
     _, err := verifyPwdByUserID(req.UserId, req.Password)
     if err != nil {
-        return nil, utils.NewError(utils.Error_InvalidAccountOrPassword)
+        return nil, utils.NewError(mconst.Error_InvalidAccountOrPassword)
     }
 
     return &rpc_impl.User_AuthenticateRes{}, nil
@@ -259,7 +259,7 @@ func verifyPwdByUserID(userID string, password string) (*model.User, error) {
     }
 
     if user.Password != utils.CalcSHA256(password, user.Salt) {
-        return nil, utils.NewError(utils.Error_InvalidAccountOrPassword)
+        return nil, utils.NewError(mconst.Error_InvalidAccountOrPassword)
     }
 
     return user, nil

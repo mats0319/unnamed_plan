@@ -4,10 +4,10 @@ import (
     "fmt"
     "github.com/mats9693/unnamed_plan/services/cloud_file/config"
     "github.com/mats9693/unnamed_plan/services/cloud_file/rpc"
+    "github.com/mats9693/unnamed_plan/services/shared/config"
+    "github.com/mats9693/unnamed_plan/services/shared/log"
     "github.com/mats9693/unnamed_plan/services/shared/proto/impl"
-    "github.com/mats9693/utils/toy_server/config"
-    "github.com/mats9693/utils/toy_server/log"
-    "github.com/mats9693/utils/toy_server/utils"
+    "github.com/mats9693/unnamed_plan/services/shared/utils"
     "go.uber.org/zap"
     "google.golang.org/grpc"
     "net"
@@ -19,7 +19,7 @@ func init() {
     if len(root) < 1 {
         root = mconfig.GetExecDir()+"files/"
     }
-    path := mutils.FormatDirSuffix(root) + config.GetConfig().CloudFilePublicDir
+    path := utils.FormatDirSuffix(root) + config.GetConfig().CloudFilePublicDir
 
     err := os.MkdirAll(path, 0755)
     if err != nil {

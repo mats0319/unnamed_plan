@@ -1,14 +1,14 @@
 package rpc
 
 import (
-	"encoding/json"
-	"github.com/mats9693/unnamed_plan/services/shared/proto/client"
-	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
-	"github.com/mats9693/unnamed_plan/services/shared/utils"
-	"github.com/mats9693/utils/toy_server/config"
-	"github.com/mats9693/utils/toy_server/log"
-	"go.uber.org/zap"
-	"os"
+    "encoding/json"
+	"github.com/mats9693/unnamed_plan/services/shared/config"
+	"github.com/mats9693/unnamed_plan/services/shared/log"
+    "github.com/mats9693/unnamed_plan/services/shared/proto/client"
+    "github.com/mats9693/unnamed_plan/services/shared/proto/impl"
+    "github.com/mats9693/unnamed_plan/services/shared/utils"
+    "go.uber.org/zap"
+    "os"
 )
 
 const uid_RPCClient = "1cd10cb8-ecf5-4855-a886-76b148ed104a"

@@ -2,9 +2,10 @@ package dao
 
 import (
     "fmt"
+    "github.com/mats9693/unnamed_plan/services/shared/const"
+    "github.com/mats9693/unnamed_plan/services/shared/db/dal"
     "github.com/mats9693/unnamed_plan/services/shared/db/model"
     "github.com/mats9693/unnamed_plan/services/shared/utils"
-    "github.com/mats9693/utils/toy_server/db"
     "github.com/mats9693/utils/uuid"
     "time"
 )
@@ -121,7 +122,7 @@ func (tn *ThinkNotePostgresql) UpdateColumnsByNoteID(thinkingNote *model.Thinkin
         }
 
         if res.RowsAffected() < 0 {
-            return utils.NewError(utils.Error_NoteAlreadyDeleted)
+            return utils.NewError(mconst.Error_NoteAlreadyDeleted)
         }
 
         return nil

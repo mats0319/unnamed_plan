@@ -2,9 +2,10 @@ package dao
 
 import (
     "fmt"
+    "github.com/mats9693/unnamed_plan/services/shared/const"
+    mdb "github.com/mats9693/unnamed_plan/services/shared/db/dal"
     "github.com/mats9693/unnamed_plan/services/shared/db/model"
     "github.com/mats9693/unnamed_plan/services/shared/utils"
-    "github.com/mats9693/utils/toy_server/db"
     "time"
 )
 
@@ -117,7 +118,7 @@ func (cf *CloudFilePostgresql) UpdateColumnsByFileID(data *model.CloudFile, colu
         }
 
         if res.RowsAffected() < 0 {
-            return utils.NewError(utils.Error_FileAlreadyDeleted)
+            return utils.NewError(mconst.Error_FileAlreadyDeleted)
         }
 
         return nil

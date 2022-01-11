@@ -3,7 +3,9 @@ package utils
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"github.com/pkg/errors"
+	"math/rand"
 	"strings"
 )
 
@@ -43,4 +45,46 @@ func ErrorsToString(errs ...error) string {
 
 func NewError(data string) error {
 	return errors.New(data)
+}
+
+// FormatDirSuffix make sure path is directory(end with '/')
+func FormatDirSuffix(path string) string {
+	if !strings.HasSuffix(path, "/") {
+		path += "/"
+	}
+
+	return path
+}
+
+func RandomHexString(length int) string {
+	str := ""
+	for len(str) < length {
+		str += fmt.Sprintf("%x", rand.Uint64())
+	}
+
+	return str[:length]
+}
+
+func Contains(slice []string, value string) bool {
+	isValid := false
+	for i := range slice {
+		if value == slice[i] {
+			isValid = true
+			break
+		}
+	}
+
+	return isValid
+}
+
+func GetIndex(slice []string, value string) int {
+	index := -1
+	for i := range slice {
+		if value == slice[i] {
+			index = i
+			break
+		}
+	}
+
+	return index
 }

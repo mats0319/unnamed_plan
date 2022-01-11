@@ -3,8 +3,8 @@ package dao
 import (
 	"fmt"
 	"github.com/go-pg/pg/v10"
+	"github.com/mats9693/unnamed_plan/services/shared/db/dal"
 	"github.com/mats9693/unnamed_plan/services/shared/db/model"
-	"github.com/mats9693/utils/toy_server/db"
 	"github.com/mats9693/utils/uuid"
 	"time"
 )

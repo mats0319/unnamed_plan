@@ -2,6 +2,7 @@ package rpc
 
 import (
     "context"
+    "github.com/mats9693/unnamed_plan/services/shared/const"
     "github.com/mats9693/unnamed_plan/services/shared/db/model"
     "github.com/mats9693/unnamed_plan/services/shared/proto/client"
     "github.com/mats9693/unnamed_plan/services/shared/proto/impl"
@@ -32,7 +33,7 @@ func GetThinkingNoteServer(userServerTarget string) (*thinkingNoteServerImpl, er
 
 func (t *thinkingNoteServerImpl) ListByWriter(_ context.Context, req *rpc_impl.ThinkingNote_ListByWriterReq) (*rpc_impl.ThinkingNote_ListByWriterRes, error) {
     if len(req.OperatorId) < 1 || req.GetPage() == nil || req.GetPage().PageSize < 1 || req.GetPage().PageNum < 1 {
-        return nil, utils.NewError(utils.Error_InvalidParams)
+        return nil, utils.NewError(mconst.Error_InvalidParams)
     }
 
     pageSize := int(req.GetPage().PageSize)
@@ -51,7 +52,7 @@ func (t *thinkingNoteServerImpl) ListByWriter(_ context.Context, req *rpc_impl.T
 
 func (t *thinkingNoteServerImpl) ListPublic(_ context.Context, req *rpc_impl.ThinkingNote_ListPublicReq) (*rpc_impl.ThinkingNote_ListPublicRes, error) {
     if len(req.OperatorId) < 1 || req.GetPage() == nil || req.GetPage().PageSize < 1 || req.GetPage().PageNum < 1 {
-        return nil, utils.NewError(utils.Error_InvalidParams)
+        return nil, utils.NewError(mconst.Error_InvalidParams)
     }
 
     pageSize := int(req.GetPage().PageSize)
@@ -70,7 +71,7 @@ func (t *thinkingNoteServerImpl) ListPublic(_ context.Context, req *rpc_impl.Thi
 
 func (t *thinkingNoteServerImpl) Create(_ context.Context, req *rpc_impl.ThinkingNote_CreateReq) (*rpc_impl.ThinkingNote_CreateRes, error) {
     if len(req.OperatorId) < 1 || len(req.Content) < 1 {
-        return nil, utils.NewError(utils.Error_InvalidParams)
+        return nil, utils.NewError(mconst.Error_InvalidParams)
     }
 
     err := db.GetThinkingNoteDao().Insert(&model.ThinkingNote{
@@ -88,7 +89,7 @@ func (t *thinkingNoteServerImpl) Create(_ context.Context, req *rpc_impl.Thinkin
 
 func (t *thinkingNoteServerImpl) Modify(ctx context.Context, req *rpc_impl.ThinkingNote_ModifyReq) (*rpc_impl.ThinkingNote_ModifyRes, error) {
     if len(req.OperatorId) < 1 || len(req.NoteId) < 1 || len(req.Password) < 1 || len(req.Content) < 1 {
-        return nil, utils.NewError(utils.Error_InvalidParams)
+        return nil, utils.NewError(mconst.Error_InvalidParams)
     }
 
     _, err := t.UserClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
@@ -104,11 +105,11 @@ func (t *thinkingNoteServerImpl) Modify(ctx context.Context, req *rpc_impl.Think
         return nil, err
     }
     if noteRecord.WriteBy != req.OperatorId {
-        return nil, utils.NewError(utils.Error_ModifyOthersThinkingNote)
+        return nil, utils.NewError(mconst.Error_ModifyOthersThinkingNote)
     }
 
     if req.Topic == noteRecord.Topic && req.Content == noteRecord.Content && req.IsPublic == noteRecord.IsPublic {
-        return nil, utils.NewError(utils.Error_NoValidModification)
+        return nil, utils.NewError(mconst.Error_NoValidModification)
     }
 
     updateColumns := make([]string, 0, 3)
@@ -135,7 +136,7 @@ func (t *thinkingNoteServerImpl) Modify(ctx context.Context, req *rpc_impl.Think
 
 func (t *thinkingNoteServerImpl) Delete(ctx context.Context, req *rpc_impl.ThinkingNote_DeleteReq) (*rpc_impl.ThinkingNote_DeleteRes, error) {
     if len(req.OperatorId) < 1 || len(req.Password) < 1 || len(req.NoteId) < 1 {
-        return nil, utils.NewError(utils.Error_InvalidParams)
+        return nil, utils.NewError(mconst.Error_InvalidParams)
     }
 
     _, err := t.UserClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{

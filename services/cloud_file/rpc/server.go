@@ -4,11 +4,11 @@ import (
     "context"
     "github.com/mats9693/unnamed_plan/services/cloud_file/config"
     "github.com/mats9693/unnamed_plan/services/cloud_file/db"
+    "github.com/mats9693/unnamed_plan/services/shared/const"
     "github.com/mats9693/unnamed_plan/services/shared/db/model"
     "github.com/mats9693/unnamed_plan/services/shared/proto/client"
     "github.com/mats9693/unnamed_plan/services/shared/proto/impl"
     "github.com/mats9693/unnamed_plan/services/shared/utils"
-    "github.com/mats9693/utils/toy_server/utils"
     "os"
     "strconv"
     "time"
@@ -39,7 +39,7 @@ func GetCloudFileServer(userServerTarget string) (*cloudFileServerImpl, error) {
 
 func (c *cloudFileServerImpl) ListByUploader(_ context.Context, req *rpc_impl.CloudFile_ListByUploaderReq) (*rpc_impl.CloudFile_ListByUploaderRes, error) {
     if len(req.OperatorId) < 1 || req.GetPage() == nil || req.GetPage().PageSize < 1 || req.GetPage().PageNum < 1 {
-        return nil, utils.NewError(utils.Error_InvalidParams)
+        return nil, utils.NewError(mconst.Error_InvalidParams)
     }
 
     pageSize := int(req.GetPage().PageSize)
@@ -58,7 +58,7 @@ func (c *cloudFileServerImpl) ListByUploader(_ context.Context, req *rpc_impl.Cl
 
 func (c *cloudFileServerImpl) ListPublic(_ context.Context, req *rpc_impl.CloudFile_ListPublicReq) (*rpc_impl.CloudFile_ListPublicRes, error) {
     if len(req.OperatorId) < 1 || req.GetPage() == nil || req.GetPage().PageSize < 1 || req.GetPage().PageNum < 1 {
-        return nil, utils.NewError(utils.Error_InvalidParams)
+        return nil, utils.NewError(mconst.Error_InvalidParams)
     }
 
     pageSize := int(req.GetPage().PageSize)
@@ -78,7 +78,7 @@ func (c *cloudFileServerImpl) ListPublic(_ context.Context, req *rpc_impl.CloudF
 func (c *cloudFileServerImpl) Upload(_ context.Context, req *rpc_impl.CloudFile_UploadReq) (*rpc_impl.CloudFile_UploadRes, error) {
     if len(req.OperatorId) < 1 || len(req.FileName) < 1 || len(req.ExtensionName) < 1 ||
         req.FileSize < 1 || req.LastModifiedTime < 1 {
-        return nil, utils.NewError(utils.Error_InvalidParams)
+        return nil, utils.NewError(mconst.Error_InvalidParams)
     }
 
     dir := spliceFileDir(req.IsPublic, req.OperatorId)
@@ -118,7 +118,7 @@ func (c *cloudFileServerImpl) Upload(_ context.Context, req *rpc_impl.CloudFile_
 
 func (c *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFile_ModifyReq) (*rpc_impl.CloudFile_ModifyRes, error) {
     if len(req.OperatorId) < 1 || len(req.FileId) < 1 || len(req.Password) < 1 {
-        return nil, utils.NewError(utils.Error_InvalidParams)
+        return nil, utils.NewError(mconst.Error_InvalidParams)
     }
 
     _, err := c.UserClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
@@ -135,7 +135,7 @@ func (c *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFil
     }
 
     if len(req.FileName)+len(req.ExtensionName) < 1 && fileRecord.IsPublic == req.IsPublic && len(req.File) < 1 {
-        return nil, utils.NewError(utils.Error_NoValidModification)
+        return nil, utils.NewError(mconst.Error_NoValidModification)
     }
 
     updateColumns := make([]string, 0, 5)
@@ -203,7 +203,7 @@ func (c *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFil
 
 func (c *cloudFileServerImpl) Delete(ctx context.Context, req *rpc_impl.CloudFile_DeleteReq) (*rpc_impl.CloudFile_DeleteRes, error) {
     if len(req.OperatorId) < 1 || len(req.Password) < 1 || len(req.FileId) < 1 {
-        return nil, utils.NewError(utils.Error_InvalidParams)
+        return nil, utils.NewError(mconst.Error_InvalidParams)
     }
 
     _, err := c.UserClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
@@ -265,14 +265,14 @@ func spliceFileURL(isPublic bool, operatorID string) string {
         url += operatorID
     }
 
-    return mutils.FormatDirSuffix(url)
+    return utils.FormatDirSuffix(url)
 }
 
 func spliceFileDir(isPublic bool, operatorID string) string {
-    dir := mutils.FormatDirSuffix(config.GetConfig().CloudFileRootPath)
+    dir := utils.FormatDirSuffix(config.GetConfig().CloudFileRootPath)
     dir += spliceFileURL(isPublic, operatorID)
 
-    return mutils.FormatDirSuffix(dir)
+    return utils.FormatDirSuffix(dir)
 }
 
 // spliceFilePath return absolute path

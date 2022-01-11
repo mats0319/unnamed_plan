@@ -2,9 +2,9 @@ package db
 
 import (
     "github.com/mats9693/unnamed_plan/services/cloud_file/db/dao"
-    "github.com/mats9693/utils/toy_server/const"
-    "github.com/mats9693/utils/toy_server/db"
-    "github.com/mats9693/utils/toy_server/log"
+    "github.com/mats9693/unnamed_plan/services/shared/const"
+    "github.com/mats9693/unnamed_plan/services/shared/db/dal"
+    "github.com/mats9693/unnamed_plan/services/shared/log"
     "os"
 )
 

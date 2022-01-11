@@ -1,14 +1,14 @@
 package main
 
 import (
-	"fmt"
-	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
-	"github.com/mats9693/unnamed_plan/services/user/config"
-	"github.com/mats9693/unnamed_plan/services/user/rpc"
-	"github.com/mats9693/utils/toy_server/log"
-	"go.uber.org/zap"
-	"google.golang.org/grpc"
-	"net"
+    "fmt"
+    "github.com/mats9693/unnamed_plan/services/shared/log"
+    "github.com/mats9693/unnamed_plan/services/shared/proto/impl"
+    "github.com/mats9693/unnamed_plan/services/user/config"
+    "github.com/mats9693/unnamed_plan/services/user/rpc"
+    "go.uber.org/zap"
+    "google.golang.org/grpc"
+    "net"
 )
 
 func main() {

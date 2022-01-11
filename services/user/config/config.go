@@ -2,8 +2,8 @@ package config
 
 import (
 	"encoding/json"
-	"github.com/mats9693/utils/toy_server/config"
-	"github.com/mats9693/utils/toy_server/log"
+	"github.com/mats9693/unnamed_plan/services/shared/config"
+	"github.com/mats9693/unnamed_plan/services/shared/log"
 	"go.uber.org/zap"
 	"os"
 )

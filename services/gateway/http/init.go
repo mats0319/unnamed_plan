@@ -2,8 +2,8 @@ package http
 
 import (
 	"github.com/mats9693/unnamed_plan/services/gateway/http/handlers"
-	"github.com/mats9693/utils/toy_server/const"
-	"github.com/mats9693/utils/toy_server/http"
+	"github.com/mats9693/unnamed_plan/services/shared/const"
+	"github.com/mats9693/unnamed_plan/services/shared/http"
 )
 
 var handlersIns *mhttp.Handlers
