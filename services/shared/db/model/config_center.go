@@ -12,7 +12,8 @@ type Version struct {
 	VersionNum  string `pg:",unique,notnull"` // format: v1.2.3-alpha
 	Description string
 
-	Services       []string // support service ids
+	ServiceIDs     []string // support service ids
+	ConfigIDs      []string
 	Configurations []string // service contains configs payload(json str)
 
 	IsUsing   bool `pg:",use_zero,notnull"`
