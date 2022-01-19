@@ -27,7 +27,6 @@ message User {
     string nickname = 3;
     bool is_locked = 4;
     uint32 permission = 5;
-    string created_by = 6;
   }
 
   message LoginReq {

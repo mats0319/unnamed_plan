@@ -39,7 +39,7 @@ func (s *userServerImpl) Login(_ context.Context, req *rpc_impl.User_LoginReq) (
     }
 
     return &rpc_impl.User_LoginRes{
-        UserId:     user.UserID,
+        UserId:     user.ID,
         Nickname:   user.Nickname,
         Permission: uint32(user.Permission),
     }, nil
@@ -240,12 +240,11 @@ func usersDBToRPC(data ...*model.User) []*rpc_impl.User_Data {
     res := make([]*rpc_impl.User_Data, 0, len(data))
     for i := range data {
         res = append(res, &rpc_impl.User_Data{
-            UserId:     data[i].UserID,
+            UserId:     data[i].ID,
             UserName:   data[i].UserName,
             Nickname:   data[i].Nickname,
             IsLocked:   data[i].IsLocked,
             Permission: uint32(data[i].Permission),
-            CreatedBy:  data[i].CreatedBy,
         })
     }
 
@@ -273,7 +272,7 @@ func sortUsersByUserID(users []*model.User, order []string) ([]*model.User, erro
     length := len(users)
     for i := 0; i < length; i++ {
         for j := i; j < length; j++ {
-            if order[j] == users[i].UserID {
+            if order[j] == users[i].ID {
                 users[i], users[j] = users[j], users[i]
                 break
             }
@@ -282,14 +281,14 @@ func sortUsersByUserID(users []*model.User, order []string) ([]*model.User, erro
 
     unmatchedIndex := -1
     for i := 0; i < length; i++ {
-        if users[i].UserID != order[i] {
+        if users[i].ID != order[i] {
             unmatchedIndex = i
             break
         }
     }
 
     if unmatchedIndex >= 0 {
-        return nil, errors.New(fmt.Sprintf("unmatched user id: %s", users[unmatchedIndex].UserID))
+        return nil, errors.New(fmt.Sprintf("unmatched user id: %s", users[unmatchedIndex].ID))
     }
 
     return users, nil

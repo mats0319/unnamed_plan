@@ -7,7 +7,6 @@ const (
 )
 
 const (
-	User_UserID     = "user_id"
 	User_UserName   = "user_name"
 	User_Nickname   = "nickname"
 	User_Password   = "password"

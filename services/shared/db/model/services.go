@@ -5,7 +5,6 @@ import (
 )
 
 type User struct {
-	UserID     string `pg:",unique,notnull"`
 	UserName   string `pg:",unique,notnull"` // login name
 	Nickname   string `pg:",notnull"`        // show name
 	Password   string `pg:"type:varchar(64),notnull"`
