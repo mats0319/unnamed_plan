@@ -2,6 +2,7 @@
   <configuration default="false" name="service_user" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="unnamed_plan" />
     <working_directory value="$PROJECT_DIR$/services/user/" />
+    <parameters value="-conf &quot;../build/&quot;" />
     <kind value="FILE" />
     <package value="github.com/mats9693/unnamed_plan" />
     <directory value="$PROJECT_DIR$" />

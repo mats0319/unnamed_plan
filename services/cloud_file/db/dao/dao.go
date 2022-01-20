@@ -7,7 +7,7 @@ type CloudFileDao interface {
     Insert(*model.CloudFile) error
 
     // QueryOne query one file by id
-    QueryOne(cloudFileID string) (*model.CloudFile, error)
+    QueryOne(fileID string) (*model.CloudFile, error)
 
     // QueryPageByUploader query files upload by designated user(designate by user id)
     // result not contains files marked as 'deleted', result order by 'update time' desc
@@ -20,5 +20,5 @@ type CloudFileDao interface {
     QueryPageInPublic(pageSize int, pageNum int, userID string) (files []*model.CloudFile, count int, err error)
 
     // UpdateColumnsByFileID update designated 'columns' on designated undeleted file(designate by file id)
-    UpdateColumnsByFileID(cloudFile *model.CloudFile, columns ...string) error
+    UpdateColumnsByFileID(file *model.CloudFile, columns ...string) error
 }

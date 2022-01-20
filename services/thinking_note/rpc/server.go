@@ -147,10 +147,11 @@ func (t *thinkingNoteServerImpl) Delete(ctx context.Context, req *rpc_impl.Think
         return nil, err
     }
 
-    err = db.GetThinkingNoteDao().UpdateColumnsByNoteID(&model.ThinkingNote{
-        NoteID:    req.NoteId,
-        IsDeleted: true,
-    }, model.ThinkingNote_IsDeleted)
+    note := &model.ThinkingNote{}
+    note.ID = req.NoteId
+    note.IsDeleted = true
+
+    err = db.GetThinkingNoteDao().UpdateColumnsByNoteID(note, model.ThinkingNote_IsDeleted)
     if err != nil {
         return nil, err
     }
@@ -162,7 +163,7 @@ func notesDBToRPC(data ...*model.ThinkingNote) []*rpc_impl.ThinkingNote_Data {
     res := make([]*rpc_impl.ThinkingNote_Data, 0, len(data))
     for i := range data {
         res = append(res, &rpc_impl.ThinkingNote_Data{
-            NoteId:      data[i].NoteID,
+            NoteId:      data[i].ID,
             WriteBy:     data[i].WriteBy,
             Topic:       data[i].Topic,
             Content:     data[i].Content,

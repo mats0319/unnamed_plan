@@ -1,7 +1,6 @@
 package dao
 
 import (
-    "fmt"
     "github.com/mats9693/unnamed_plan/services/shared/const"
     mdb "github.com/mats9693/unnamed_plan/services/shared/db/dal"
     "github.com/mats9693/unnamed_plan/services/shared/db/model"
@@ -24,41 +23,46 @@ func (cf *CloudFilePostgresql) Insert(cloudFile *model.CloudFile) error {
     })
 }
 
-func (cf *CloudFilePostgresql) QueryOne(cloudFileID string) (file *model.CloudFile, err error) {
-    file = &model.CloudFile{}
+func (cf *CloudFilePostgresql) QueryOne(cloudFileID string) (*model.CloudFile, error) {
+    file := &model.CloudFile{}
 
-    condition := fmt.Sprintf("%s = ? and %s = ?", model.CloudFile_IsDeleted, model.CloudFile_FileID)
-
-    err = mdb.DB().WithNoTx(func(conn mdb.Conn) error {
-        return conn.PostgresqlConn.Model(file).Where(condition, false, cloudFileID).First()
+    err := mdb.DB().WithNoTx(func(conn mdb.Conn) error {
+        return conn.PostgresqlConn.Model(file).
+            Where(model.CloudFile_IsDeleted + " = ?", false).
+            Where(model.CloudFile_FileID + " = ?", cloudFileID).
+            First()
     })
     if err != nil {
         file = nil
     }
 
-    return
+    return file, err
 }
 
 func (cf *CloudFilePostgresql) QueryPageByUploader(
     pageSize int,
     pageNum int,
     userID string,
-) (files []*model.CloudFile, count int, err error) {
-    err = mdb.DB().WithNoTx(func(conn mdb.Conn) error {
-        count, err = conn.PostgresqlConn.Model(&files).
+) ([]*model.CloudFile, int, error) {
+    files := make([]*model.CloudFile, 0)
+    count := 0
+
+    err := mdb.DB().WithNoTx(func(conn mdb.Conn) error {
+        var err2 error
+        count, err2 = conn.PostgresqlConn.Model(&files).
             Where(model.CloudFile_IsDeleted+" = ?", false).
             Where(model.CloudFile_UploadedBy+" = ?", userID).
             Order(model.Common_UpdateTime + " DESC").
             Offset((pageNum - 1) * pageSize).Limit(pageSize).SelectAndCount()
 
-        return err
+        return err2
     })
     if err != nil {
         files = nil
         count = 0
     }
 
-    return
+    return files, count, err
 }
 
 // QueryPageInPublic
@@ -67,12 +71,12 @@ Core: sub-query
 	select *
 	from cloud_files cf
 	where cf.uploaded_by in (
-		select "user_id"
+		select "id"
 		from users u
 		where "permission" <= (
 			select "permission"
 			from users u2
-			where user_id = 'user id'
+			where id = 'user id'
 		)
 	);
 */
@@ -80,26 +84,32 @@ func (cf *CloudFilePostgresql) QueryPageInPublic(
     pageSize int,
     pageNum int,
     userID string,
-) (files []*model.CloudFile, count int, err error) {
-    err = mdb.DB().WithNoTx(func(conn mdb.Conn) error {
-        permission := conn.PostgresqlConn.Model((*model.User)(nil)).Column(model.User_Permission).Where(model.User_UserID+" = ?", userID)
-        userIDs := conn.PostgresqlConn.Model((*model.User)(nil)).Column(model.User_UserID).Where(model.User_Permission+" <= (?)", permission)
+) ([]*model.CloudFile, int, error) {
+    files := make([]*model.CloudFile, 0)
+    count := 0
 
-        count, err = conn.PostgresqlConn.Model(&files).
+    err := mdb.DB().WithNoTx(func(conn mdb.Conn) error {
+        permission := conn.PostgresqlConn.Model((*model.User)(nil)).Column(model.User_Permission).Where(model.Common_ID+" = ?", userID)
+        userIDs := conn.PostgresqlConn.Model((*model.User)(nil)).Column(model.Common_ID).Where(model.User_Permission+" <= (?)", permission)
+
+        var err2 error
+        count, err2 = conn.PostgresqlConn.Model(&files).
             Where(model.CloudFile_IsDeleted+" = ?", false).
             Where(model.CloudFile_IsPublic+" = ?", true).
             Where(model.CloudFile_UploadedBy+" in (?)", userIDs).
             Order(model.Common_UpdateTime + " DESC").
-            Offset((pageNum - 1) * pageSize).Limit(pageSize).SelectAndCount()
+            Offset((pageNum - 1) * pageSize).
+            Limit(pageSize).
+            SelectAndCount()
 
-        return err
+        return err2
     })
     if err != nil {
         files = nil
         count = 0
     }
 
-    return
+    return files, count, err
 }
 
 func (cf *CloudFilePostgresql) UpdateColumnsByFileID(data *model.CloudFile, columns ...string) error {

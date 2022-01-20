@@ -30,14 +30,31 @@ var users = []*model.User{
     },
 }
 
-func insertUsers(db *pg.DB) {
+func setDefaultUser(db *pg.DB) {
     for i := range users {
         users[i].Password = utils.CalcSHA256(users[i].Password)
         users[i].Password = utils.CalcSHA256(users[i].Password, users[i].Salt)
 
         _, err := db.Model(users[i]).Insert()
         if err != nil {
-            log.Printf("insert users failed, index: %d, error: %v\n", i, err)
+            log.Printf("set default users failed, index: %d, error: %v\n", i, err)
         }
+    }
+}
+
+var user = &model.Administrator{
+    UserName: "Mario",
+    Password: "960319",
+    Salt:     utils.RandomHexString(10),
+    Common:   model.NewCommon(),
+}
+
+func setConfigCenterUser(db *pg.DB) {
+    user.Password = utils.CalcSHA256(user.Password)
+    user.Password = utils.CalcSHA256(user.Password, user.Salt)
+
+    _, err := db.Model(user).Insert()
+    if err != nil {
+        log.Println("set config center user failed, error: ", err)
     }
 }

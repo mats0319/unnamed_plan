@@ -25,6 +25,10 @@ func main() {
     }()
 
     models := []interface{}{
+        (*model.Administrator)(nil),
+        (*model.Version)(nil),
+        (*model.Service)(nil),
+        (*model.Config)(nil),
         (*model.User)(nil),
         (*model.CloudFile)(nil),
         (*model.ThinkingNote)(nil),
@@ -39,7 +43,8 @@ func main() {
 
     // built-in data
     {
-        insertUsers(db)
+        setDefaultUser(db)
+        setConfigCenterUser(db)
     }
 
     log.Println("db init finish.")

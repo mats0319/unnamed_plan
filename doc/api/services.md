@@ -35,7 +35,7 @@
 
 返回：
 
-1. 用户ID id
+1. 用户ID userID
 2. 昵称 nickname
 3. 权限等级 permission
 
@@ -66,7 +66,7 @@
 
 1. 符合条件的数据条数 total
 2. 用户列表 users
-    1. 用户ID id
+    1. 用户ID userID
     2. 用户名 userName
     3. 昵称 nickname
     4. 锁定状态 isLocked
@@ -297,7 +297,7 @@
 
 ## 随想系统
 
-记录一些自己的想法（空想）与体会（经一事，长一智）
+记录一些自己的想法与体会
 
 ### 前台(2)
 
@@ -356,7 +356,7 @@
 输入：
 
 1. 修改者ID operatorID
-2. 目标笔记ID noteID
+2. 待修改笔记ID noteID
 4. 修改者密码 password
 5. 新的主题 topic
 6. 新的内容 content

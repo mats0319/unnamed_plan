@@ -169,7 +169,6 @@ func usersRPCToHTTP(data ...*rpc_impl.User_Data) []*structure.UserRes {
             Nickname:   data[i].Nickname,
             IsLocked:   data[i].IsLocked,
             Permission: data[i].Permission,
-            CreatedBy:  data[i].CreatedBy,
         })
     }
 

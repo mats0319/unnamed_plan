@@ -134,7 +134,6 @@ export default class UserList extends Vue {
             nickname: item.nickname,
             isLocked: item.isLocked,
             permission: item.permission,
-            createdBy: item.createdBy
           });
         }
       })

@@ -4,7 +4,6 @@ import (
     "fmt"
     "github.com/mats9693/unnamed_plan/services/cloud_file/config"
     "github.com/mats9693/unnamed_plan/services/cloud_file/rpc"
-    "github.com/mats9693/unnamed_plan/services/shared/config"
     "github.com/mats9693/unnamed_plan/services/shared/log"
     "github.com/mats9693/unnamed_plan/services/shared/proto/impl"
     "github.com/mats9693/unnamed_plan/services/shared/utils"
@@ -12,16 +11,26 @@ import (
     "google.golang.org/grpc"
     "net"
     "os"
+    "path"
+    "strings"
 )
 
 func init() {
     root := config.GetConfig().CloudFileRootPath
     if len(root) < 1 {
-        root = mconfig.GetExecDir()+"files/"
-    }
-    path := utils.FormatDirSuffix(root) + config.GetConfig().CloudFilePublicDir
+        executableAbsolutePath, err := os.Executable()
+        if err != nil {
+            fmt.Println("get executable failed, error:", err)
+            os.Exit(-1)
+        }
+        executableAbsolutePath = strings.ReplaceAll(executableAbsolutePath, "\\", "/")
+        executableDir := utils.FormatDirSuffix(path.Dir(executableAbsolutePath))
 
-    err := os.MkdirAll(path, 0755)
+        root = executableDir+"files/"
+    }
+    cloudFileDir := utils.FormatDirSuffix(root) + config.GetConfig().CloudFilePublicDir
+
+    err := os.MkdirAll(cloudFileDir, 0755)
     if err != nil {
         mlog.Logger().Error("os.MkdirAll failed", zap.Error(err))
         os.Exit(-1)

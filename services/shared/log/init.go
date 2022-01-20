@@ -42,7 +42,7 @@ func logEncoder() zapcore.Encoder {
 }
 
 func logWriteSyncer() zapcore.WriteSyncer {
-	file, err := os.Create(mconfig.GetExecDir() + mconst.LogFileName)
+	file, err := os.Create(mconfig.GetLogFileDir() + mconst.LogFileName)
 	if err != nil {
 		log.Println("create log file failed, error:", err)
 		os.Exit(-1)

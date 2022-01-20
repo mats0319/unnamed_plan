@@ -2,12 +2,15 @@ package mconfig
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/utils"
 	"io/ioutil"
 	"log"
 	"os"
+	"path"
+	"strings"
 )
 
 type config struct {
@@ -23,20 +26,22 @@ type configItem struct {
 }
 
 var (
-	conf    = &config{}
-	execDir = ""
+	conf = &config{}
+
+	help          bool
+	configFileDir string
+	logFileDir    string
 )
 
 func init() {
-	dir, err := os.Getwd()
+	parseFlag()
+
+	err := setDir()
 	if err != nil {
-		fmt.Println("get executable failed, error:", err)
 		os.Exit(-1)
 	}
 
-	execDir = utils.FormatDirSuffix(dir)
-
-	err = setConfig()
+	err = initConfig()
 	if err != nil {
 		os.Exit(-1)
 	}
@@ -44,8 +49,45 @@ func init() {
 	log.Println("> Config init finish, more log will be redirect to log file.")
 }
 
-func setConfig() error {
-	configPath := execDir + mconst.ConfigFileName
+func parseFlag() {
+	flag.BoolVar(&help, "h", false, "this help")
+	flag.StringVar(&configFileDir, "conf", "", "config file dir")
+	flag.StringVar(&logFileDir, "log", "", "log file dir")
+
+	flag.Parse()
+
+	if help {
+		log.Println("Options: ")
+		flag.PrintDefaults()
+		os.Exit(0)
+	}
+}
+
+func setDir() error {
+	if len(configFileDir) > 0 && len(logFileDir) > 0 {
+		return nil
+	}
+
+	executableAbsolutePath, err := os.Executable()
+	if err != nil {
+		fmt.Println("get executable failed, error:", err)
+		return err
+	}
+	executableAbsolutePath = strings.ReplaceAll(executableAbsolutePath, "\\", "/")
+	executableDir := utils.FormatDirSuffix(path.Dir(executableAbsolutePath))
+
+	if len(configFileDir) < 1 {
+		configFileDir = executableDir
+	}
+	if len(logFileDir) < 1 {
+		logFileDir = executableDir
+	}
+
+	return nil
+}
+
+func initConfig() error {
+	configPath := configFileDir + mconst.ConfigFileName
 
 	configBs, err := ioutil.ReadFile(configPath)
 	if err != nil {
@@ -78,6 +120,6 @@ func GetConfig(uid string) []byte {
 	return res
 }
 
-func GetExecDir() string {
-	return execDir
+func GetLogFileDir() string {
+	return logFileDir
 }

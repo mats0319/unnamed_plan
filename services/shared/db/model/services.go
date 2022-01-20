@@ -30,7 +30,6 @@ type CloudFile struct {
 }
 
 type ThinkingNote struct {
-	NoteID    string `pg:",unique,notnull"`
 	WriteBy   string `pg:",notnull"` // user id
 	Topic     string
 	Content   string `pg:",notnull"`

@@ -2,6 +2,8 @@
 *.log
 *.exe
 
-services/build/
+services/build/*
+!services/build/config.json
+
 services/cloud_file/files/
 services/go.sum

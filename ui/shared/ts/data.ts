@@ -4,7 +4,6 @@ export interface User {
   nickname: string;
   isLocked: boolean;
   permission: number;
-  createdBy: string;
 }
 
 export interface CloudFile {

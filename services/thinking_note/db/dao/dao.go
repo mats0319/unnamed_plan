@@ -7,7 +7,7 @@ type ThinkingNoteDao interface {
     Insert(*model.ThinkingNote) error
 
     // QueryOne query one undeleted note by 'note id'
-    QueryOne(thinkingNoteID string) (*model.ThinkingNote, error)
+    QueryOne(noteID string) (*model.ThinkingNote, error)
 
     // QueryPageByWriter query notes that write by designated user(designate by user id)
     // result not contains notes marked as 'deleted', result order by 'update time' desc
@@ -20,5 +20,5 @@ type ThinkingNoteDao interface {
     QueryPageInPublic(pageSize int, pageNum int, userID string) (notes []*model.ThinkingNote, count int, err error)
 
     // UpdateColumnsByNoteID update designated 'columns' on designated undeleted note(designate by note id)
-    UpdateColumnsByNoteID(data *model.ThinkingNote, columns ...string) error
+    UpdateColumnsByNoteID(note *model.ThinkingNote, columns ...string) error
 }
