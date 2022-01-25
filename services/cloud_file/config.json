@@ -5,8 +5,8 @@
       "name": "config",
       "uid": "76175dee-ffee-4198-8f97-94dfd4f960fd",
       "json": {
-        "address": "127.0.0.1:29693",
-        "userServerAddress": "127.0.0.1:19693",
+        "address": "127.0.0.1:10002",
+        "userServerAddress": "127.0.0.1:10001",
         "cloudFileRootPath": "",
         "cloudFilePublicDir": "public"
       }

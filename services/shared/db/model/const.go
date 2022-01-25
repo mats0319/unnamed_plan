@@ -6,38 +6,6 @@ const (
 	Common_UpdateTime  = "update_time"
 )
 
-// config center
-
-const (
-	Administrator_UserName = "user_name"
-	Administrator_Password = "password"
-	Administrator_Salt     = "salt"
-)
-
-const (
-	Version_VersionNum     = "version_num"
-	Version_Description    = "description"
-	Version_ServicesIDs    = "service_ids"
-	Version_ConfigIDs      = "config_ids"
-	Version_Configurations = "configurations"
-	Version_IsUsing        = "is_using"
-	Version_HasUpdate      = "has_update"
-)
-
-const (
-	Service_ServiceID = "service_id"
-	Service_ServiceName = "service_name"
-	Service_ConfigIDs = "config_ids"
-	Service_IsShadow = "is_shadow"
-)
-
-const (
-	Config_ConfigID = "config_id"
-	Config_ConfigName = "config_name"
-	Config_payload = "payload"
-	Config_IsShadow = "is_shadow"
-)
-
 // services
 
 const (

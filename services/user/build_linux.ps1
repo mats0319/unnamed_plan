@@ -7,17 +7,17 @@ $path = Get-Location
 
 Set-Location $PSScriptRoot
 
-    if (!(Test-Path "../build/service_user/")) {
+    if (Test-Path "../build/service_user/") {
+        Remove-Item "../build/service_user/*"
+    } else {
         mkdir "../build/service_user/"
-    }
-
-    if (Test-Path "../build/service_user/service_exec") {
-        Remove-Item "../build/service_user/service_exec"
     }
 
     go build -o "service_exec"
 
     Move-Item "service_exec" -Destination "../build/service_user/service_exec"
+
+    Copy-Item "config.json" -Destination "../build/service_user/config.json"
 
 Set-Location $path
 

@@ -5,8 +5,8 @@
       "name": "config",
       "uid": "5d71f9af-63f5-44c5-9ef0-403bcd1ad381",
       "json": {
-        "address": "127.0.0.1:39693",
-        "userServerAddress": "127.0.0.1:19693"
+        "address": "127.0.0.1:10003",
+        "userServerAddress": "127.0.0.1:10001"
       }
     },
     {

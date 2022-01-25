@@ -16,9 +16,9 @@
       "name": "rpc client",
       "uid": "1cd10cb8-ecf5-4855-a886-76b148ed104a",
       "json": {
-        "userClientTarget": "127.0.0.1:19693",
-        "cloudFileClientTarget": "127.0.0.1:29693",
-        "thinkingNoteClientTarget": "127.0.0.1:39693"
+        "userClientTarget": "127.0.0.1:10001",
+        "cloudFileClientTarget": "127.0.0.1:10002",
+        "thinkingNoteClientTarget": "127.0.0.1:10003"
       }
     }
   ]

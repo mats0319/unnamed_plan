@@ -8,11 +8,6 @@ Start-Transcript "build.log" -Force
         if (!(Test-Path "./build/")) {
             mkdir build
         }
-        
-        # config center service
-        powershell -executionpolicy bypass -File ".\config_center\build_linux.ps1"
-
-        Write-Output "> build config center service finished."
 
         # gateway service
         powershell -executionpolicy bypass -File ".\gateway\build_linux.ps1"

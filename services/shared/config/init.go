@@ -14,7 +14,6 @@ import (
 )
 
 type config struct {
-	Version     string        `json:"version"`
 	Level       string        `json:"level"`
 	ConfigItems []*configItem `json:"config"`
 }
