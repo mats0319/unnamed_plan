@@ -111,16 +111,16 @@ func (h *Handlers) ServeHTTP(writer http.ResponseWriter, request *http.Request) 
 // HandleFunc register pattern - handler pair into http handlers
 //
 // @params params: describe if this handler has different behaviors from default
-func (h *Handlers) HandleFunc(pattern string, handler handler, params ...mconst.MultiLoginSign) {
+func (h *Handlers) HandleFunc(pattern string, handler handler, params ...mconst.HTTPMultiLoginFlag) {
 	handlerWrapperIns := &handlerWrapper{
 		handler: handler,
 	}
 
 	for i := range params {
 		switch params[i] {
-		case mconst.SkipLimit:
+		case mconst.HTTPMultiLogin_SkipLimit:
 			handlerWrapperIns.skipMultiLoginLimit = true
-		case mconst.ReSetParams:
+		case mconst.HTTPMultiLogin_ReSetParams:
 			handlerWrapperIns.reSetMultiLoginParams = true
 		}
 	}

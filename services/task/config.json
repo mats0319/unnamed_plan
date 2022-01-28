@@ -1,0 +1,26 @@
+{
+  "level": "dev",
+  "config": [
+    {
+      "name": "config",
+      "uid": "034ac632-8329-4045-94a6-92219b22a263",
+      "json": {
+        "address": "127.0.0.1:10004",
+        "maxRecords": 200
+      }
+    },
+    {
+      "name": "db",
+      "uid": "658e06f7-71d5-4ada-b715-8c1a4489e5d2",
+      "json": {
+        "DBMS": "postgresql",
+        "addr": "106.75.174.54:5432",
+        "dbName": "unnamed_plan_test",
+        "user": "mario_test",
+        "password": "123456",
+        "timeout": 3,
+        "showSQL": true
+      }
+    }
+  ]
+}

@@ -9,35 +9,39 @@
     1. 每页条数：pageSize
     2. 当前页码：pageNum （当前页码从1开始）
     3. 符合条件的数据总条数：total
-3. 数据库记录ID：id
-4. 创建时间：createdTime
-5. 更新时间：updateTime
-6. 是否公开：isPublic
+3. 创建时间：createdTime
+4. 更新时间：updateTime
+5. 是否公开：isPublic
 
-7. 用户列表：users
-8. 用户ID：id （用户在数据库表中的记录ID）
-9. 用户名：userName
-10. 昵称：nickname
-11. 锁定状态：isLocked
-12. 密码：password
-13. 权限等级：permission
-14. 创建人：createdBy
+6. 用户列表：users
+7. 用户ID：userID
+8. 用户名：userName
+9. 昵称：nickname
+10. 锁定状态：isLocked
+11. 密码：password
+12. 权限等级：permission
+13. 创建人：createdBy
 
-15. 文件列表：files
-20. 文件ID：fileID
+14. 文件列表：files
+15. 文件ID：fileID
 16. 文件名：fileName
-22. 上次修改时间：lastModifiedTime
-21. 访问路径：fileURL
-17. 扩展名：extensionName
-18. 文件大小：fileSize
-19. 文件：file
+17. 上次修改时间：lastModifiedTime
+18. 访问路径：fileURL
+19. 扩展名：extensionName
+20. 文件大小：fileSize
+21. 文件：file
 
-23. 编辑者：writeBy
-24. 主题：topic
-25. 内容：content
-26. 笔记：notes
-27. 笔记ID：noteID
-28. 编辑者ID：writerID
+22. 编辑者：writeBy
+23. 主题：topic
+24. 内容：content
+25. 笔记：notes
+26. 笔记ID：noteID
+
+27. 任务名：taskName
+28. 描述：description
+29. 前置任务ID列表：preTaskIDs
+30. 任务ID：taskID
+31. 任务：tasks
 
 ## CRUD
 

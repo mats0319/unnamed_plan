@@ -67,3 +67,15 @@ func MakeListPublicThinkingNoteRes(total uint32, notes []*NoteRes) interface{} {
 		&Notes{Notes: notes},
 	}
 }
+
+// task
+
+func MakeListTaskRes(total uint32, tasks []*TaskRes) interface{} {
+	return &struct {
+		*Total
+		*Tasks
+	}{
+		&Total{Total: total},
+		&Tasks{Tasks: tasks},
+	}
+}

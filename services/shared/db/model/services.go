@@ -1,6 +1,7 @@
 package model
 
 import (
+	mconst "github.com/mats9693/unnamed_plan/services/shared/const"
 	"time"
 )
 
@@ -35,6 +36,16 @@ type ThinkingNote struct {
 	Content   string `pg:",notnull"`
 	IsPublic  bool   `pg:",use_zero,notnull"`
 	IsDeleted bool   `pg:",use_zero,notnull"`
+
+	Common
+}
+
+type Task struct {
+	TaskName    string `pg:",unique:task,notnull"`
+	PostedBy    string `pg:",unique:task,notnull"` // user id
+	Description string
+	PreTaskIDs  []string          `pg:"pre_task_ids,notnull"`
+	Status      mconst.TaskStatus `pg:",use_zero,notnull"`
 
 	Common
 }

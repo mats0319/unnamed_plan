@@ -36,3 +36,11 @@ const (
 	ThinkingNote_IsPublic  = "is_public"
 	ThinkingNote_IsDeleted = "is_deleted"
 )
+
+const (
+	Task_TaskName = "task_name"
+	Task_PostedBy = "posted_by"
+	Task_Description = "description"
+	Task_PreTaskIDs = "pre_task_ids"
+	Task_Status = "status"
+)

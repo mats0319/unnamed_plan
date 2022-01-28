@@ -8,18 +8,16 @@ $path = Get-Location
 
 Set-Location $PSScriptRoot
 
-    if (!(Test-Path "./impl")) {
-        mkdir impl
+    if (Test-Path "./impl") {
+        Remove-Item "./impl/*"
+    } else {
+        mkdir "./impl"
     }
 
     # out path is relative on proto file
     protoc --go_out=./impl --go_opt=paths=source_relative `
     --go-grpc_out=./impl --go-grpc_opt=paths=source_relative `
-    .\config_center.proto `
-    .\common.proto `
-    .\user.proto `
-    .\cloud_file.proto `
-    .\thinking_note.proto
+    .\*.proto `
 
 Set-Location $path
 

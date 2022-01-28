@@ -1,4 +1,4 @@
-Start-Transcript "build.log" -Force
+Start-Transcript "log.log" -Force
 
     # record path
     $path = Get-Location
@@ -28,6 +28,11 @@ Start-Transcript "build.log" -Force
         powershell -executionpolicy bypass -File ".\thinking_note\build_linux.ps1"
 
         Write-Output "> build thinking note service finished."
+
+        # task service
+        powershell -executionpolicy bypass -File ".\task\build_linux.ps1"
+
+        Write-Output "> build task service finished."
 
     # reset path
     Set-Location $path

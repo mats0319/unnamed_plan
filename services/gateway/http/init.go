@@ -16,7 +16,7 @@ func init() {
 	handlersIns = mhttp.NewHandlers()
 
 	// user
-	handlersIns.HandleFunc("/api/login", handlers.Login, mconst.SkipLimit, mconst.ReSetParams)
+	handlersIns.HandleFunc("/api/login", handlers.Login, mconst.HTTPMultiLogin_SkipLimit, mconst.HTTPMultiLogin_ReSetParams)
 	handlersIns.HandleFunc("/api/user/list", handlers.ListUser)
 	handlersIns.HandleFunc("/api/user/create", handlers.CreateUser)
 	handlersIns.HandleFunc("/api/user/lock", handlers.LockUser)
@@ -37,4 +37,9 @@ func init() {
 	handlersIns.HandleFunc("/api/thinkingNote/create", handlers.CreateThinkingNote)
 	handlersIns.HandleFunc("/api/thinkingNote/modify", handlers.ModifyThinkingNote)
 	handlersIns.HandleFunc("/api/thinkingNote/delete", handlers.DeleteThinkingNote)
+
+	// task
+	handlersIns.HandleFunc("/api/task/list", handlers.ListTask)
+	handlersIns.HandleFunc("/api/task/create", handlers.CreateTask)
+	handlersIns.HandleFunc("/api/task/modify", handlers.ModifyTask)
 }

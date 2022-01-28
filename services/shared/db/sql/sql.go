@@ -33,6 +33,7 @@ func main() {
 		(*model.User)(nil),
 		(*model.CloudFile)(nil),
 		(*model.ThinkingNote)(nil),
+		(*model.Task)(nil),
 	}
 
 	for i, m := range models {

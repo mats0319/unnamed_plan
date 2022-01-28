@@ -28,13 +28,6 @@ const (
 	Error_InvalidParams       = "invalid param(s)"
 )
 
-type MultiLoginSign = uint8
-
-const (
-	SkipLimit MultiLoginSign = iota
-	ReSetParams
-)
-
 const (
 	Error_InvalidAccountOrPassword = "invalid account or password"
 	Error_PermissionDenied         = "permission denied"
@@ -45,4 +38,5 @@ const (
 	Error_FileAlreadyDeleted       = "file already deleted"
 	Error_NoteAlreadyDeleted       = "note already deleted"
 	Error_ModifyOthersThinkingNote = "not allowed to modify others' thinking note"
+	Error_ModifyOthersTask         = "not allowed to modify others' task"
 )
