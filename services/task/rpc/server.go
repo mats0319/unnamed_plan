@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/db/model"
+	"github.com/mats9693/unnamed_plan/services/shared/proto/client"
 	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
 	"github.com/mats9693/unnamed_plan/services/shared/utils"
 	"github.com/mats9693/unnamed_plan/services/task/config"
@@ -12,14 +13,23 @@ import (
 
 type taskServerImpl struct {
 	rpc_impl.UnimplementedITaskServer
+
+	UserClient rpc_impl.IUserClient
 }
 
 var _ rpc_impl.ITaskServer = (*taskServerImpl)(nil)
 
 var taskServerImplIns = &taskServerImpl{}
 
-func GetTaskServer() *taskServerImpl {
-	return taskServerImplIns
+func GetTaskServer(userServerTarget string) (*taskServerImpl, error) {
+	userClient, err := client.ConnectUserServer(userServerTarget)
+	if err != nil {
+		return nil, err
+	}
+
+	taskServerImplIns.UserClient = userClient
+
+	return taskServerImplIns, nil
 }
 
 func (t *taskServerImpl) List(_ context.Context, req *rpc_impl.Task_ListReq) (*rpc_impl.Task_ListRes, error) {
@@ -61,9 +71,17 @@ func (t *taskServerImpl) Create(_ context.Context, req *rpc_impl.Task_CreateReq)
 	return &rpc_impl.Task_CreateRes{}, nil
 }
 
-func (t *taskServerImpl) Modify(_ context.Context, req *rpc_impl.Task_ModifyReq) (*rpc_impl.Task_ModifyRes, error) {
+func (t *taskServerImpl) Modify(ctx context.Context, req *rpc_impl.Task_ModifyReq) (*rpc_impl.Task_ModifyRes, error) {
 	if len(req.OperatorId) < 1 || len(req.TaskId) < 1 || len(req.TaskName) < 1 {
 		return nil, utils.NewError(mconst.Error_InvalidParams)
+	}
+
+	_, err := t.UserClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
+		UserId:   req.OperatorId,
+		Password: req.Password,
+	})
+	if err != nil {
+		return nil, err
 	}
 
 	task, err := db.GetTaskDao().QueryOne(req.TaskId)

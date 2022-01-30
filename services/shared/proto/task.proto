@@ -43,10 +43,11 @@ message Task {
   message ModifyReq {
     string operator_id = 1;
     string task_id = 2;
-    string task_name = 3;
-    string description = 4;
-    repeated string pre_task_ids = 5;
-    uint32 status = 6;
+    string password = 3;
+    string task_name = 4;
+    string description = 5;
+    repeated string pre_task_ids = 6;
+    uint32 status = 7;
   }
 
   message ModifyRes {

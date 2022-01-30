@@ -67,6 +67,9 @@ export default class UploadCloudFile extends Vue {
         }
 
         this.$message.success("上传文件成功");
+
+        this.fileName = "";
+        this.isPublic = false;
       })
       .catch(err => {
         this.$message.error("上传文件失败");

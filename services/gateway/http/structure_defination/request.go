@@ -405,7 +405,12 @@ func (p *CreateTaskReqParams) Decode(r *http.Request) string {
 	p.OperatorID = r.PostFormValue(params_OperatorID)
 	p.TaskName = r.PostFormValue(params_TaskName)
 	p.Description = r.PostFormValue(params_Description)
-	p.PreTaskIDs = strings.Split(r.PostFormValue(params_PreTaskIDs), ",") // todo: build a real req from ui, see param style
+	p.PreTaskIDs = make([]string, 0)
+
+	preTaskIDs := r.PostFormValue(params_PreTaskIDs)
+	if len(preTaskIDs) > 0 {
+		p.PreTaskIDs = strings.Split(preTaskIDs, ",")
+	}
 
 	return ""
 }
@@ -413,6 +418,7 @@ func (p *CreateTaskReqParams) Decode(r *http.Request) string {
 type ModifyTaskReqParams struct {
 	OperatorID  string
 	TaskID      string
+	Password    string
 	TaskName    string
 	Description string
 	PreTaskIDs  []string
@@ -422,9 +428,15 @@ type ModifyTaskReqParams struct {
 func (p *ModifyTaskReqParams) Decode(r *http.Request) string {
 	p.OperatorID = r.PostFormValue(params_OperatorID)
 	p.TaskID = r.PostFormValue(params_TaskID)
+	p.Password = r.PostFormValue(params_Password)
 	p.TaskName = r.PostFormValue(params_TaskName)
 	p.Description = r.PostFormValue(params_Description)
-	p.PreTaskIDs = strings.Split(r.PostFormValue(params_PreTaskIDs), ",") // todo: build a real req from ui, see param style
+	p.PreTaskIDs = make([]string, 0)
+
+	preTaskIDs := r.PostFormValue(params_PreTaskIDs)
+	if len(preTaskIDs) > 0 {
+		p.PreTaskIDs = strings.Split(preTaskIDs, ",")
+	}
 	statusInt, err := strconv.Atoi(r.PostFormValue(params_Status))
 
 	if err != nil {

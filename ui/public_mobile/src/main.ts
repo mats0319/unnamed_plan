@@ -12,7 +12,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
 
 // filters
-import { displayIsPublic, displayTime } from "shared/ts/data";
+import { displayIsPublic, displayTime } from "shared/ts/utils";
 
 Vue.filter("displayIsPublic", displayIsPublic);
 Vue.filter("displayTime", displayTime);

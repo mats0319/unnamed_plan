@@ -150,7 +150,8 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { CloudFile, generateCloudFileURL } from "shared/ts/data";
+import { CloudFile } from "shared/ts/data";
+import { generateCloudFileURL } from "shared/ts/utils";
 import { tips_CloudFile_FileName, tips_IsPublic } from "shared/ts/const";
 import cloudFileAxios from "shared/ts/axios_wrapper/cloud_file";
 

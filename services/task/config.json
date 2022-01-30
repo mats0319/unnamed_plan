@@ -6,6 +6,7 @@
       "uid": "034ac632-8329-4045-94a6-92219b22a263",
       "json": {
         "address": "127.0.0.1:10004",
+        "userServerAddress": "127.0.0.1:10001",
         "maxRecords": 200
       }
     },

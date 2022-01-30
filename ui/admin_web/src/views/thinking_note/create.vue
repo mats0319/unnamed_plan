@@ -61,6 +61,10 @@ export default class CreateThinkingNote extends Vue {
         }
 
         this.$message.success("记录随想成功");
+
+        this.topic = "";
+        this.isPublic = false;
+        this.content = "";
       })
       .catch(err => {
         this.$message.error("记录随想失败");

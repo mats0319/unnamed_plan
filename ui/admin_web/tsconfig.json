@@ -1,21 +1,21 @@
+// reference: https://www.typescriptlang.org/zh/tsconfig
 {
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "strict": false,
-    "jsx": "preserve",
-    "importHelpers": true,
     "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "skipLibCheck": true,
+    "strict": false,
+    "importHelpers": true,
+    "experimentalDecorators": true, // for 'vue-class-component'
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true, // skip type checking of declaration files
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
       "webpack-env"
     ],
-    "paths": {
+    "paths": { // 模块名或路径的映射列表
       "@/*": [
         "src/*"
       ]
@@ -29,10 +29,7 @@
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.tsx",
     "src/**/*.vue",
-    "tests/**/*.ts",
-    "tests/**/*.tsx"
   ],
   "exclude": [
     "node_modules"

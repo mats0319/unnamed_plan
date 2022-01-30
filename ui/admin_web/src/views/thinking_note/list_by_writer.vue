@@ -224,6 +224,7 @@ export default class ListThinkingNoteByWriter extends Vue {
         }
 
         this.$message.success("修改随想成功");
+        this.modifyDialogController = false;
 
         this.list(this.pageNum);
       })
@@ -244,6 +245,7 @@ export default class ListThinkingNoteByWriter extends Vue {
         }
 
         this.$message.success("删除随想成功");
+        this.deleteDialogController = false;
 
         this.list(this.pageNum);
       })

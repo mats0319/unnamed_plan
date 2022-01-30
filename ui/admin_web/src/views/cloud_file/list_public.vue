@@ -40,7 +40,8 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { CloudFile, generateCloudFileURL } from "shared/ts/data";
+import { CloudFile } from "shared/ts/data";
+import { generateCloudFileURL } from "shared/ts/utils";
 import cloudFileAxios from "shared/ts/axios_wrapper/cloud_file";
 
 @Component

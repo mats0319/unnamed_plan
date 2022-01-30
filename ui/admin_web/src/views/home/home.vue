@@ -39,9 +39,16 @@
         <el-submenu index="thinking-note">
           <template slot="title">随想</template>
 
-          <el-menu-item index="create" :route="{ name: 'thinkingNoteCreate' }">记录</el-menu-item>
+          <el-menu-item index="create" :route="{ name: 'thinkingNoteCreate' }">记录随想</el-menu-item>
           <el-menu-item index="listByWriter" :route="{ name: 'thinkingNoteListByWriter' }">我记录的随想</el-menu-item>
           <el-menu-item index="listPublic" :route="{ name: 'thinkingNoteListPublic' }">公开的随想</el-menu-item>
+        </el-submenu>
+
+        <el-submenu index="task">
+          <template slot="title">任务</template>
+
+          <el-menu-item index="create" :route="{ name: 'taskCreate' }">发布任务</el-menu-item>
+          <el-menu-item index="list" :route="{ name: 'taskList' }">查看任务</el-menu-item>
         </el-submenu>
       </el-menu>
     </div>

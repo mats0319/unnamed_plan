@@ -6,6 +6,26 @@ export interface User {
   permission: number;
 }
 
+export function newUser(): User {
+  return {
+    userID: "",
+    userName: "",
+    nickname: "",
+    isLocked: false,
+    permission: 0,
+  };
+}
+
+export function deepCopyUser(data: User): User {
+  return {
+    userID: data.userID,
+    userName: data.userName,
+    nickname: data.nickname,
+    isLocked: data.isLocked,
+    permission: data.permission,
+  };
+}
+
 export interface CloudFile {
   fileID: string;
   fileName: string;
@@ -13,6 +33,28 @@ export interface CloudFile {
   isPublic: boolean;
   updateTime: number;
   createdTime: number;
+}
+
+export function newCloudFile(): CloudFile {
+  return {
+    fileID: "",
+    fileName: "",
+    fileURL: "",
+    isPublic: false,
+    updateTime: 0,
+    createdTime: 0,
+  }
+}
+
+export function deepCopyCloudFile(data: CloudFile): CloudFile {
+  return {
+    fileID: data.fileID,
+    fileName: data.fileName,
+    fileURL: data.fileURL,
+    isPublic: data.isPublic,
+    updateTime: data.updateTime,
+    createdTime: data.createdTime,
+  }
 }
 
 export interface ThinkingNote {
@@ -25,38 +67,63 @@ export interface ThinkingNote {
   createdTime: number;
 }
 
-const cloudFileURLPrefix = "https://mats9693.cn/cloud-file/";
-
-export function generateCloudFileURL(url: string): string {
-  return cloudFileURLPrefix + url
+export function newThinkingNote(): ThinkingNote {
+  return {
+    noteID: "",
+    writeBy: "",
+    topic: "",
+    content: "",
+    isPublic: false,
+    updateTime: 0,
+    createdTime: 0,
+  }
 }
 
-export function displayIsLocked(isLocked: boolean): string {
-  return isLocked ? "已锁定" : "未锁定";
+export function deepCopyThinkingNote(data: ThinkingNote): ThinkingNote {
+  return {
+    noteID: data.noteID,
+    writeBy: data.writeBy,
+    topic: data.topic,
+    content: data.content,
+    isPublic: data.isPublic,
+    updateTime: data.updateTime,
+    createdTime: data.createdTime,
+  }
 }
 
-export function displayIsPublic(isPublic: boolean): string {
-  return isPublic ? "公开" : "非公开";
+export interface Task {
+  taskID: string;
+  taskName: string;
+  description: string;
+  preTaskIDs: Array<string>;
+  preTasks: string; // for display
+  status: number;
+  updateTime: number;
+  createdTime: number;
 }
 
-/**
- * display time string base on timestamp
- * @param time timestamp, unit: second
- */
-export function displayTime(time: number): string {
-  const date: Date = new Date(time * 1000);
-
-  const year = date.getFullYear();
-  const month = formatTimeDigit(date.getMonth() + 1);
-  const day = formatTimeDigit(date.getDate());
-
-  const hour = formatTimeDigit(date.getHours());
-  const minute = formatTimeDigit(date.getMinutes());
-  const second = formatTimeDigit(date.getSeconds());
-
-  return year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
+export function newTask(): Task {
+  return {
+    taskID: "",
+    taskName: "",
+    description: "",
+    preTaskIDs: new Array<string>(),
+    preTasks: "",
+    status: 0,
+    updateTime: 0,
+    createdTime: 0,
+  }
 }
 
-function formatTimeDigit(time: number): string {
-  return time >= 10 ? time.toString() : "0" + time;
+export function deepCopyTask(data: Task): Task {
+  return {
+    taskID: data.taskID,
+    taskName: data.taskName,
+    description: data.description,
+    preTaskIDs: data.preTaskIDs,
+    preTasks: data.preTasks,
+    status: data.status,
+    updateTime: data.updateTime,
+    createdTime: data.createdTime,
+  }
 }

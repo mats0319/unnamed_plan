@@ -33,46 +33,47 @@ func ListTask(r *http.Request) *mhttp.ResponseData {
 
 func CreateTask(r *http.Request) *mhttp.ResponseData {
 	params := &structure.CreateTaskReqParams{}
-    if errMsg := params.Decode(r); len(errMsg) > 0 {
-        mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
-        return mhttp.ResponseWithError(errMsg)
-    }
+	if errMsg := params.Decode(r); len(errMsg) > 0 {
+		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
+		return mhttp.ResponseWithError(errMsg)
+	}
 
-    _, err := rpc.GetRPCClient().TaskClient.Create(context.Background(), &rpc_impl.Task_CreateReq{
-        OperatorId:  params.OperatorID,
-        TaskName:    params.TaskName,
-        Description: params.Description,
-        PreTaskIds:  params.PreTaskIDs,
-    })
-    if err != nil {
-        mlog.Logger().Error("create task failed", zap.Error(err))
-        return mhttp.ResponseWithError(err.Error())
-    }
+	_, err := rpc.GetRPCClient().TaskClient.Create(context.Background(), &rpc_impl.Task_CreateReq{
+		OperatorId:  params.OperatorID,
+		TaskName:    params.TaskName,
+		Description: params.Description,
+		PreTaskIds:  params.PreTaskIDs,
+	})
+	if err != nil {
+		mlog.Logger().Error("create task failed", zap.Error(err))
+		return mhttp.ResponseWithError(err.Error())
+	}
 
-    return mhttp.Response(mconst.EmptyHTTPRes)
+	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
 func ModifyTask(r *http.Request) *mhttp.ResponseData {
-    params := &structure.ModifyTaskReqParams{}
-    if errMsg := params.Decode(r); len(errMsg) > 0 {
-        mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
-        return mhttp.ResponseWithError(errMsg)
-    }
+	params := &structure.ModifyTaskReqParams{}
+	if errMsg := params.Decode(r); len(errMsg) > 0 {
+		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
+		return mhttp.ResponseWithError(errMsg)
+	}
 
-    _, err := rpc.GetRPCClient().TaskClient.Modify(context.Background(), &rpc_impl.Task_ModifyReq{
-        OperatorId:  params.OperatorID,
-        TaskId:      params.TaskID,
-        TaskName:    params.TaskName,
-        Description: params.Description,
-        PreTaskIds:  params.PreTaskIDs,
-        Status:      uint32(params.Status),
-    })
-    if err != nil {
-        mlog.Logger().Error("create task failed", zap.Error(err))
-        return mhttp.ResponseWithError(err.Error())
-    }
+	_, err := rpc.GetRPCClient().TaskClient.Modify(context.Background(), &rpc_impl.Task_ModifyReq{
+		OperatorId:  params.OperatorID,
+		TaskId:      params.TaskID,
+		Password:    params.Password,
+		TaskName:    params.TaskName,
+		Description: params.Description,
+		PreTaskIds:  params.PreTaskIDs,
+		Status:      uint32(params.Status),
+	})
+	if err != nil {
+		mlog.Logger().Error("create task failed", zap.Error(err))
+		return mhttp.ResponseWithError(err.Error())
+	}
 
-    return mhttp.Response(mconst.EmptyHTTPRes)
+	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
 func tasksRPCToHTTP(data ...*rpc_impl.Task_Data) []*structure.TaskRes {

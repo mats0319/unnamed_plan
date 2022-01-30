@@ -68,7 +68,19 @@ const routes: Array<RouteConfig> = [
         name: "thinkingNoteListPublic",
         meta: { needLogin: true },
         component: () => import("@/views/thinking_note/list_public.vue")
-      }
+      },
+      {
+        path: "task/create",
+        name: "taskCreate",
+        meta: { needLogin: true },
+        component: () => import("@/views/task/create.vue")
+      },
+      {
+        path: "task/list",
+        name: "taskList",
+        meta: { needLogin: true },
+        component: () => import("@/views/task/list.vue")
+      },
     ]
   },
   {

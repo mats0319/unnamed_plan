@@ -44,7 +44,7 @@ type Task struct {
 	TaskName    string `pg:",unique:task,notnull"`
 	PostedBy    string `pg:",unique:task,notnull"` // user id
 	Description string
-	PreTaskIDs  []string          `pg:"pre_task_ids,notnull"`
+	PreTaskIDs  []string          `pg:"pre_task_ids"`
 	Status      mconst.TaskStatus `pg:",use_zero,notnull"`
 
 	Common

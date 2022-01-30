@@ -12,10 +12,11 @@ import "element-ui/lib/theme-chalk/index.css";
 Vue.use(ElementUI);
 
 // filters
-import { displayIsLocked, displayIsPublic, displayTime } from "shared/ts/data";
+import { displayIsLocked, displayIsPublic, displayTaskStatus, displayTime } from "shared/ts/utils";
 
 Vue.filter("displayIsLocked", displayIsLocked);
 Vue.filter("displayIsPublic", displayIsPublic);
+Vue.filter("displayTaskStatus", displayTaskStatus);
 Vue.filter("displayTime", displayTime);
 
 // axios init interceptors
