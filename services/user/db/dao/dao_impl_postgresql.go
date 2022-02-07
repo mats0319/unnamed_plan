@@ -35,13 +35,13 @@ func (u *UserPostgresql) Query(userIDs []string) ([]*model.User, error) {
 	return users, err
 }
 
-func (u *UserPostgresql) QueryOne(userID string)  (*model.User, error) {
+func (u *UserPostgresql) QueryOne(userID string) (*model.User, error) {
 	user := &model.User{}
 
 	err := mdb.DB().WithNoTx(func(conn mdb.Conn) error {
 		return conn.PostgresqlConn.Model(user).
-			Where(model.User_IsLocked + " = ?", false).
-			Where(model.Common_ID + " = ?", userID).
+			Where(model.User_IsLocked+" = ?", false).
+			Where(model.Common_ID+" = ?", userID).
 			First()
 	})
 	if err != nil {
@@ -56,8 +56,8 @@ func (u *UserPostgresql) QueryOneByUserName(userName string) (*model.User, error
 
 	err := mdb.DB().WithNoTx(func(conn mdb.Conn) error {
 		return conn.PostgresqlConn.Model(user).
-			Where(model.User_IsLocked + " = ?", false).
-			Where(model.User_UserName + " = ?", userName).
+			Where(model.User_IsLocked+" = ?", false).
+			Where(model.User_UserName+" = ?", userName).
 			First()
 	})
 	if err != nil {

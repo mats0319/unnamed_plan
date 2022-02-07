@@ -297,9 +297,9 @@
 
 ---
 
-## 随想系统
+## 笔记系统
 
-记录自己对一些事情的看法和体会
+记录自己对一些事情的看法和体会，形式上主要包括主题和正文两个模块
 
 ### 前台(2)
 
@@ -307,8 +307,8 @@
 
 查询：
 
-1. 当前用户编辑的笔记 /api/thinkingNote/listByWriter
-2. 当前用户可查看的公开笔记 /api/thinkingNote/listPublic
+1. 当前用户编辑的笔记 /api/note/listByWriter
+2. 当前用户可查看的公开笔记 /api/note/listPublic
 
 规则：
 
@@ -338,7 +338,7 @@
 
 #### 记录（创建）
 
-/api/thinkingNote/create
+/api/note/create
 
 输入：
 
@@ -353,7 +353,7 @@
 
 #### 修改
 
-/api/thinkingNote/modify
+/api/note/modify
 
 输入：
 
@@ -372,7 +372,7 @@
 
 #### 删除
 
-/api/thinkingNote/delete
+/api/note/delete
 
 输入：
 

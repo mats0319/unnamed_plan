@@ -30,17 +30,17 @@ const (
 )
 
 const (
-	ThinkingNote_WriteBy   = "write_by"
-	ThinkingNote_Topic     = "topic"
-	ThinkingNote_Content   = "content"
-	ThinkingNote_IsPublic  = "is_public"
-	ThinkingNote_IsDeleted = "is_deleted"
+	Note_WriteBy   = "write_by"
+	Note_Topic     = "topic"
+	Note_Content   = "content"
+	Note_IsPublic  = "is_public"
+	Note_IsDeleted = "is_deleted"
 )
 
 const (
-	Task_TaskName = "task_name"
-	Task_PostedBy = "posted_by"
+	Task_TaskName    = "task_name"
+	Task_PostedBy    = "posted_by"
 	Task_Description = "description"
-	Task_PreTaskIDs = "pre_task_ids"
-	Task_Status = "status"
+	Task_PreTaskIDs  = "pre_task_ids"
+	Task_Status      = "status"
 )

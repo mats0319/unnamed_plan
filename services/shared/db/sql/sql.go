@@ -32,7 +32,7 @@ func main() {
 	models := []interface{}{
 		(*model.User)(nil),
 		(*model.CloudFile)(nil),
-		(*model.ThinkingNote)(nil),
+		(*model.Note)(nil),
 		(*model.Task)(nil),
 	}
 

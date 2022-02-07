@@ -35,12 +35,12 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { ThinkingNote } from "shared/ts/data";
-import thinkingNoteAxios from "shared/ts/axios_wrapper/thinking_note";
+import { Note } from "shared/ts/data";
+import noteAxios from "shared/ts/axios_wrapper/note";
 
 @Component
-export default class ListPublicThinkingNote extends Vue {
-  private notes: Array<ThinkingNote> = new Array<ThinkingNote>();
+export default class ListPublicNote extends Vue {
+  private notes: Array<Note> = new Array<Note>();
 
   private total = 0;
   private pageSize = 10;
@@ -54,7 +54,7 @@ export default class ListPublicThinkingNote extends Vue {
     this.total = 0;
     this.notes = [];
 
-    thinkingNoteAxios.listPublic(this.$store.state.userID, this.pageSize, currPage ? currPage : 1)
+    noteAxios.listPublic(this.$store.state.userID, this.pageSize, currPage ? currPage : 1)
       .then(response => {
         if (response.data["hasError"]) {
           throw response.data["data"];
@@ -82,8 +82,8 @@ export default class ListPublicThinkingNote extends Vue {
         }
       })
       .catch(err => {
-        this.$message.error("获取当前用户记录的随想列表失败");
-        console.log("> get thinking note by writer failed.", err);
+        this.$message.error("获取当前用户记录的笔记列表失败");
+        console.log("> get note by writer failed.", err);
       });
   }
 }

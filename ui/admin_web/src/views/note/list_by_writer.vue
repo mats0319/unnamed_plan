@@ -1,5 +1,5 @@
 <template>
-  <div class="thinking-note-list-by-writer">
+  <div class="note-list-by-writer">
     <el-table :data="notes" height="calc(80vh - 32px)" stripe highlight-current-row>
       <el-table-column label="主题" prop="topic" min-width="3" show-overflow-tooltip />
       <el-table-column label="内容" prop="content" min-width="5" show-overflow-tooltip />
@@ -53,15 +53,15 @@
     />
 
     <el-dialog
-      class="tnlbw-dialog"
+      class="nlbw-dialog"
       :visible.sync="modifyDialogController"
-      title="修改随想"
+      title="修改笔记"
       :before-close="resetModifyDialogData"
     >
-      <div class="tnlbwd-content">
+      <div class="nlbwd-content">
         <el-form label-position="left" label-width="20%">
 
-          <el-form-item label="随想ID">{{ noteID }}</el-form-item>
+          <el-form-item label="笔记ID">{{ noteID }}</el-form-item>
           <el-form-item label="原主题">{{ oldTopic }}</el-form-item>
 
           <hr />
@@ -69,7 +69,7 @@
           <el-form-item label="主题">
             <el-input v-model="topic" placeholder="主题" />
 
-            <el-popover trigger="hover" placement="top" :content="tips_ThinkingNote_Topic">
+            <el-popover trigger="hover" placement="top" :content="tips_Note_Topic">
               <i slot="reference" class="el-icon-warning-outline" />
             </el-popover>
           </el-form-item>
@@ -80,7 +80,7 @@
               type="textarea"
               :autosize="{ minRows: 3, maxRows: 5 }"
               resize="none"
-              placeholder="请输入随想内容"
+              placeholder="请输入笔记内容"
             />
           </el-form-item>
 
@@ -110,15 +110,15 @@
     </el-dialog>
 
     <el-dialog
-      class="tnlbw-dialog"
+      class="nlbw-dialog"
       :visible.sync="deleteDialogController"
-      title="删除随想"
+      title="删除笔记"
       :before-close="resetDeleteDialogData"
     >
-      <div class="tnlbwd-content">
+      <div class="nlbwd-content">
         <el-form label-position="left" label-width="20%">
 
-          <el-form-item label="随想ID">{{ noteID }}</el-form-item>
+          <el-form-item label="笔记ID">{{ noteID }}</el-form-item>
           <el-form-item label="主题">{{ topic }}</el-form-item>
 
           <el-form-item label="密码">
@@ -142,13 +142,13 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { ThinkingNote } from "shared/ts/data";
-import { tips_IsPublic, tips_ThinkingNote_Topic } from "shared/ts/const";
-import thinkingNoteAxios from "shared/ts/axios_wrapper/thinking_note";
+import { Note } from "shared/ts/data";
+import { tips_IsPublic, tips_Note_Topic } from "shared/ts/const";
+import noteAxios from "shared/ts/axios_wrapper/note";
 
 @Component
-export default class ListThinkingNoteByWriter extends Vue {
-  private notes: Array<ThinkingNote> = new Array<ThinkingNote>();
+export default class ListNoteByWriter extends Vue {
+  private notes: Array<Note> = new Array<Note>();
 
   private total = 0;
   private pageSize = 10;
@@ -168,7 +168,7 @@ export default class ListThinkingNoteByWriter extends Vue {
 
   // const
   private tips_IsPublic = tips_IsPublic;
-  private tips_ThinkingNote_Topic = tips_ThinkingNote_Topic;
+  private tips_Note_Topic = tips_Note_Topic;
 
   private mounted() {
     this.list();
@@ -178,7 +178,7 @@ export default class ListThinkingNoteByWriter extends Vue {
     this.total = 0;
     this.notes = [];
 
-    thinkingNoteAxios.listByWriter(this.$store.state.userID, this.pageSize, currPage ? currPage : 1)
+    noteAxios.listByWriter(this.$store.state.userID, this.pageSize, currPage ? currPage : 1)
       .then(response => {
         if (response.data["hasError"]) {
           throw response.data["data"];
@@ -206,31 +206,31 @@ export default class ListThinkingNoteByWriter extends Vue {
         }
       })
       .catch(err => {
-        this.$message.error("获取当前用户记录的随想列表失败");
-        console.log("> get thinking note by writer failed.", err);
+        this.$message.error("获取当前用户记录的笔记列表失败");
+        console.log("> get note by writer failed.", err);
       });
   }
 
   private modifyNote(): void {
-    if (!this.isValidModifyParams()) {
+    if (this.topic == this.oldTopic && this.content == this.oldContent && this.isPublic == this.oldIsPublic) {
       this.$message.info("当前未执行任何修改");
       return;
     }
 
-    thinkingNoteAxios.modify(this.$store.state.userID, this.noteID, this.password, this.topic, this.content, this.isPublic)
+    noteAxios.modify(this.$store.state.userID, this.noteID, this.password, this.topic, this.content, this.isPublic)
       .then(response => {
         if (response.data["hasError"]) {
           throw response.data["data"];
         }
 
-        this.$message.success("修改随想成功");
+        this.$message.success("修改笔记成功");
         this.modifyDialogController = false;
 
         this.list(this.pageNum);
       })
       .catch(err => {
-        this.$message.error("修改随想失败");
-        console.log("> modify thinking note failed.", err);
+        this.$message.error("修改笔记失败");
+        console.log("> modify note failed.", err);
       })
       .finally(() => {
         this.password = "";
@@ -238,28 +238,24 @@ export default class ListThinkingNoteByWriter extends Vue {
   }
 
   private deleteNote(): void {
-    thinkingNoteAxios.delete(this.$store.state.userID, this.noteID, this.password)
+    noteAxios.delete(this.$store.state.userID, this.noteID, this.password)
       .then(response => {
         if (response.data["hasError"]) {
           throw response.data["data"];
         }
 
-        this.$message.success("删除随想成功");
+        this.$message.success("删除笔记成功");
         this.deleteDialogController = false;
 
-        this.list(this.pageNum);
+        this.list(); // 防止删除一页的最后一条时，再次查询该页数据导致异常，故此处重新查询
       })
       .catch(err => {
-        this.$message.error("删除随想失败");
-        console.log("> delete thinking note failed.", err);
+        this.$message.error("删除笔记失败");
+        console.log("> delete note failed.", err);
       })
       .finally(() => {
         this.password = "";
       })
-  }
-
-  private isValidModifyParams(): boolean {
-    return this.topic != this.oldTopic || this.content != this.oldContent || this.isPublic != this.oldIsPublic
   }
 
   private beforeModifyNote(noteID: string, topic: string, content: string, isPublic: boolean): void {
@@ -301,11 +297,11 @@ export default class ListThinkingNoteByWriter extends Vue {
 </script>
 
 <style lang="scss">
-.thinking-note-list-by-writer {
-  .tnlbw-dialog {
+.note-list-by-writer {
+  .nlbw-dialog {
     text-align: left;
 
-    .tnlbwd-content {
+    .nlbwd-content {
       padding: 2vh 15%;
     }
 

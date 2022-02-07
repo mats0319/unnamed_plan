@@ -276,15 +276,15 @@ func (p *DeleteCloudFileReqParams) Decode(r *http.Request) string {
 	return ""
 }
 
-// thinking note
+// note
 
-type ListThinkingNoteByWriterReqParams struct {
+type ListNoteByWriterReqParams struct {
 	OperatorID string
 	PageSize   int
 	PageNum    int
 }
 
-func (p *ListThinkingNoteByWriterReqParams) Decode(r *http.Request) string {
+func (p *ListNoteByWriterReqParams) Decode(r *http.Request) string {
 	p.OperatorID = r.PostFormValue(params_OperatorID)
 	pageSize, err := strconv.Atoi(r.PostFormValue(params_PageSize))
 	pageNum, err2 := strconv.Atoi(r.PostFormValue(params_PageNum))
@@ -299,13 +299,13 @@ func (p *ListThinkingNoteByWriterReqParams) Decode(r *http.Request) string {
 	return ""
 }
 
-type ListPublicThinkingNoteReqParams struct {
+type ListPublicNoteReqParams struct {
 	OperatorID string
 	PageSize   int
 	PageNum    int
 }
 
-func (p *ListPublicThinkingNoteReqParams) Decode(r *http.Request) string {
+func (p *ListPublicNoteReqParams) Decode(r *http.Request) string {
 	p.OperatorID = r.PostFormValue(params_OperatorID)
 	pageSize, err := strconv.Atoi(r.PostFormValue(params_PageSize))
 	pageNum, err2 := strconv.Atoi(r.PostFormValue(params_PageNum))
@@ -320,14 +320,14 @@ func (p *ListPublicThinkingNoteReqParams) Decode(r *http.Request) string {
 	return ""
 }
 
-type CreateThinkingNoteReqParams struct {
+type CreateNoteReqParams struct {
 	OperatorID string
 	Topic      string
 	Content    string
 	IsPublic   bool
 }
 
-func (p *CreateThinkingNoteReqParams) Decode(r *http.Request) string {
+func (p *CreateNoteReqParams) Decode(r *http.Request) string {
 	p.OperatorID = r.PostFormValue(params_OperatorID)
 	p.Topic = r.PostFormValue(params_Topic)
 	p.Content = r.PostFormValue(params_Content)
@@ -342,7 +342,7 @@ func (p *CreateThinkingNoteReqParams) Decode(r *http.Request) string {
 	return ""
 }
 
-type ModifyThinkingNoteReqParams struct {
+type ModifyNoteReqParams struct {
 	OperatorID string
 	NoteID     string
 	Password   string
@@ -351,7 +351,7 @@ type ModifyThinkingNoteReqParams struct {
 	IsPublic   bool
 }
 
-func (p *ModifyThinkingNoteReqParams) Decode(r *http.Request) string {
+func (p *ModifyNoteReqParams) Decode(r *http.Request) string {
 	p.OperatorID = r.PostFormValue(params_OperatorID)
 	p.NoteID = r.PostFormValue(params_NoteID)
 	p.Password = r.PostFormValue(params_Password)
@@ -368,13 +368,13 @@ func (p *ModifyThinkingNoteReqParams) Decode(r *http.Request) string {
 	return ""
 }
 
-type DeleteThinkingNoteReqParams struct {
+type DeleteNoteReqParams struct {
 	OperatorID string
 	Password   string
 	NoteID     string
 }
 
-func (p *DeleteThinkingNoteReqParams) Decode(r *http.Request) string {
+func (p *DeleteNoteReqParams) Decode(r *http.Request) string {
 	p.OperatorID = r.PostFormValue(params_OperatorID)
 	p.Password = r.PostFormValue(params_Password)
 	p.NoteID = r.PostFormValue(params_NoteID)

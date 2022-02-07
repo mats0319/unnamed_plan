@@ -1,23 +1,23 @@
 package db
 
 import (
+	"github.com/mats9693/unnamed_plan/services/note/db/dao"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/db/dal"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
-	"github.com/mats9693/unnamed_plan/services/user/db/dao"
 	"os"
 )
 
-var userDaoIns dao.UserDao
+var noteDaoIns dao.NoteDao
 
-func GetUserDao() dao.UserDao {
-	return userDaoIns
+func GetNoteDao() dao.NoteDao {
+	return noteDaoIns
 }
 
 func init() {
 	switch mdb.DB().GetDBMSName() {
 	case mconst.DB_PostgreSQL:
-		userDaoIns = &dao.UserPostgresql{}
+		noteDaoIns = &dao.NotePostgresql{}
 	default:
 		mlog.Logger().Error(mconst.Error_UnsupportedDB)
 		os.Exit(-1)

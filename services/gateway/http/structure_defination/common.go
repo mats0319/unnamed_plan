@@ -1,7 +1,7 @@
 package structure
 
 import (
-	mconst "github.com/mats9693/unnamed_plan/services/shared/const"
+	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"time"
 )
 
@@ -26,13 +26,13 @@ const (
 
 	params_Topic   = "topic"
 	params_Content = "content"
-	params_NoteID = "noteID"
+	params_NoteID  = "noteID"
 
-	params_TaskName = "taskName"
+	params_TaskName    = "taskName"
 	params_Description = "description"
-	params_PreTaskIDs = "preTaskIDs"
-	params_TaskID = "taskID"
-	params_Status = "status"
+	params_PreTaskIDs  = "preTaskIDs"
+	params_TaskID      = "taskID"
+	params_Status      = "status"
 )
 
 // common

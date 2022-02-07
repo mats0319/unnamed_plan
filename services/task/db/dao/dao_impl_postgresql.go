@@ -25,8 +25,8 @@ func (t *TaskPostgresql) Insert(task *model.Task) error {
 func (t *TaskPostgresql) QueryByPoster(userID string) (tasks []*model.Task, count int, err error) {
 	err = mdb.DB().WithNoTx(func(conn mdb.Conn) error {
 		count, err = conn.PostgresqlConn.Model(&tasks).
-			Where(model.Task_PostedBy + " = ?", userID).
-			Where(model.Task_Status + " > ?", mconst.TaskStatus_History). // todo: test if '<>' works?
+			Where(model.Task_PostedBy+" = ?", userID).
+			Where(model.Task_Status+" > ?", mconst.TaskStatus_History). // todo: test if '<>' works?
 			Order(model.Common_UpdateTime + " ASC").
 			SelectAndCount()
 
@@ -44,7 +44,7 @@ func (t *TaskPostgresql) QueryOne(taskID string) (note *model.Task, err error) {
 	note = &model.Task{}
 
 	err = mdb.DB().WithNoTx(func(conn mdb.Conn) error {
-		return conn.PostgresqlConn.Model(note).Where(model.Common_ID + " = ?", taskID).Select()
+		return conn.PostgresqlConn.Model(note).Where(model.Common_ID+" = ?", taskID).Select()
 	})
 	if err != nil {
 		note = nil

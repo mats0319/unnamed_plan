@@ -52,22 +52,22 @@ const routes: Array<RouteConfig> = [
         component: () => import("@/views/cloud_file/list_public.vue")
       },
       {
-        path: "thinking-note/create",
-        name: "thinkingNoteCreate",
+        path: "note/create",
+        name: "noteCreate",
         meta: { needLogin: true },
-        component: () => import("@/views/thinking_note/create.vue")
+        component: () => import("@/views/note/create.vue")
       },
       {
-        path: "thinking-note/list-by-writer",
-        name: "thinkingNoteListByWriter",
+        path: "note/list-by-writer",
+        name: "noteListByWriter",
         meta: { needLogin: true },
-        component: () => import("@/views/thinking_note/list_by_writer.vue")
+        component: () => import("@/views/note/list_by_writer.vue")
       },
       {
-        path: "thinking-note/list-public",
-        name: "thinkingNoteListPublic",
+        path: "note/list-public",
+        name: "noteListPublic",
         meta: { needLogin: true },
-        component: () => import("@/views/thinking_note/list_public.vue")
+        component: () => import("@/views/note/list_public.vue")
       },
       {
         path: "task/create",

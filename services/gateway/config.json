@@ -7,7 +7,7 @@
       "json": {
         "userClientTarget": "127.0.0.1:10001",
         "cloudFileClientTarget": "127.0.0.1:10002",
-        "thinkingNoteClientTarget": "127.0.0.1:10003",
+        "noteClientTarget": "127.0.0.1:10003",
         "taskClientTarget": "127.0.0.1:10004"
       }
     },

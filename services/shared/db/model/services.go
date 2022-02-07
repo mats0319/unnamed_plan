@@ -30,7 +30,7 @@ type CloudFile struct {
 	Common
 }
 
-type ThinkingNote struct {
+type Note struct {
 	WriteBy   string `pg:",notnull"` // user id
 	Topic     string
 	Content   string `pg:",notnull"`

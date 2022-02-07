@@ -1,6 +1,6 @@
 <template>
-  <div class="list-thinking-note-by-writer">
-    <el-timeline class="ltnbw-content">
+  <div class="list-note">
+    <el-timeline class="ln-content">
       <el-timeline-item
         v-for="item in notes"
         :key="item['noteID']"
@@ -19,18 +19,18 @@
       </el-timeline-item>
     </el-timeline>
 
-    <div class="ltnbw-bottom">
-      <div class="ltnbwb-data">
+    <div class="ln-bottom">
+      <div class="lnb-data">
         共&nbsp;{{ total }}&nbsp;条<br />
         每次加载&nbsp;{{ pageSize }}&nbsp;条<br />
       </div>
 
-      <div class="ltnbwb-more">
+      <div class="lnb-more">
         <el-button v-show="(pageNum-1) * pageSize < total" type="text" plain @click="list">
           加载更多
         </el-button>
 
-        <span v-show="(pageNum-1) * pageSize >= total" class="ltnbwbm-no-more">没有更多了</span>
+        <span v-show="(pageNum-1) * pageSize >= total" class="lnbm-no-more">没有更多了</span>
       </div>
     </div>
   </div>
@@ -38,12 +38,12 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
-import { ThinkingNote } from "shared/ts/data";
-import thinkingNoteAxios from "shared/ts/axios_wrapper/thinking_note";
+import { Note } from "shared/ts/data";
+import noteAxios from "shared/ts/axios_wrapper/note";
 
 @Component
-export default class ListThinkingNoteByWriter extends Vue {
-  private notes: Array<ThinkingNote> = new Array<ThinkingNote>();
+export default class ListNote extends Vue {
+  private notes: Array<Note> = new Array<Note>();
 
   private total = 0;
   private pageSize = 5;
@@ -56,12 +56,12 @@ export default class ListThinkingNoteByWriter extends Vue {
   private list(): void {
     let axiosResPromise;
 
-    switch (this.$store.state.thinkingNotePageType) {
+    switch (this.$store.state.notePageType) {
       case "0":
-        axiosResPromise = thinkingNoteAxios.listByWriter(this.$store.state.userID, this.pageSize, this.pageNum);
+        axiosResPromise = noteAxios.listByWriter(this.$store.state.userID, this.pageSize, this.pageNum);
         break;
       case "1":
-        axiosResPromise = thinkingNoteAxios.listPublic(this.$store.state.userID, this.pageSize, this.pageNum)
+        axiosResPromise = noteAxios.listPublic(this.$store.state.userID, this.pageSize, this.pageNum)
         break;
     }
 
@@ -93,21 +93,21 @@ export default class ListThinkingNoteByWriter extends Vue {
       })
       .catch(err => {
         let errMsg = "";
-        switch (this.$store.state.thinkingNotePageType) {
+        switch (this.$store.state.notePageType) {
           case "0":
-            errMsg = "获取当前用户记录的随想列表失败"
+            errMsg = "获取当前用户记录的笔记列表失败"
             break;
           case "1":
-            errMsg = "获取公开的随想列表失败"
+            errMsg = "获取公开的笔记列表失败"
             break;
         }
 
         this.$message.error(errMsg);
-        console.log("> get thinking note failed.", err)
+        console.log("> get note failed.", err)
       })
   }
 
-  @Watch("$store.state.thinkingNotePageType")
+  @Watch("$store.state.notePageType")
   private watchPageType(): void {
     this.notes = [];
     this.total = 0;
@@ -119,18 +119,18 @@ export default class ListThinkingNoteByWriter extends Vue {
 </script>
 
 <style lang="scss">
-.list-thinking-note-by-writer {
+.list-note {
   display: flex;
   height: calc(100vh - 20rem);
   overflow-y: auto;
 
-  .ltnbw-content {
+  .ln-content {
     width: 60vw;
     padding-left: 20vw;
     padding-top: 3vh;
   }
 
-  .ltnbw-bottom {
+  .ln-bottom {
     position: absolute;
     right: 17px;
     bottom: 10rem;
@@ -142,16 +142,16 @@ export default class ListThinkingNoteByWriter extends Vue {
 
     font-size: 2rem;
 
-    .ltnbwb-data {
+    .lnb-data {
       line-height: 3rem;
       padding: 3vh 0;
     }
 
-    .ltnbwb-more {
+    .lnb-more {
       height: 4rem;
       padding-bottom: 2vh;
 
-      .ltnbwbm-no-more {
+      .lnbm-no-more {
         color: darkgray;
       }
 

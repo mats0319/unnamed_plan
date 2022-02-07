@@ -27,16 +27,16 @@ const routes: Array<RouteConfig> = [
         component: () => import("@/views/cloud_file/list.vue")
       },
       {
-        path: "thinking-note/list-by-writer",
-        name: "thinkingNoteListByWriter",
+        path: "note/list-by-writer",
+        name: "noteListByWriter",
         meta: { needLogin: true },
-        component: () => import("@/views/thinking_note/list.vue")
+        component: () => import("@/views/note/list.vue")
       },
       {
-        path: "thinking-note/list-public",
-        name: "thinkingNoteListPublic",
+        path: "note/list-public",
+        name: "noteListPublic",
         meta: { needLogin: true },
-        component: () => import("@/views/thinking_note/list.vue")
+        component: () => import("@/views/note/list.vue")
       }
     ]
   },

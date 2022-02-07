@@ -1,9 +1,9 @@
 <template>
-  <div class="list-cloud-file-by-uploader">
+  <div class="list-cloud-file">
     <el-table :data="cloudFiles" height="calc(94vh - 20rem - 32px)" stripe highlight-current-row>
       <el-table-column label="文件名" min-width="2">
         <template slot-scope="scope">
-          <div class="cflbu-file-name">
+          <div class="lcf-file-name">
             <a :href="scope.row.fileURL" target="_blank">{{ scope.row.fileName }}</a>
           </div>
         </template>
@@ -45,7 +45,7 @@ import { generateCloudFileURL } from "shared/ts/utils";
 import cloudFileAxios from "shared/ts/axios_wrapper/cloud_file";
 
 @Component
-export default class ListCloudFileByUploader extends Vue {
+export default class ListCloudFile extends Vue {
   private cloudFiles: Array<CloudFile> = new Array<CloudFile>();
 
   private total = 0;
@@ -121,16 +121,16 @@ export default class ListCloudFileByUploader extends Vue {
 </script>
 
 <style lang="scss">
-.list-cloud-file-by-uploader {
+.list-cloud-file {
   padding: 3vh 10vw;
 
-  .cflbu-file-name {
+  .lcf-file-name {
     a {
       color: darkgray;
     }
   }
 
-  .cflbu-file-name:hover {
+  .lcf-file-name:hover {
     a {
       color: lightgray;
     }

@@ -1,10 +1,10 @@
 <template>
-  <div class="thinking-note-create">
+  <div class="note-create">
     <el-form label-position="left" label-width="15%">
       <el-form-item label="主题">
-        <el-input v-model="topic" placeholder="请输入随想主题" />
+        <el-input v-model="topic" placeholder="请输入笔记主题" />
 
-        <el-popover trigger="hover" placement="top" :content="tips_ThinkingNote_Topic">
+        <el-popover trigger="hover" placement="top" :content="tips_Note_Topic">
           <i slot="reference" class="el-icon-warning-outline" />
         </el-popover>
       </el-form-item>
@@ -23,12 +23,12 @@
           type="textarea"
           :autosize="{ minRows: 3, maxRows: 5 }"
           resize="none"
-          placeholder="请输入随想内容"
+          placeholder="请输入笔记内容"
         />
       </el-form-item>
 
       <el-form-item>
-        <el-button type="info" plain @click="beforeCreateThinkingNote">记录随想</el-button>
+        <el-button type="info" plain @click="beforeCreateNote">记录笔记</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -36,56 +36,56 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { tips_IsPublic, tips_ThinkingNote_Topic } from "shared/ts/const";
-import thinkingNoteAxios from "shared/ts/axios_wrapper/thinking_note";
+import { tips_IsPublic, tips_Note_Topic } from "shared/ts/const";
+import noteAxios from "shared/ts/axios_wrapper/note";
 
 @Component
-export default class CreateThinkingNote extends Vue {
+export default class CreateNote extends Vue {
   private topic = "";
   private isPublic = false;
   private content = "";
 
   // const
   private tips_IsPublic = tips_IsPublic;
-  private tips_ThinkingNote_Topic = tips_ThinkingNote_Topic;
+  private tips_Note_Topic = tips_Note_Topic;
 
   private mounted() {
     // placeholder
   }
 
-  private createThinkingNote(): void {
-    thinkingNoteAxios.create(this.$store.state.userID, this.topic, this.content, this.isPublic)
+  private createNote(): void {
+    noteAxios.create(this.$store.state.userID, this.topic, this.content, this.isPublic)
       .then(response => {
         if (response.data["hasError"]) {
           throw response.data["data"];
         }
 
-        this.$message.success("记录随想成功");
+        this.$message.success("记录笔记成功");
 
         this.topic = "";
         this.isPublic = false;
         this.content = "";
       })
       .catch(err => {
-        this.$message.error("记录随想失败");
-        console.log("> create thinking note failed.", err);
+        this.$message.error("记录笔记失败");
+        console.log("> create note failed.", err);
       })
   }
 
-  private beforeCreateThinkingNote(): void {
+  private beforeCreateNote(): void {
     // null topic is valid
     if (this.content.length < 1) {
-      this.$message.info("请输入随想内容");
+      this.$message.info("请输入笔记内容");
       return;
     }
 
-    this.createThinkingNote();
+    this.createNote();
   }
 }
 </script>
 
 <style lang="scss">
-.thinking-note-create {
+.note-create {
   padding: 7vh 15vw;
   text-align: left;
 

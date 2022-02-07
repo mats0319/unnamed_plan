@@ -48,7 +48,7 @@ func MakeListPublicCloudFileRes(total uint32, files []*FileRes) interface{} {
 
 // note
 
-func MakeListThinkingNoteByWriterRes(total uint32, notes []*NoteRes) interface{} {
+func MakeListNoteByWriterRes(total uint32, notes []*NoteRes) interface{} {
 	return &struct {
 		*Total
 		*Notes
@@ -58,7 +58,7 @@ func MakeListThinkingNoteByWriterRes(total uint32, notes []*NoteRes) interface{}
 	}
 }
 
-func MakeListPublicThinkingNoteRes(total uint32, notes []*NoteRes) interface{} {
+func MakeListPublicNoteRes(total uint32, notes []*NoteRes) interface{} {
 	return &struct {
 		*Total
 		*Notes

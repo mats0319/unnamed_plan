@@ -16,17 +16,17 @@ const uid_RPCClient = "1cd10cb8-ecf5-4855-a886-76b148ed104a"
 type rpcClient struct {
 	conf *rpcClientConfig
 
-	UserClient         rpc_impl.IUserClient
-	CloudFileClient    rpc_impl.ICloudFileClient
-	ThinkingNoteClient rpc_impl.IThinkingNoteClient
-	TaskClient         rpc_impl.ITaskClient
+	UserClient      rpc_impl.IUserClient
+	CloudFileClient rpc_impl.ICloudFileClient
+	NoteClient      rpc_impl.INoteClient
+	TaskClient      rpc_impl.ITaskClient
 }
 
 type rpcClientConfig struct {
-	UserClientTarget         string `json:"userClientTarget"`
-	CloudFileClientTarget    string `json:"cloudFileClientTarget"`
-	ThinkingNoteClientTarget string `json:"thinkingNoteClientTarget"`
-	TaskClientTarget         string `json:"taskClientTarget"`
+	UserClientTarget      string `json:"userClientTarget"`
+	CloudFileClientTarget string `json:"cloudFileClientTarget"`
+	NoteClientTarget      string `json:"noteClientTarget"`
+	TaskClientTarget      string `json:"taskClientTarget"`
 }
 
 var rpcClientIns = &rpcClient{}
@@ -49,7 +49,7 @@ func init() {
 
 	userClient, err := client.ConnectUserServer(rpcClientIns.conf.UserClientTarget)
 	cloudFileClient, err2 := client.ConnectCloudFileServer(rpcClientIns.conf.CloudFileClientTarget)
-	thinkingNoteClient, err3 := client.ConnectThinkingNoteServer(rpcClientIns.conf.ThinkingNoteClientTarget)
+	noteClient, err3 := client.ConnectNoteServer(rpcClientIns.conf.NoteClientTarget)
 	taskClient, err4 := client.ConnectTaskServer(rpcClientIns.conf.TaskClientTarget)
 
 	if err != nil || err2 != nil || err3 != nil || err4 != nil {
@@ -60,7 +60,7 @@ func init() {
 
 	rpcClientIns.UserClient = userClient
 	rpcClientIns.CloudFileClient = cloudFileClient
-	rpcClientIns.ThinkingNoteClient = thinkingNoteClient
+	rpcClientIns.NoteClient = noteClient
 	rpcClientIns.TaskClient = taskClient
 
 	mlog.Logger().Info("> RPC client init finish.")

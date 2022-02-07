@@ -57,7 +57,7 @@ export function deepCopyCloudFile(data: CloudFile): CloudFile {
   }
 }
 
-export interface ThinkingNote {
+export interface Note {
   noteID: string;
   writeBy: string;
   topic: string;
@@ -67,7 +67,7 @@ export interface ThinkingNote {
   createdTime: number;
 }
 
-export function newThinkingNote(): ThinkingNote {
+export function newNote(): Note {
   return {
     noteID: "",
     writeBy: "",
@@ -79,7 +79,7 @@ export function newThinkingNote(): ThinkingNote {
   }
 }
 
-export function deepCopyThinkingNote(data: ThinkingNote): ThinkingNote {
+export function deepCopyNote(data: Note): Note {
   return {
     noteID: data.noteID,
     writeBy: data.writeBy,

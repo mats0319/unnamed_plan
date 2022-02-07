@@ -5,19 +5,19 @@
     <div class="top-links">
       <div v-show="$store.state.isLogin" class="tl-item">
         <el-dropdown class="tli-title">
-          <span>随想<i class="el-icon-arrow-down  el-icon--right" /></span>
+          <span>笔记<i class="el-icon-arrow-down  el-icon--right" /></span>
 
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item @click.native="linkTo('/thinking-note/list-by-writer',
-            'thinkingNoteListByWriter', 'thinkingNotePageType', '0')"
+            <el-dropdown-item @click.native="linkTo('/note/list-by-writer','noteListByWriter',
+             'notePageType', '0')"
             >
-              我记录的随想
+              我记录的笔记
             </el-dropdown-item>
 
-            <el-dropdown-item @click.native="linkTo('/thinking-note/list-public',
-             'thinkingNoteListPublic', 'thinkingNotePageType', '1')"
+            <el-dropdown-item @click.native="linkTo('/note/list-public','noteListPublic',
+             'notePageType', '1')"
             >
-              公开的随想
+              公开的笔记
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>

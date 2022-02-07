@@ -21,12 +21,12 @@ export function displayIsPublic(isPublic: boolean): string {
 }
 
 export function displayTaskStatus(status: number): string {
-  let res = "未知状态："+status;
+  let res = "";
   if (0 <= status && status < taskStatus.length) {
     res = taskStatus[status];
   }
 
-  return res;
+  return res.length < 1 ? "未知状态：" + status : res;
 }
 
 /**
@@ -66,7 +66,7 @@ export function compareOnStringSliceNotStrict(a: Array<string>, b: Array<string>
   let aMap: Map<string, number> = new Map();
   for (let i = 0; i < a.length; i++) {
     let v = aMap.get(a[i]); // v: undefined if key is not exist
-    aMap = aMap.set(a[i], v ? v+1 : 1);
+    aMap = aMap.set(a[i], v ? v + 1 : 1);
   }
 
   let isEqual = true;
@@ -78,7 +78,7 @@ export function compareOnStringSliceNotStrict(a: Array<string>, b: Array<string>
     }
 
     if (v > 1) {
-      aMap = aMap.set(b[i], v-1);
+      aMap = aMap.set(b[i], v - 1);
     } else {
       aMap.delete(b[i]);
     }

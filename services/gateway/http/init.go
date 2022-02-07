@@ -31,12 +31,12 @@ func init() {
 	handlersIns.HandleFunc("/api/cloudFile/modify", handlers.ModifyCloudFile)
 	handlersIns.HandleFunc("/api/cloudFile/delete", handlers.DeleteCloudFile)
 
-	// thinking note
-	handlersIns.HandleFunc("/api/thinkingNote/listByWriter", handlers.ListThinkingNoteByWriter)
-	handlersIns.HandleFunc("/api/thinkingNote/listPublic", handlers.ListPublicThinkingNote)
-	handlersIns.HandleFunc("/api/thinkingNote/create", handlers.CreateThinkingNote)
-	handlersIns.HandleFunc("/api/thinkingNote/modify", handlers.ModifyThinkingNote)
-	handlersIns.HandleFunc("/api/thinkingNote/delete", handlers.DeleteThinkingNote)
+	// note
+	handlersIns.HandleFunc("/api/note/listByWriter", handlers.ListNoteByWriter)
+	handlersIns.HandleFunc("/api/note/listPublic", handlers.ListPublicNote)
+	handlersIns.HandleFunc("/api/note/create", handlers.CreateNote)
+	handlersIns.HandleFunc("/api/note/modify", handlers.ModifyNote)
+	handlersIns.HandleFunc("/api/note/delete", handlers.DeleteNote)
 
 	// task
 	handlersIns.HandleFunc("/api/task/list", handlers.ListTask)
