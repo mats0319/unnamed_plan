@@ -116,14 +116,22 @@ export function newTask(): Task {
 }
 
 export function deepCopyTask(data: Task): Task {
-  return {
+  let task = {
     taskID: data.taskID,
     taskName: data.taskName,
     description: data.description,
-    preTaskIDs: data.preTaskIDs,
+    preTaskIDs: new Array<string>(),
     preTasks: data.preTasks,
     status: data.status,
     updateTime: data.updateTime,
     createdTime: data.createdTime,
   }
+
+  if (data.preTaskIDs) { // if array is null
+    for (let i = 0; i < data.preTaskIDs.length; i++) {
+      task.preTaskIDs.push(data.preTaskIDs[i]);
+    }
+  }
+
+  return task;
 }

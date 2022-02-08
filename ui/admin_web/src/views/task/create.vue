@@ -20,7 +20,22 @@
       </el-form-item>
 
       <el-form-item label="前置任务">
-        <el-select v-model="preTasks" multiple placeholder="请选择前置任务（未实现）" disabled />
+        <el-button v-show="$store.state.allTasks.length < 1" type="info" plain @click="listAllTasks">获取全部任务列表</el-button>
+
+        <el-select
+          v-show="$store.state.allTasks.length > 0"
+          v-model="preTasks"
+          multiple
+          placeholder="请选择前置任务"
+          clearable
+        >
+          <el-option
+            v-for="item in $store.state.allTasks"
+            :key="item.taskID"
+            :label="item.taskName"
+            :value="item.taskID"
+          />
+        </el-select>
       </el-form-item>
 
       <el-form-item>
@@ -34,12 +49,13 @@
 import { Component, Vue } from "vue-property-decorator";
 import { tips_Task_Name } from "shared/ts/const";
 import taskAxios from "shared/ts/axios_wrapper/task";
+import { BriefTask } from "@/ts/data";
 
 @Component
 export default class TaskCreate extends Vue {
   private taskName = "";
   private description = "";
-  private preTasks: Array<string> = []; // todo: unimplemented
+  private preTasks: Array<string> = [];
 
   // const
   private tips_Task_Name = tips_Task_Name;
@@ -74,6 +90,30 @@ export default class TaskCreate extends Vue {
     }
 
     this.postTask();
+  }
+
+  private listAllTasks(): void {
+    taskAxios.list(this.$store.state.userID)
+      .then(response => {
+        if (response.data["hasError"]) {
+          throw response.data["data"];
+        }
+
+        const payload = JSON.parse(response.data["data"] as string);
+
+        for (let i = 0; i < payload.tasks.length; i++) {
+          const item: BriefTask = {
+            taskID: payload.tasks[i].taskID,
+            taskName: payload.tasks[i].taskName,
+          }
+
+          this.$store.state.allTasks.push(item);
+        }
+      })
+      .catch(err => {
+        this.$message.error("获取当前用户发布的任务列表失败");
+        console.log("> get task by poster failed.", err);
+      });
   }
 }
 </script>

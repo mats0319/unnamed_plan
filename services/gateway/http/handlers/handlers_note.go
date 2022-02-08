@@ -20,7 +20,7 @@ func ListNoteByWriter(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	res, err := rpc.GetRPCClient().ThinkingNoteClient.ListByWriter(context.Background(), &rpc_impl.ThinkingNote_ListByWriterReq{
+	res, err := rpc.GetRPCClient().NoteClient.ListByWriter(context.Background(), &rpc_impl.Note_ListByWriterReq{
 		OperatorId: params.OperatorID,
 		Page: &rpc_impl.Pagination{
 			PageSize: uint32(params.PageSize),
@@ -42,7 +42,7 @@ func ListPublicNote(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	res, err := rpc.GetRPCClient().ThinkingNoteClient.ListPublic(context.Background(), &rpc_impl.ThinkingNote_ListPublicReq{
+	res, err := rpc.GetRPCClient().NoteClient.ListPublic(context.Background(), &rpc_impl.Note_ListPublicReq{
 		OperatorId: params.OperatorID,
 		Page: &rpc_impl.Pagination{
 			PageSize: uint32(params.PageSize),
@@ -64,7 +64,7 @@ func CreateNote(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	_, err := rpc.GetRPCClient().ThinkingNoteClient.Create(context.Background(), &rpc_impl.ThinkingNote_CreateReq{
+	_, err := rpc.GetRPCClient().NoteClient.Create(context.Background(), &rpc_impl.Note_CreateReq{
 		OperatorId: params.OperatorID,
 		Topic:      params.Topic,
 		Content:    params.Content,
@@ -85,7 +85,7 @@ func ModifyNote(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	_, err := rpc.GetRPCClient().ThinkingNoteClient.Modify(context.Background(), &rpc_impl.ThinkingNote_ModifyReq{
+	_, err := rpc.GetRPCClient().NoteClient.Modify(context.Background(), &rpc_impl.Note_ModifyReq{
 		OperatorId: params.OperatorID,
 		NoteId:     params.NoteID,
 		Password:   params.Password,
@@ -108,7 +108,7 @@ func DeleteNote(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	_, err := rpc.GetRPCClient().ThinkingNoteClient.Delete(context.Background(), &rpc_impl.ThinkingNote_DeleteReq{
+	_, err := rpc.GetRPCClient().NoteClient.Delete(context.Background(), &rpc_impl.Note_DeleteReq{
 		OperatorId: params.OperatorID,
 		Password:   params.Password,
 		NoteId:     params.NoteID,
@@ -121,7 +121,7 @@ func DeleteNote(r *http.Request) *mhttp.ResponseData {
 	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
-func notesRPCToHTTP(data ...*rpc_impl.ThinkingNote_Data) []*structure.NoteRes {
+func notesRPCToHTTP(data ...*rpc_impl.Note_Data) []*structure.NoteRes {
 	res := make([]*structure.NoteRes, 0, len(data))
 	for i := range data {
 		res = append(res, &structure.NoteRes{

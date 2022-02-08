@@ -68,7 +68,19 @@
           </el-form-item>
 
           <el-form-item label="前置任务">
-            {{ modifyingTask.preTaskIDs }}
+            <el-select
+              v-model="modifyingTask.preTaskIDs"
+              multiple
+              placeholder="请选择前置任务"
+              clearable
+            >
+              <el-option
+                v-for="item in $store.state.allTasks"
+                :key="item.taskID"
+                :label="item.taskName"
+                :value="item.taskID"
+              />
+            </el-select>
           </el-form-item>
 
           <el-form-item label="状态">
@@ -107,15 +119,15 @@ import { Task, newTask, deepCopyTask } from "shared/ts/data";
 import { tips_Task_Name, taskStatus } from "shared/ts/const";
 import { compareOnStringSliceNotStrict } from "shared/ts/utils";
 import taskAxios from "shared/ts/axios_wrapper/task";
-import {displayPreTasks} from "@/ts/utils";
+import { displayPreTasks, sortTasks } from "@/ts/utils";
 
 @Component
 export default class TaskList extends Vue {
   private tasks: Array<Task> = new Array<Task>();
-  private selectedTask = newTask();
+  private selectedTask: Task = newTask();
 
   private modifyDialogController = false;
-  private modifyingTask = newTask();
+  private modifyingTask: Task = newTask();
   private password = "";
 
   private total = 0;
@@ -131,6 +143,7 @@ export default class TaskList extends Vue {
   private list(): void {
     this.total = 0;
     this.tasks = [];
+    this.$store.state.allTasks = [];
 
     taskAxios.list(this.$store.state.userID)
       .then(response => {
@@ -141,20 +154,29 @@ export default class TaskList extends Vue {
         const payload = JSON.parse(response.data["data"] as string);
 
         this.total = payload.total;
+
+        let tempTasks: Array<Task> = new Array<Task>();
         for (let i = 0; i < payload.tasks.length; i++) {
           const item = payload.tasks[i];
 
-          this.tasks.push({
+          tempTasks.push({
             taskID: item.taskID,
             taskName: item.taskName,
             description: item.description,
-            preTaskIDs: item.preTaskIDs,
+            preTaskIDs: item.preTaskIDs ? item.preTaskIDs : new Array<string>(),
             preTasks: displayPreTasks(item.preTaskIDs, payload.tasks as Array<Task>),
             status: item.status,
             updateTime: item.updateTime,
             createdTime: item.createdTime,
           });
+
+          this.$store.state.allTasks.push({
+            taskID: item.taskID,
+            taskName: item.taskName,
+          });
         }
+
+        this.tasks = sortTasks(tempTasks);
       })
       .catch(err => {
         this.$message.error("获取当前用户发布的任务列表失败");
