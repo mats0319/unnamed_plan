@@ -76,6 +76,7 @@
     2. zap
     3. github.com/flipped-aurora/gin-vue-admin gin-vue基础平台，其中的组件设计较为优秀
     4. github.com/zhenghaoz/gorse go语言推荐系统
+    5. github.com/andydotxyz/chess go GUI开发
 
 其他：
 

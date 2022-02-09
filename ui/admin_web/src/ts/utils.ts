@@ -48,14 +48,16 @@ export function sortTasks(tasks: Array<Task>): Array<Task> {
   // record tasks which pre-tasks are all in 'res', loop
   while (length > 0) {
     const lengthBackup = length;
+    const tempRes = new Array<Task>();
 
-    for (let i = 0; i < length; i++) {
+    for (let i = 0; i < length;) {
       if (!contains(res, tasks[i].preTaskIDs)) {
+        i++;
         continue;
       }
-      
-      res.push(tasks[i]);
-      
+
+      tempRes.push(tasks[i]);
+
       tasks[i] = tasks[0];
       tasks.shift();
       length = tasks.length;
@@ -64,12 +66,12 @@ export function sortTasks(tasks: Array<Task>): Array<Task> {
     if (lengthBackup == length) {
       break;
     }
+
+    res.push(...tempRes)
   }
 
   // handle tasks with unexpected pre-tasks
-  for (let i = 0; i < length; i++) {
-    res.push(tasks[i]);
-  }
+  res.push(...tasks);
 
   return res;
 }
@@ -97,7 +99,7 @@ function contains(sliceA: Array<Task>, sliceB: Array<string>): boolean {
   if (sliceA.length < sliceB.length) {
     return false;
   }
-  
+
   let isContained = true;
   for (let i = 0; i < sliceB.length; i++) {
     let isContainedInner = false;
@@ -107,12 +109,12 @@ function contains(sliceA: Array<Task>, sliceB: Array<string>): boolean {
         break;
       }
     }
-    
+
     if (!isContainedInner) {
-     isContained = false;
-     break;
+      isContained = false;
+      break;
     }
   }
-  
+
   return isContained
 }
