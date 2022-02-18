@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="service_thinking_note" type="GoApplicationRunConfiguration" factoryName="Go Application">
+  <configuration default="false" name="service_note" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="unnamed_plan" />
     <working_directory value="$PROJECT_DIR$/services/note/" />
     <kind value="FILE" />

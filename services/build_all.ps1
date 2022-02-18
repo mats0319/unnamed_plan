@@ -5,6 +5,8 @@ Start-Transcript "log.log" -Force
 
     Set-Location $PSScriptRoot
 
+        go mod tidy
+
         if (!(Test-Path "./build/")) {
             mkdir build
         }
@@ -25,7 +27,7 @@ Start-Transcript "log.log" -Force
         Write-Output "> build cloud file service finished."
 
         # thinking note service
-        powershell -executionpolicy bypass -File ".\thinking_note\build_linux.ps1"
+        powershell -executionpolicy bypass -File ".\note\build_linux.ps1"
 
         Write-Output "> build thinking note service finished."
 

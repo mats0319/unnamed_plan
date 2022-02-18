@@ -96,7 +96,7 @@ func ModifyCloudFile(r *http.Request) *mhttp.ResponseData {
 		ExtensionName:    params.ExtensionName,
 		IsPublic:         params.IsPublic,
 		File:             params.File,
-		FileSize:         params.FileHeader.Size,
+		FileSize:         params.FileSize,
 		LastModifiedTime: int64(params.LastModifiedTime),
 	})
 	if err != nil {

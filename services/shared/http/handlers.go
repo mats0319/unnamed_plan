@@ -55,6 +55,11 @@ func (h *Handlers) ServeHTTP(writer http.ResponseWriter, request *http.Request) 
 		return
 	}
 
+	if request.Method == http.MethodOptions {
+		h.response(writer, &ResponseData{})
+		return
+	}
+
 	// todo: 尝试获取访问来源ip，参考nginx日志
 	mlog.Logger().Info("> Receive new request:", zap.String("uri", request.RequestURI))
 

@@ -92,6 +92,8 @@
             </el-popover>
           </el-form-item>
 
+          <hr />
+
           <el-form-item label="密码">
             <el-input
               v-model="password"

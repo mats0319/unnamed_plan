@@ -224,7 +224,7 @@ type ModifyCloudFileReqParams struct {
 	File          []byte
 
 	// required if 'file' is not null
-	FileHeader       *multipart.FileHeader
+	FileSize         int64
 	LastModifiedTime int
 }
 
@@ -253,7 +253,7 @@ func (p *ModifyCloudFileReqParams) Decode(r *http.Request) string {
 		}()
 
 		p.File = fileContent
-		p.FileHeader = fileHeader
+		p.FileSize = fileHeader.Size
 		p.LastModifiedTime = lastModifiedTime
 	}
 
