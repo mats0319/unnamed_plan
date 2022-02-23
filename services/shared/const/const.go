@@ -16,7 +16,8 @@ const (
 	Error_UnsupportedDB = "unsupported db: "
 
 	// http
-	HTTP_MultiLoginSourceSign = "Unnamed-Plan-Source"
+	HTTP_SourceSign = "Unnamed-Plan-Source"
+
 	HTTP_MultiLoginUserIDSign = "Unnamed-Plan-User"
 	HTTP_MultiLoginTokenSign  = "Unnamed-Plan-Token"
 

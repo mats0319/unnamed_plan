@@ -1,9 +1,9 @@
 package mconst
 
-type HTTPMultiLoginFlag = uint8
+type HTTPFlags = uint8
 
 const (
-	HTTPMultiLogin_SkipLimit HTTPMultiLoginFlag = iota
+	HTTPMultiLogin_SkipLimit HTTPFlags = iota
 	HTTPMultiLogin_ReSetParams
 )
 

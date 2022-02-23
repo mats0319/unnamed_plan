@@ -4,18 +4,18 @@ import (
 	"encoding/json"
 	"github.com/mats9693/unnamed_plan/services/shared/config"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
+	"github.com/mats9693/unnamed_plan/services/shared/http/plugins/limit_multi_login"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
 	"go.uber.org/zap"
 	"net/http"
-	"sync"
 )
 
 type httpConfig struct {
 	Port             string   `json:"port"`
-	LimitMultiLogin  bool     `json:"limitMultiLogin"`
-	KeepTokenValid   int64    `json:"KeepTokenValid"` // unit: second
 	Sources          []string `json:"sources"`
 	UnlimitedSources []string `json:"unlimitedSources"`
+
+	LimitMultiLoginConfig limit_multi_login.LimitMultiLoginConfig `json:"limitMultiLoginConfig"`
 }
 
 // StartServer is blocked
@@ -24,8 +24,9 @@ func StartServer(handlers *Handlers) {
 
 	handlers.isDev = mconfig.GetConfigLevel() == mconst.ConfigDevLevel
 
-	if handlers.config.LimitMultiLogin {
-		handlers.loginInfoMap = sync.Map{}
+	if handlers.config.LimitMultiLoginConfig.LimitMultiLogin {
+		handlers.plugins = append(handlers.plugins, limit_multi_login.Init(&handlers.config.LimitMultiLoginConfig,
+			handlers.config.Sources))
 	}
 
 	mlog.Logger().Info("> Listening at : " + handlers.config.Port)

@@ -16,10 +16,12 @@
       "uid": "3b839c1f-9f1e-474b-b3da-7b5e9bc792ec",
       "json": {
         "port": "9693",
-        "limitMultiLogin": false,
-        "keepTokenValid": 7200,
         "sources": ["public web", "admin web"],
-        "unlimitedSources": ["public mobile"]
+        "unlimitedSources": ["public mobile"],
+        "limitMultiLoginConfig": {
+          "limitMultiLogin": true,
+          "keepTokenValid": 7200
+        }
       }
     }
   ]

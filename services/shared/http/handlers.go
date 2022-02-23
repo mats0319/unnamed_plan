@@ -1,8 +1,10 @@
 package mhttp
 
 import (
-	"encoding/json"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
+	"github.com/mats9693/unnamed_plan/services/shared/http/plugins"
+	"github.com/mats9693/unnamed_plan/services/shared/http/plugins/limit_multi_login"
+	"github.com/mats9693/unnamed_plan/services/shared/http/response"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
 	"github.com/mats9693/unnamed_plan/services/shared/utils"
 	"go.uber.org/zap"
@@ -11,22 +13,15 @@ import (
 	"time"
 )
 
-type handler func(r *http.Request) *ResponseData
-
-type handlerWrapper struct {
-	handler handler
-
-	skipMultiLoginLimit   bool
-	reSetMultiLoginParams bool
-}
+type handler func(r *http.Request) *mresponse.ResponseData
 
 type Handlers struct {
-	handlersMap sync.Map // pattern - handlerWrapper
-
-	config *httpConfig
 	isDev  bool
+	config *httpConfig
 
-	loginInfoMap sync.Map // user id - login info
+	handlersMap sync.Map // pattern - handler
+
+	plugins []plugins.Plugins
 }
 
 var _ http.Handler = (*Handlers)(nil)
@@ -46,25 +41,37 @@ func (h *Handlers) ServeHTTP(writer http.ResponseWriter, request *http.Request) 
 	// allow self-define headers
 	writer.Header().Set("Access-Control-Allow-Headers", "*")
 
-	// parse req source
-	source := request.Header.Get(mconst.HTTP_MultiLoginSourceSign)
+	// verify request
+	{
+		if request.Method == http.MethodOptions {
+			response(writer, &mresponse.ResponseData{})
+			return
+		}
 
-	isLimitedSource := utils.Contains(h.config.Sources, source)
-	if !isLimitedSource && utils.Contains(h.config.UnlimitedSources, source) {
-		http.Error(writer, mconst.Error_UnknownSource+source, http.StatusUnauthorized)
-		return
+		source := request.Header.Get(mconst.HTTP_SourceSign)
+		if !utils.Contains(h.config.Sources, source) && !utils.Contains(h.config.UnlimitedSources, source) {
+			http.Error(writer, mconst.Error_UnknownSource+source, http.StatusUnauthorized)
+			return
+		}
 	}
 
-	if request.Method == http.MethodOptions {
-		h.response(writer, &ResponseData{})
-		return
+	timestamp := time.Now().Unix()
+	mlog.Logger().Info("> Receive new request:",
+		zap.String("uri", request.RequestURI),
+		zap.String("remote address", request.RemoteAddr),
+		zap.Int64("timestamp", timestamp))
+
+	// plugins: before invoke hooks
+	for i := range h.plugins {
+		code, err := h.plugins[i].BeforeInvokeHook(request, timestamp)
+		if err != nil { // make sure hook logged each error before return
+			http.Error(writer, err.Error(), code)
+			return
+		}
 	}
 
-	// todo: 尝试获取访问来源ip，参考nginx日志
-	mlog.Logger().Info("> Receive new request:", zap.String("uri", request.RequestURI))
-
-	// get matched handler by URI
-	wrapper := &handlerWrapper{}
+	// invoke handler func
+	var res *mresponse.ResponseData
 	{
 		v, ok := h.handlersMap.Load(request.RequestURI)
 		if !ok {
@@ -72,79 +79,49 @@ func (h *Handlers) ServeHTTP(writer http.ResponseWriter, request *http.Request) 
 			return
 		}
 
-		wrapper, ok = v.(*handlerWrapper)
+		handlerFunc, ok := v.(handler)
 		if !ok {
-			http.Error(writer, "", http.StatusInternalServerError)
+			http.Error(writer, "type assert error", http.StatusInternalServerError)
 			return
+		}
+
+		res = handlerFunc(request)
+	}
+
+	// plugins: after invoke hooks
+	if !res.HasError {
+		for i := range h.plugins {
+			code, err := h.plugins[i].AfterInvokeHook(res, request, timestamp)
+			if err != nil { // make sure hook logged each error before return
+				http.Error(writer, err.Error(), code)
+				return
+			}
 		}
 	}
 
-	// multi-login limit: verify
-	timestamp := time.Now().Unix()
-	if h.config.LimitMultiLogin && isLimitedSource && !wrapper.skipMultiLoginLimit {
-		userID := request.Header.Get(mconst.HTTP_MultiLoginUserIDSign)
-		token := request.Header.Get(mconst.HTTP_MultiLoginTokenSign)
+	response(writer, res)
 
-		if errMsg := h.multiLoginVerify(userID, source, token, timestamp); len(errMsg) > 0 {
-			http.Error(writer, errMsg, http.StatusUnauthorized)
-			return
-		}
-	}
-
-	// invoke handler func
-	res := wrapper.handler(request)
-
-	// multi-login limit: refresh token
-	if h.config.LimitMultiLogin && isLimitedSource && wrapper.reSetMultiLoginParams && !res.HasError {
-		newToken := utils.RandomHexString(10)
-
-		res.Token = newToken
-		if errMsg := h.setLoginInfo(res.UserID, source, newToken, timestamp); len(errMsg) > 0 {
-			http.Error(writer, errMsg, http.StatusInternalServerError)
-			return
-		}
-	}
-
-	h.response(writer, res)
-
-	mlog.Logger().Info("> Handle request result:", zap.Bool("success", res.HasError),
-		zap.String("uri", request.RequestURI))
+	mlog.Logger().Info("> Handle request result:",
+		zap.String("uri", request.RequestURI),
+		zap.Bool("success", !res.HasError))
 
 	return
 }
 
 // HandleFunc register pattern - handler pair into http handlers
 //
-// @params params: describe if this handler has different behaviors from default
-func (h *Handlers) HandleFunc(pattern string, handler handler, params ...mconst.HTTPMultiLoginFlag) {
-	handlerWrapperIns := &handlerWrapper{
-		handler: handler,
-	}
+//   @params params: http plugins flags
+func (h *Handlers) HandleFunc(pattern string, handlerFunc handler, params ...uint8) {
+	h.handlersMap.Store(pattern, handlerFunc)
 
+	limitMultiLoginParams := make([]uint8, 0, 2)
 	for i := range params {
 		switch params[i] {
-		case mconst.HTTPMultiLogin_SkipLimit:
-			handlerWrapperIns.skipMultiLoginLimit = true
-		case mconst.HTTPMultiLogin_ReSetParams:
-			handlerWrapperIns.reSetMultiLoginParams = true
+		case mconst.HTTPMultiLogin_SkipLimit, mconst.HTTPMultiLogin_ReSetParams:
+			limitMultiLoginParams = append(limitMultiLoginParams, params[i])
 		}
 	}
 
-	h.handlersMap.Store(pattern, handlerWrapperIns)
-}
-
-func (h *Handlers) response(writer http.ResponseWriter, data *ResponseData) {
-	jsonBytes, err := json.Marshal(data)
-	if err != nil {
-		http.Error(writer, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	_, err = writer.Write(jsonBytes)
-	if err != nil {
-		http.Error(writer, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	return
+	// even params is empty, just register pattern, distinguish from absolutely unknown uri
+	limit_multi_login.HandleFunc(pattern, limitMultiLoginParams...)
 }

@@ -26,7 +26,7 @@ func (t *TaskPostgresql) QueryByPoster(userID string) (tasks []*model.Task, coun
 	err = mdb.DB().WithNoTx(func(conn mdb.Conn) error {
 		count, err = conn.PostgresqlConn.Model(&tasks).
 			Where(model.Task_PostedBy+" = ?", userID).
-			Where(model.Task_Status+" > ?", mconst.TaskStatus_History). // todo: test if '<>' works?
+			Where(model.Task_Status+" != ?", mconst.TaskStatus_History).
 			Order(model.Common_UpdateTime + " ASC").
 			SelectAndCount()
 

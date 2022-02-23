@@ -6,13 +6,14 @@ import (
 	"github.com/mats9693/unnamed_plan/services/gateway/rpc"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/http"
+	"github.com/mats9693/unnamed_plan/services/shared/http/response"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
 	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
 	"go.uber.org/zap"
 	"net/http"
 )
 
-func Login(r *http.Request) *mhttp.ResponseData {
+func Login(r *http.Request) *mresponse.ResponseData {
 	params := &structure.LoginReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
@@ -31,7 +32,7 @@ func Login(r *http.Request) *mhttp.ResponseData {
 	return mhttp.Response(structure.MakeLoginRes(res.UserId, res.Nickname, res.Permission), res.UserId)
 }
 
-func ListUser(r *http.Request) *mhttp.ResponseData {
+func ListUser(r *http.Request) *mresponse.ResponseData {
 	params := &structure.ListUserReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
@@ -53,7 +54,7 @@ func ListUser(r *http.Request) *mhttp.ResponseData {
 	return mhttp.Response(structure.MakeListUserRes(res.Total, usersRPCToHTTP(res.Users...)))
 }
 
-func CreateUser(r *http.Request) *mhttp.ResponseData {
+func CreateUser(r *http.Request) *mresponse.ResponseData {
 	params := &structure.CreateUserReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
@@ -74,7 +75,7 @@ func CreateUser(r *http.Request) *mhttp.ResponseData {
 	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
-func LockUser(r *http.Request) *mhttp.ResponseData {
+func LockUser(r *http.Request) *mresponse.ResponseData {
 	params := &structure.LockUserReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
@@ -93,7 +94,7 @@ func LockUser(r *http.Request) *mhttp.ResponseData {
 	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
-func UnlockUser(r *http.Request) *mhttp.ResponseData {
+func UnlockUser(r *http.Request) *mresponse.ResponseData {
 	params := &structure.UnlockUserReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
@@ -112,7 +113,7 @@ func UnlockUser(r *http.Request) *mhttp.ResponseData {
 	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
-func ModifyUserInfo(r *http.Request) *mhttp.ResponseData {
+func ModifyUserInfo(r *http.Request) *mresponse.ResponseData {
 	params := &structure.ModifyUserInfoReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
@@ -134,7 +135,7 @@ func ModifyUserInfo(r *http.Request) *mhttp.ResponseData {
 	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
-func ModifyUserPermission(r *http.Request) *mhttp.ResponseData {
+func ModifyUserPermission(r *http.Request) *mresponse.ResponseData {
 	params := &structure.ModifyUserPermissionReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))

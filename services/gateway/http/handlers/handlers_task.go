@@ -6,6 +6,7 @@ import (
 	"github.com/mats9693/unnamed_plan/services/gateway/rpc"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/http"
+	"github.com/mats9693/unnamed_plan/services/shared/http/response"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
 	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
 	"go.uber.org/zap"
@@ -13,7 +14,7 @@ import (
 	"time"
 )
 
-func ListTask(r *http.Request) *mhttp.ResponseData {
+func ListTask(r *http.Request) *mresponse.ResponseData {
 	params := &structure.ListTaskReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
@@ -31,7 +32,7 @@ func ListTask(r *http.Request) *mhttp.ResponseData {
 	return mhttp.Response(structure.MakeListTaskRes(res.Total, tasksRPCToHTTP(res.Tasks...)))
 }
 
-func CreateTask(r *http.Request) *mhttp.ResponseData {
+func CreateTask(r *http.Request) *mresponse.ResponseData {
 	params := &structure.CreateTaskReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
@@ -52,7 +53,7 @@ func CreateTask(r *http.Request) *mhttp.ResponseData {
 	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
-func ModifyTask(r *http.Request) *mhttp.ResponseData {
+func ModifyTask(r *http.Request) *mresponse.ResponseData {
 	params := &structure.ModifyTaskReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
