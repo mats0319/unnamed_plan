@@ -43,7 +43,7 @@ func (h *Handlers) ServeHTTP(writer http.ResponseWriter, request *http.Request) 
 
 	// verify request
 	{
-		if request.Method == http.MethodOptions {
+		if request.Method != http.MethodPost {
 			response(writer, &mresponse.ResponseData{})
 			return
 		}
