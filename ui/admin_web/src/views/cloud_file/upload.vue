@@ -93,7 +93,7 @@ export default class UploadCloudFile extends Vue {
     }
     this.extensionName = fileNameSplit.pop();
 
-    this.lastModifiedTime = this.fileList.item(0).lastModified;
+    this.lastModifiedTime = parseInt((this.fileList.item(0).lastModified / 1000).toString());
   }
 
   private beforeUpload(): void {

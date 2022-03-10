@@ -6,7 +6,7 @@ export function calcSHA256(message: string): string {
   return sha256(message);
 }
 
-const cloudFileURLPrefix = "https://mats9693.cn/cloud-file/";
+const cloudFileURLPrefix = "https://117.50.177.201/cloud-file/";
 
 export function generateCloudFileURL(url: string): string {
   return cloudFileURLPrefix + url

@@ -17,7 +17,7 @@ Set-Location $PSScriptRoot
 
     Move-Item "service_exec" -Destination "../build/service_user/service_exec"
 
-    Copy-Item "config.json" -Destination "../build/service_user/config.json"
+    Copy-Item "config_production.json" -Destination "../build/service_user/config.json"
 
 Set-Location $path
 
