@@ -106,7 +106,7 @@ router.beforeEach((to, from, next) => {
     return;
   }
 
-  if (sessionStorage.getItem("auth")) {
+  if (sessionStorage.getItem("auth") === process.env.VUE_APP_axios_source_sign as string) {
     next();
     return;
   } else {

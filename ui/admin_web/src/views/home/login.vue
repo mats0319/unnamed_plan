@@ -42,7 +42,7 @@ export default class Login extends Vue {
           throw response.data["data"];
         }
 
-        sessionStorage.setItem("auth", "passed");
+        sessionStorage.setItem("auth", process.env.VUE_APP_axios_source_sign as string);
 
         const payload = JSON.parse(response.data["data"] as string);
         this.$store.state.userID = payload.userID;
