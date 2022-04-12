@@ -1,43 +1,9 @@
 # 设计
 
-## 服务启动过程
-
-init阶段：
-
-1. 加载配置文件
-2. 初始化数据库、日志模块
-
-main阶段：
-
-1. 启动http监听或rpc监听，阻塞程序
-
-最初将加载配置文件等功能做到init阶段，是为了简化编程，因为这样可以不用显式初始化配置、数据库等模块；也不必担心配置模块还没有初始化完成，就调用了依赖它的数据库模块；  
-但现在面临新的问题：服务的测试不好写，以用户服务的登录功能举例，主要原因如下：
-
-1. 业务代码中，使用了数据库模块，而数据库模块在init阶段初始化，所以测试代码需要mock数据库模块，或者编写额外的代码来配置数据库
-2. 前端向网关层发起请求，网关将请求转发给用户服务；一些**非常规参数**难以凭空构造
-    1. 非常规参数：例如上传文件时的文件原文
-
-解决办法：
-
-1. 问题一：拟将各模块的初始化从init阶段放到main阶段，显式调用，这样就可以用不同的配置初始化各模块了
-2. 问题二：先从前端（或使用http请求工具）发一次请求，使用在后端获取到的真实的参数作为非常规参数
-
-问题：
-
-1. 不在init阶段实现初始化功能，就需要人为保证各模块初始化的先后顺序
-2. 测试代码能够修改模块配置，意味着其他非初始化阶段，也能修改模块配置，比如程序跑到一半，切换了数据库……
-
-服务测试的目的：
-
-现在写了一个功能，至少需要把服务跑起来，再启动一个grpcui；或者启动完整的项目，从前端开始执行；  
-服务测试完成以后，可以在不启动服务的情况下，完成全部服务功能的测试；  
-这个效果非常好，所以我想要做  
-先看看一些优秀的库是怎么做测试的吧，awesome-go上有测试覆盖率要求，可以去看看那上面的库
-
 ## API 网关
 
-> 只接受http post请求
+> 只处理http post请求，忽略其他类型的请求
+> 忽略：直接返回成功
 
 ### http请求响应过程
 
@@ -99,11 +65,76 @@ type ResponseData struct {
    简单来说就是容易实现，后续考虑统一
     1. 考虑使用服务端设置cookie的方式，涉及跨域问题
 
+### 使用ip可能带来的共用session storage问题
+
+> 强调：使用不同的域名（源）不会存在该问题
+
+没有买域名，对于前台界面和后台界面的路径，参考nginx配置：（ip仅供示意）
+
+1. 前台界面：https://117.50.177.201
+2. 后台界面：https://117.50.177.201/admin
+
+这就导致两个网站会共用session storage，因为我将登录信息保存在vuex、使用session storage做的vuex防刷新，  
+以至于当我登录了前台界面之后，在当前浏览器标签页，通过修改url的方式访问后台界面，后台界面能够读到前台界面的vuex
+
+```ts vue  
+// vuex防刷新
+export default class App extends Vue {
+  private created() {
+    if (sessionStorage.getItem(process.env.VUE_APP_axios_source_sign)) {
+      this.$store.replaceState(
+        Object.assign(
+          {},
+          this.$store.state,
+          JSON.parse(sessionStorage.getItem(process.env.VUE_APP_axios_source_sign))
+        )
+      );
+
+      sessionStorage.removeItem(process.env.VUE_APP_axios_source_sign);
+    }
+  }
+
+  private mounted() {
+    window.addEventListener("beforeunload", () => {
+      sessionStorage.setItem(process.env.VUE_APP_axios_source_sign, JSON.stringify(this.$store.state));
+    });
+  }
+}
+
+// 登录成功，写session storage
+sessionStorage.setItem("auth", process.env.VUE_APP_axios_source_sign);
+```
+
+又因为我没有为两个网站做代码区分，即**是否登录**字段都叫`isLogin`，所以仅从界面来看，我做到了特殊情况下的单点登录...
+
+对此，我的解决办法是，不同的网站，vuex写session storage时，使用不同的key，以避免与其他网站的session storage混用
+
+效果：（访问其他网站，默认在同一个浏览器标签页内）
+
+1. 访问前台界面，登录，访问后台界面：未登录
+2. 访问前台界面，登录，访问后台界面，访问前台界面：登录
+3. 访问前台界面，登录，访问后台界面，登录，访问前台界面：登录
+
 ## 服务测试(draft)
 
-在提交代码前，应执行的服务功能测试
+当前实现：（业务服务）
 
-需要考虑测试数据等问题，或可使用临时表
+1. init阶段加载配置
+2. init阶段连接数据库
+
+修改：
+
+1. main阶段手动加载配置
+2. 临时取消命令行解析功能
+3. 取消默认配置文件名，改成允许传入
+4. 连接数据库部分，先做检查，如果配置不对，则拒绝连接
+5. 然后以服务为单位，编写测试：
+    1. 测试不需要启动服务，而是构造一个服务实例，然后针对每一个功能函数构造请求参数
+    2. 问题：数据库部分是mock还是新建表？  
+       拟新建测试表，每次启动测试，首先清空全部测试表、构造测试数据，然后再进行测试
+6. 写完每个服务的测试，再编写统一的测试脚本，直接go test只会在当前目录执行测试
+7. 思考：测试是单独写一个powershell，还是引入makefile呢？  
+   拟引入makefile
 
 ## 配置中心(draft)
 

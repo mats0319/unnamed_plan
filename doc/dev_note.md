@@ -66,16 +66,16 @@
 
 前端：
 
-1. node版本升级（当前使用14），依赖版本相应升级
-2. 按需引入依赖
-3. ts代码优化，例如note的修改功能，使用了很多变量，可以优化为使用一个object
+1. 按需引入依赖
+2. ts代码优化，例如note的修改功能，使用了很多变量，可以优化为使用一个object
+3. 解决node-sass 7以下的版本不推荐使用的问题，需要升级node到17(?)
 
 后端：
 
 1. 阅读优秀的代码，学习和吸收优秀的设计与功能模块，计划阅读的几个库：
     1. gin
     2. zap
-    3. github.com/flipped-aurora/gin-vue-admin gin-vue基础平台，其中的组件设计较为优秀
+    3. github.com/flipped-aurora/gin-vue-admin gin-vue基础平台，据说其中的组件设计较为优秀
     4. github.com/zhenghaoz/gorse go语言推荐系统
     5. github.com/andydotxyz/chess go GUI开发
 

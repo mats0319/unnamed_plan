@@ -7,32 +7,32 @@ Start-Transcript "log.log" -Force
 
         go mod tidy
 
-        if (!(Test-Path "./build/")) {
+        if (!(Test-Path "../build/")) {
             mkdir build
         }
 
         # gateway service
-        powershell -executionpolicy bypass -File ".\gateway\build_linux.ps1"
+        powershell -executionpolicy bypass -File "..\gateway\build_linux.ps1"
 
         Write-Output "> build gateway service finished."
 
         # user service
-        powershell -executionpolicy bypass -File ".\user\build_linux.ps1"
+        powershell -executionpolicy bypass -File "..\user\build_linux.ps1"
 
         Write-Output "> build user service finished."
 
         # cloud file service
-        powershell -executionpolicy bypass -File ".\cloud_file\build_linux.ps1"
+        powershell -executionpolicy bypass -File "..\cloud_file\build_linux.ps1"
 
         Write-Output "> build cloud file service finished."
 
         # thinking note service
-        powershell -executionpolicy bypass -File ".\note\build_linux.ps1"
+        powershell -executionpolicy bypass -File "..\note\build_linux.ps1"
 
         Write-Output "> build thinking note service finished."
 
         # task service
-        powershell -executionpolicy bypass -File ".\task\build_linux.ps1"
+        powershell -executionpolicy bypass -File "..\task\build_linux.ps1"
 
         Write-Output "> build task service finished."
 

@@ -9,7 +9,7 @@
 ### 编程语言/技术框架
 
 - go
-- vue(html+ts+css)
+- vue(html+ts+scss), recommend: node 16
 
 ### 工具
 

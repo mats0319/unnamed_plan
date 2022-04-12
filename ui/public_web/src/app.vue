@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
@@ -10,22 +10,22 @@ import { Component, Vue } from "vue-property-decorator";
 @Component
 export default class App extends Vue {
   private created() {
-    if (sessionStorage.getItem("vuex")) {
+    if (sessionStorage.getItem(process.env.VUE_APP_axios_source_sign)) {
       this.$store.replaceState(
         Object.assign(
           {},
           this.$store.state,
-          JSON.parse(sessionStorage.getItem("vuex") as string)
+          JSON.parse(sessionStorage.getItem(process.env.VUE_APP_axios_source_sign))
         )
       );
 
-      sessionStorage.removeItem("vuex");
+      sessionStorage.removeItem(process.env.VUE_APP_axios_source_sign);
     }
   }
 
   private mounted() {
     window.addEventListener("beforeunload", () => {
-      sessionStorage.setItem("vuex", JSON.stringify(this.$store.state));
+      sessionStorage.setItem(process.env.VUE_APP_axios_source_sign, JSON.stringify(this.$store.state));
     });
   }
 }

@@ -7,7 +7,7 @@
     </div>
 
     <div class="bottom">
-      <a href="https://beian.miit.gov.cn/" target="_blank">吉ICP备2021002242号-1</a>
+      <a href="https://beian.miit.gov.cn/" target="_blank">&#91;假装这里有一个域名的备案号&#93;</a>
     </div>
   </div>
 </template>
