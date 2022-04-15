@@ -31,8 +31,17 @@ func DB() *db {
 	return dbIns
 }
 
-func init() {
+func Init() {
+	if dbIns.config != nil { // have initialized
+		return
+	}
+
 	dbIns.config = getDBConfig()
+
+	if dbIns.config == nil {
+		mlog.Logger().Error("config not ready when init db")
+		os.Exit(-1)
+	}
 
 	switch dbIns.config.DBMS {
 	case mconst.DB_PostgreSQL:

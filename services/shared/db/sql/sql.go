@@ -5,7 +5,6 @@ import (
 	"github.com/go-pg/pg/v10/orm"
 	"github.com/mats9693/unnamed_plan/services/shared/db/model"
 	"log"
-	"math/rand"
 	"reflect"
 	"time"
 )
@@ -17,10 +16,6 @@ var dbConf = &pg.Options{
 	Database:     "unnamed_plan_test",
 	ReadTimeout:  5 * time.Second,
 	WriteTimeout: 5 * time.Second,
-}
-
-func init() {
-	rand.Seed(time.Now().Unix())
 }
 
 func main() {

@@ -8,13 +8,21 @@ import (
 	"os"
 )
 
-var noteDaoIns dao.NoteDao
+var (
+	noteDaoIns dao.NoteDao
+
+	inited bool
+)
 
 func GetNoteDao() dao.NoteDao {
 	return noteDaoIns
 }
 
-func init() {
+func Init() {
+	if inited { // have initialized
+		return
+	}
+
 	switch mdb.DB().GetDBMSName() {
 	case mconst.DB_PostgreSQL:
 		noteDaoIns = &dao.NotePostgresql{}
@@ -22,6 +30,8 @@ func init() {
 		mlog.Logger().Error(mconst.Error_UnsupportedDB)
 		os.Exit(-1)
 	}
+
+	inited = true
 
 	mlog.Logger().Info("> Database instance init finish.")
 }

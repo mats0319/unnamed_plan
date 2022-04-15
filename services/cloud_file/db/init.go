@@ -8,13 +8,21 @@ import (
 	"os"
 )
 
-var cloudFileDaoIns dao.CloudFileDao
+var (
+	cloudFileDaoIns dao.CloudFileDao
+
+	inited bool
+)
 
 func GetCloudFileDao() dao.CloudFileDao {
 	return cloudFileDaoIns
 }
 
-func init() {
+func Init() {
+	if inited { // have initialized
+		return
+	}
+
 	switch mdb.DB().GetDBMSName() {
 	case mconst.DB_PostgreSQL:
 		cloudFileDaoIns = &dao.CloudFilePostgresql{}
@@ -22,6 +30,8 @@ func init() {
 		mlog.Logger().Error(mconst.Error_UnsupportedDB)
 		os.Exit(-1)
 	}
+
+	inited = true
 
 	mlog.Logger().Info("> Database instance init finish.")
 }

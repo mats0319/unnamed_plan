@@ -16,8 +16,13 @@ func Logger() *zap.Logger {
 	return zlog
 }
 
-func init() {
-	core := zapcore.NewCore(logEncoder(), logWriteSyncer(), logLevel())
+func Init() {
+	if zlog != nil { // have initialized
+		return
+	}
+
+	//core := zapcore.NewCore(logEncoder(), logWriteSyncer(), logLevel())
+	core := zapcore.NewCore(logEncoder(), logWriteSyncer(), zap.DebugLevel)
 	zlog = zap.New(core, zap.AddCaller())
 
 	zlog.Info("> Config init finish.")
@@ -42,7 +47,7 @@ func logEncoder() zapcore.Encoder {
 }
 
 func logWriteSyncer() zapcore.WriteSyncer {
-	file, err := os.Create(mconfig.GetLogFileDir() + mconst.LogFileName)
+	file, err := os.Create(mconfig.GetExecDir() + mconst.LogFileName)
 	if err != nil {
 		log.Println("create log file failed, error:", err)
 		os.Exit(-1)

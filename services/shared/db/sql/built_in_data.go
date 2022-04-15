@@ -5,7 +5,13 @@ import (
 	"github.com/mats9693/unnamed_plan/services/shared/db/model"
 	"github.com/mats9693/unnamed_plan/services/shared/utils"
 	"log"
+	"math/rand"
+	"time"
 )
+
+func init() {
+	rand.Seed(time.Now().Unix())
+}
 
 var users = []*model.User{
 	{

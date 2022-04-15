@@ -35,7 +35,7 @@ func GetRPCClient() *rpcClient {
 	return rpcClientIns
 }
 
-func init() {
+func Init() {
 	byteSlice := mconfig.GetConfig(uid_RPCClient)
 
 	rpcClientConfigIns := &rpcClientConfig{}

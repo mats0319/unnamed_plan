@@ -16,11 +16,9 @@ type userServerImpl struct {
 	rpc_impl.UnimplementedIUserServer
 }
 
-var _ rpc_impl.IUserServer = (*userServerImpl)(nil)
-
 var userServerImplIns = &userServerImpl{}
 
-func GetUserServer() *userServerImpl {
+func GetUserServer() rpc_impl.IUserServer {
 	return userServerImplIns
 }
 

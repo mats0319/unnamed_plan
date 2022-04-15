@@ -3,7 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/mats9693/unnamed_plan/services/note/config"
+	"github.com/mats9693/unnamed_plan/services/note/db"
 	"github.com/mats9693/unnamed_plan/services/note/rpc"
+	mdb "github.com/mats9693/unnamed_plan/services/shared/db/dal"
+	"github.com/mats9693/unnamed_plan/services/shared/init"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
 	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
 	"go.uber.org/zap"
@@ -12,6 +15,8 @@ import (
 )
 
 func main() {
+	initialize.Init("config.json", mdb.Init, config.Init, db.Init)
+
 	listener, err := net.Listen("tcp", config.GetConfig().Address)
 	if err != nil {
 		mlog.Logger().Error(fmt.Sprintf("listen on %s failed", config.GetConfig().Address), zap.Error(err))

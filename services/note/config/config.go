@@ -11,13 +11,19 @@ import (
 const uid_NoteServiceConfig = "5d71f9af-63f5-44c5-9ef0-403bcd1ad381"
 
 type noteServiceConfig struct {
+	init bool
+
 	Address           string `json:"address"`
 	UserServerAddress string `json:"userServerAddress"`
 }
 
 var noteServiceConfigIns = &noteServiceConfig{}
 
-func init() {
+func Init() {
+	if noteServiceConfigIns.init { // have initialized
+		return
+	}
+
 	byteSlice := mconfig.GetConfig(uid_NoteServiceConfig)
 
 	err := json.Unmarshal(byteSlice, noteServiceConfigIns)
@@ -25,6 +31,8 @@ func init() {
 		mlog.Logger().Error("json unmarshal failed", zap.String("uid", uid_NoteServiceConfig), zap.Error(err))
 		os.Exit(-1)
 	}
+
+	noteServiceConfigIns.init = true
 
 	mlog.Logger().Info("> Note service config init finish.")
 }

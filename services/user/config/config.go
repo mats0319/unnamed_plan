@@ -11,6 +11,8 @@ import (
 const uid_UserServiceConfig = "6d31fac1-346c-4b03-8596-8b3e1ee5b960"
 
 type userServiceConfig struct {
+	init bool
+
 	Address              string `json:"address"`
 	ARankAdminPermission uint8  `json:"ARankAdminPermission"`
 	SRankAdminPermission uint8  `json:"SRankAdminPermission"`
@@ -18,7 +20,11 @@ type userServiceConfig struct {
 
 var userServiceConfigIns = &userServiceConfig{}
 
-func init() {
+func Init() {
+	if userServiceConfigIns.init { // have initialized
+		return
+	}
+
 	byteSlice := mconfig.GetConfig(uid_UserServiceConfig)
 
 	err := json.Unmarshal(byteSlice, userServiceConfigIns)
@@ -26,6 +32,8 @@ func init() {
 		mlog.Logger().Error("json unmarshal failed", zap.String("uid", uid_UserServiceConfig), zap.Error(err))
 		os.Exit(-1)
 	}
+
+	userServiceConfigIns.init = true
 
 	mlog.Logger().Info("> User service config init finish.")
 }

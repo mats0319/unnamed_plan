@@ -12,7 +12,7 @@ func GetHandler() *mhttp.Handlers {
 	return handlersIns
 }
 
-func init() {
+func Init() {
 	handlersIns = mhttp.NewHandlers()
 
 	// user

@@ -7,6 +7,8 @@ $path = Get-Location
 
 Set-Location $PSScriptRoot
 
+    Set-Location "../services/gateway"
+
     if (Test-Path "../build/service_gateway/") {
         Remove-Item "../build/service_gateway/*"
     } else {

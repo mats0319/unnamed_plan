@@ -7,6 +7,8 @@ $path = Get-Location
 
 Set-Location $PSScriptRoot
 
+    Set-Location "../services/task"
+
     if (Test-Path "../build/service_task/") {
         Remove-Item "../build/service_task/*"
     } else {
