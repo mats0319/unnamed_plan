@@ -84,7 +84,7 @@ export default class CreateNote extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="less">
 .note-create {
   padding: 7vh 15vw;
   text-align: left;

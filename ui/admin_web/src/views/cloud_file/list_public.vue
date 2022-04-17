@@ -94,7 +94,7 @@ export default class ListPublic extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="less">
 .cloud-file-list-public {
   .cflp-file-name {
     a {

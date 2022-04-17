@@ -118,7 +118,7 @@ export default class TaskCreate extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="less">
 .task-create {
   padding: 7vh 15vw;
   text-align: left;

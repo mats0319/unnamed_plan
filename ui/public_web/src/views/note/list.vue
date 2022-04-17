@@ -118,7 +118,7 @@ export default class ListNote extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="less">
 .list-note {
   display: flex;
   height: calc(100vh - 20rem);

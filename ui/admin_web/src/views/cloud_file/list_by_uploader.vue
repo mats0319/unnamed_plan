@@ -335,7 +335,7 @@ export default class listByUploader extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="less">
 .cloud-file-list-by-uploader {
   .cflbu-file-name {
     a {

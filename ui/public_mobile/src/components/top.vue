@@ -138,7 +138,7 @@ export default class Top extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="less">
 .top-title {
   width: 40vw;
   line-height: 10rem;

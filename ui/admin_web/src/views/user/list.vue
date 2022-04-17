@@ -193,7 +193,7 @@ export default class UserList extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="less">
 .user-list {
   .ul-operate {
     display: flex;

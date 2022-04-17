@@ -16,7 +16,7 @@ module.exports = {
     extract: false
   },
   devServer: {
-    open: true,
+    // open: true,
     port: 9695
   },
   configureWebpack: {

@@ -1,5 +1,9 @@
 # 未命名计划
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/mats9693/unnamed_plan.svg)](https://pkg.go.dev/github.com/mats9693/unnamed_plan)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mats9693/unnamed_plan)](https://goreportcard.com/report/github.com/mats9693/unnamed_plan)
+[![996.icu](https://img.shields.io/badge/link-996.icu-red.svg)](https://996.icu)
+
 一个web项目，用来学习和实践相关知识技能
 
 ## 编程语言/技术框架

@@ -39,7 +39,7 @@ export default class Content extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="less">
 .default-home-content {
   height: calc(100vh - 20rem);
   font-size: 3rem;

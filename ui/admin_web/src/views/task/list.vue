@@ -237,7 +237,7 @@ export default class TaskList extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="less">
 .task-list {
   .el-table, .cell.el-tooltip {
     white-space: pre-wrap;

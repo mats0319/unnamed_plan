@@ -26,7 +26,7 @@ export default class Home extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="less">
 .home {
   width: 100vw;
   height: 100vh;

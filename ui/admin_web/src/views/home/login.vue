@@ -63,7 +63,7 @@ export default class Login extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="less">
 .login {
   height: 100vh;
 

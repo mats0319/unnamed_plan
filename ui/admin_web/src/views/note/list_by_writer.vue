@@ -298,7 +298,7 @@ export default class ListNoteByWriter extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="less">
 .note-list-by-writer {
   .nlbw-dialog {
     text-align: left;

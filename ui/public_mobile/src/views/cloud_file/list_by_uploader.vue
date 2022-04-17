@@ -93,7 +93,7 @@ export default class ListCloudFileByUploader extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="less">
 .list-cloud-file-by-uploader {
   padding: 3vh 0;
 

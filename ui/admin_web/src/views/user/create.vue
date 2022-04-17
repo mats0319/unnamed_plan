@@ -90,7 +90,7 @@ export default class UserCreate extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="less">
 .user-create {
   padding: 7vh 15vw;
   text-align: left;

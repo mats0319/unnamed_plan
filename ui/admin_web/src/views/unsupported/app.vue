@@ -18,7 +18,7 @@ export default class Unsupported extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="less">
 html {
   font-size: 62.5%; // now, 1 rem = 10 px
 }

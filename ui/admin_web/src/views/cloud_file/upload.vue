@@ -107,7 +107,7 @@ export default class UploadCloudFile extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="less">
 .cloud-file-upload {
   padding: 7vh 15vw;
   text-align: left;

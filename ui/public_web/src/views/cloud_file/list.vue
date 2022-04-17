@@ -120,7 +120,7 @@ export default class ListCloudFile extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="less">
 .list-cloud-file {
   padding: 3vh 10vw;
 

@@ -86,7 +86,7 @@ export default class Home extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="less">
 .home {
   height: 100vh;
 
