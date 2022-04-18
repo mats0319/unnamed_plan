@@ -71,6 +71,7 @@
 前端：
 
 1. ts代码优化，例如note的修改功能，使用了很多变量，可以优化为使用一个object
+2. 后台界面，任务模块，为不同状态的任务添加不同样式（例如已完成的整行置灰、进行中的状态栏加粗），调整代码：按照任务状态排序
 
 后端：
 
@@ -81,10 +82,12 @@
     4. github.com/zhenghaoz/gorse go语言推荐系统
     5. github.com/andydotxyz/chess go GUI开发
 2. 数据库乐观锁
+3. 拟取消使用orm
 
 其他：
 
 1. 画系统设计图
 2. 网关层多登限制与网关代码强绑定，拟做成插件形式——做成插件了，但没有完全做成插件
 3. nginx反向代理规则优化
-5. makefile添加前端build脚本（powershell），包含build、dist文件夹移动
+4. makefile添加前端build脚本（powershell），包含build、dist文件夹移动
+5. makefile添加后端测试脚本

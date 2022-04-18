@@ -2,6 +2,7 @@ package dao
 
 import (
 	"github.com/go-pg/pg/v10"
+	"github.com/mats9693/unnamed_plan/services/shared/db"
 	"github.com/mats9693/unnamed_plan/services/shared/db/dal"
 	"github.com/mats9693/unnamed_plan/services/shared/db/model"
 	"time"
@@ -16,7 +17,7 @@ func (u *UserPostgresql) Insert(user *model.User) error {
 		user.Common = model.NewCommon()
 	}
 
-	return mdb.DB().WithTx(func(conn mdb.Conn) error {
+	return mdb.DB().WithTx(func(conn mdal.Conn) error {
 		_, err := conn.PostgresqlConn.Model(user).Insert()
 		return err
 	})
@@ -25,7 +26,7 @@ func (u *UserPostgresql) Insert(user *model.User) error {
 func (u *UserPostgresql) Query(userIDs []string) ([]*model.User, error) {
 	users := make([]*model.User, 0)
 
-	err := mdb.DB().WithNoTx(func(conn mdb.Conn) error {
+	err := mdb.DB().WithNoTx(func(conn mdal.Conn) error {
 		return conn.PostgresqlConn.Model(&users).Where(model.Common_ID+" in (?)", pg.In(userIDs)).Select()
 	})
 	if err != nil {
@@ -38,7 +39,7 @@ func (u *UserPostgresql) Query(userIDs []string) ([]*model.User, error) {
 func (u *UserPostgresql) QueryOne(userID string) (*model.User, error) {
 	user := &model.User{}
 
-	err := mdb.DB().WithNoTx(func(conn mdb.Conn) error {
+	err := mdb.DB().WithNoTx(func(conn mdal.Conn) error {
 		return conn.PostgresqlConn.Model(user).
 			Where(model.User_IsLocked+" = ?", false).
 			Where(model.Common_ID+" = ?", userID).
@@ -54,7 +55,7 @@ func (u *UserPostgresql) QueryOne(userID string) (*model.User, error) {
 func (u *UserPostgresql) QueryOneByUserName(userName string) (*model.User, error) {
 	user := &model.User{}
 
-	err := mdb.DB().WithNoTx(func(conn mdb.Conn) error {
+	err := mdb.DB().WithNoTx(func(conn mdal.Conn) error {
 		return conn.PostgresqlConn.Model(user).
 			Where(model.User_IsLocked+" = ?", false).
 			Where(model.User_UserName+" = ?", userName).
@@ -86,7 +87,7 @@ func (u *UserPostgresql) QueryPageLEPermission(
 	users := make([]*model.User, 0)
 	count := 0
 
-	err := mdb.DB().WithNoTx(func(conn mdb.Conn) error {
+	err := mdb.DB().WithNoTx(func(conn mdal.Conn) error {
 		permission := conn.PostgresqlConn.Model((*model.User)(nil)).Column(model.User_Permission).Where(model.Common_ID+" = ?", userID)
 
 		var err2 error
@@ -111,7 +112,7 @@ func (u *UserPostgresql) QueryPageLEPermission(
 func (u *UserPostgresql) UpdateColumnsByUserID(user *model.User, columns ...string) error {
 	user.UpdateTime = time.Duration(time.Now().Unix())
 
-	return mdb.DB().WithTx(func(conn mdb.Conn) error {
+	return mdb.DB().WithTx(func(conn mdal.Conn) error {
 		query := conn.PostgresqlConn.Model(user).Column(model.Common_UpdateTime)
 		for i := range columns {
 			query.Column(columns[i])

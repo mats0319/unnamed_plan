@@ -1,4 +1,4 @@
-package mdb
+package mdal
 
 import "github.com/go-pg/pg/v10/orm"
 

@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	mdb "github.com/mats9693/unnamed_plan/services/shared/db/dal"
-	initialize "github.com/mats9693/unnamed_plan/services/shared/init"
+	"github.com/mats9693/unnamed_plan/services/shared/db"
+	"github.com/mats9693/unnamed_plan/services/shared/init"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
 	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
 	"github.com/mats9693/unnamed_plan/services/task/config"

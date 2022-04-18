@@ -1,4 +1,4 @@
-package mdb
+package mdal
 
 import (
 	"context"
@@ -12,12 +12,14 @@ type postgresqlDB struct {
 	postgresql *pg.DB
 }
 
-var _ DAL = (*postgresqlDB)(nil)
+var postgresqlDBIns = &postgresqlDB{}
 
-func initPostgresqlDB(addr string, dbName string, user string, password string, timeout int, showSQL bool) DAL {
-	ins := &postgresqlDB{}
+func InitPostgresqlDB(addr string, dbName string, user string, password string, timeout int, showSQL bool) DAL {
+	if postgresqlDBIns.postgresql != nil { // have initialized
+		return postgresqlDBIns
+	}
 
-	ins.postgresql = pg.Connect(&pg.Options{
+	postgresqlDBIns.postgresql = pg.Connect(&pg.Options{
 		Addr:         addr,
 		Database:     dbName,
 		User:         user,
@@ -27,10 +29,10 @@ func initPostgresqlDB(addr string, dbName string, user string, password string, 
 	})
 
 	if showSQL {
-		ins.postgresql.AddQueryHook(&debugHook{})
+		postgresqlDBIns.postgresql.AddQueryHook(&debugHook{})
 	}
 
-	return ins
+	return postgresqlDBIns
 }
 
 func (db *postgresqlDB) WithTx(task func(conn Conn) error) error {

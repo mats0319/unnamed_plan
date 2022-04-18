@@ -1,8 +1,9 @@
 package dao
 
 import (
-	mconst "github.com/mats9693/unnamed_plan/services/shared/const"
-	mdb "github.com/mats9693/unnamed_plan/services/shared/db/dal"
+	"github.com/mats9693/unnamed_plan/services/shared/const"
+    "github.com/mats9693/unnamed_plan/services/shared/db"
+    "github.com/mats9693/unnamed_plan/services/shared/db/dal"
 	"github.com/mats9693/unnamed_plan/services/shared/db/model"
 	"time"
 )
@@ -16,14 +17,14 @@ func (t *TaskPostgresql) Insert(task *model.Task) error {
 		task.Common = model.NewCommon()
 	}
 
-	return mdb.DB().WithTx(func(conn mdb.Conn) error {
+	return mdb.DB().WithTx(func(conn mdal.Conn) error {
 		_, err := conn.PostgresqlConn.Model(task).Insert()
 		return err
 	})
 }
 
 func (t *TaskPostgresql) QueryByPoster(userID string) (tasks []*model.Task, count int, err error) {
-	err = mdb.DB().WithNoTx(func(conn mdb.Conn) error {
+	err = mdb.DB().WithNoTx(func(conn mdal.Conn) error {
 		count, err = conn.PostgresqlConn.Model(&tasks).
 			Where(model.Task_PostedBy+" = ?", userID).
 			Where(model.Task_Status+" != ?", mconst.TaskStatus_History).
@@ -43,7 +44,7 @@ func (t *TaskPostgresql) QueryByPoster(userID string) (tasks []*model.Task, coun
 func (t *TaskPostgresql) QueryOne(taskID string) (note *model.Task, err error) {
 	note = &model.Task{}
 
-	err = mdb.DB().WithNoTx(func(conn mdb.Conn) error {
+	err = mdb.DB().WithNoTx(func(conn mdal.Conn) error {
 		return conn.PostgresqlConn.Model(note).Where(model.Common_ID+" = ?", taskID).Select()
 	})
 	if err != nil {
@@ -56,7 +57,7 @@ func (t *TaskPostgresql) QueryOne(taskID string) (note *model.Task, err error) {
 func (t *TaskPostgresql) UpdateColumnsByTaskID(task *model.Task, columns ...string) error {
 	task.UpdateTime = time.Duration(time.Now().Unix())
 
-	return mdb.DB().WithTx(func(conn mdb.Conn) error {
+	return mdb.DB().WithTx(func(conn mdal.Conn) error {
 		query := conn.PostgresqlConn.Model(task).Column(model.Common_UpdateTime)
 		for i := range columns {
 			query.Column(columns[i])

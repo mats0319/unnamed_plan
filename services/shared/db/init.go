@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/mats9693/unnamed_plan/services/shared/config"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
+	"github.com/mats9693/unnamed_plan/services/shared/db/dal"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
 	"go.uber.org/zap"
 	"os"
@@ -22,7 +23,7 @@ type dbConfig struct {
 
 type db struct {
 	config *dbConfig
-	ins    DAL
+	ins    mdal.DAL
 }
 
 var dbIns = &db{}
@@ -45,7 +46,7 @@ func Init() {
 
 	switch dbIns.config.DBMS {
 	case mconst.DB_PostgreSQL:
-		dbIns.ins = initPostgresqlDB(dbIns.config.Addr, dbIns.config.Database, dbIns.config.User,
+		dbIns.ins = mdal.InitPostgresqlDB(dbIns.config.Addr, dbIns.config.Database, dbIns.config.User,
 			dbIns.config.Password, dbIns.config.Timeout, dbIns.config.ShowSQL)
 	default:
 		mlog.Logger().Error("init db failed", zap.String(mconst.Error_UnsupportedDB, dbIns.config.DBMS))
@@ -55,11 +56,11 @@ func Init() {
 	mlog.Logger().Info(fmt.Sprintf("> Database %s init finish.", dbIns.config.DBMS))
 }
 
-func (dbi *db) WithTx(task func(Conn) error) error {
+func (dbi *db) WithTx(task func(mdal.Conn) error) error {
 	return dbi.ins.WithTx(task)
 }
 
-func (dbi *db) WithNoTx(task func(Conn) error) error {
+func (dbi *db) WithNoTx(task func(mdal.Conn) error) error {
 	return dbi.ins.WithNoTx(task)
 }
 

@@ -2,7 +2,8 @@ package dao
 
 import (
 	"github.com/mats9693/unnamed_plan/services/shared/const"
-	mdb "github.com/mats9693/unnamed_plan/services/shared/db/dal"
+    "github.com/mats9693/unnamed_plan/services/shared/db"
+    "github.com/mats9693/unnamed_plan/services/shared/db/dal"
 	"github.com/mats9693/unnamed_plan/services/shared/db/model"
 	"github.com/mats9693/unnamed_plan/services/shared/utils"
 	"time"
@@ -17,7 +18,7 @@ func (cf *CloudFilePostgresql) Insert(cloudFile *model.CloudFile) error {
 		cloudFile.Common = model.NewCommon()
 	}
 
-	return mdb.DB().WithTx(func(conn mdb.Conn) error {
+	return mdb.DB().WithTx(func(conn mdal.Conn) error {
 		_, err := conn.PostgresqlConn.Model(cloudFile).Insert()
 		return err
 	})
@@ -26,7 +27,7 @@ func (cf *CloudFilePostgresql) Insert(cloudFile *model.CloudFile) error {
 func (cf *CloudFilePostgresql) QueryOne(cloudFileID string) (*model.CloudFile, error) {
 	file := &model.CloudFile{}
 
-	err := mdb.DB().WithNoTx(func(conn mdb.Conn) error {
+	err := mdb.DB().WithNoTx(func(conn mdal.Conn) error {
 		return conn.PostgresqlConn.Model(file).
 			Where(model.CloudFile_IsDeleted+" = ?", false).
 			Where(model.CloudFile_FileID+" = ?", cloudFileID).
@@ -47,7 +48,7 @@ func (cf *CloudFilePostgresql) QueryPageByUploader(
 	files := make([]*model.CloudFile, 0)
 	count := 0
 
-	err := mdb.DB().WithNoTx(func(conn mdb.Conn) error {
+	err := mdb.DB().WithNoTx(func(conn mdal.Conn) error {
 		var err2 error
 		count, err2 = conn.PostgresqlConn.Model(&files).
 			Where(model.CloudFile_IsDeleted+" = ?", false).
@@ -88,7 +89,7 @@ func (cf *CloudFilePostgresql) QueryPageInPublic(
 	files := make([]*model.CloudFile, 0)
 	count := 0
 
-	err := mdb.DB().WithNoTx(func(conn mdb.Conn) error {
+	err := mdb.DB().WithNoTx(func(conn mdal.Conn) error {
 		permission := conn.PostgresqlConn.Model((*model.User)(nil)).Column(model.User_Permission).Where(model.Common_ID+" = ?", userID)
 		userIDs := conn.PostgresqlConn.Model((*model.User)(nil)).Column(model.Common_ID).Where(model.User_Permission+" <= (?)", permission)
 
@@ -115,7 +116,7 @@ func (cf *CloudFilePostgresql) QueryPageInPublic(
 func (cf *CloudFilePostgresql) UpdateColumnsByFileID(data *model.CloudFile, columns ...string) error {
 	data.UpdateTime = time.Duration(time.Now().Unix())
 
-	return mdb.DB().WithTx(func(conn mdb.Conn) error {
+	return mdb.DB().WithTx(func(conn mdal.Conn) error {
 		query := conn.PostgresqlConn.Model(data).Column(model.Common_UpdateTime)
 		for i := range columns {
 			query.Column(columns[i])

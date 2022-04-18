@@ -19,8 +19,19 @@ const (
 	testUserName = "test user"
 	testNickname = "test nickname"
 	testPassword = "test password"
-	testPermission = 1
+	testPermission = 8
 	testID = "test id"
+
+	testCreateUserName = "test create user"
+	testCreatePermission = 1
+
+	testModifyInfoUserName = "test create user - modify"
+
+	testModifyPermissionP = 2
+)
+
+var (
+	testCreateUserID string // calc when create success
 )
 
 var users = []*model.User{

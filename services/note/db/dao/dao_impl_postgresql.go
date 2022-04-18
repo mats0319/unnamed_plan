@@ -2,6 +2,7 @@ package dao
 
 import (
 	"github.com/mats9693/unnamed_plan/services/shared/const"
+	"github.com/mats9693/unnamed_plan/services/shared/db"
 	"github.com/mats9693/unnamed_plan/services/shared/db/dal"
 	"github.com/mats9693/unnamed_plan/services/shared/db/model"
 	"github.com/mats9693/unnamed_plan/services/shared/utils"
@@ -17,7 +18,7 @@ func (tn *NotePostgresql) Insert(data *model.Note) error {
 		data.Common = model.NewCommon()
 	}
 
-	return mdb.DB().WithTx(func(conn mdb.Conn) error {
+	return mdb.DB().WithTx(func(conn mdal.Conn) error {
 		_, err := conn.PostgresqlConn.Model(data).Insert()
 		return err
 	})
@@ -26,7 +27,7 @@ func (tn *NotePostgresql) Insert(data *model.Note) error {
 func (tn *NotePostgresql) QueryOne(noteID string) (note *model.Note, err error) {
 	note = &model.Note{}
 
-	err = mdb.DB().WithNoTx(func(conn mdb.Conn) error {
+	err = mdb.DB().WithNoTx(func(conn mdal.Conn) error {
 		return conn.PostgresqlConn.Model(note).
 			Where(model.Note_IsDeleted+" = ?", false).
 			Where(model.Common_ID+" = ?", noteID).
@@ -44,7 +45,7 @@ func (tn *NotePostgresql) QueryPageByWriter(
 	pageNum int,
 	userID string,
 ) (notes []*model.Note, count int, err error) {
-	err = mdb.DB().WithNoTx(func(conn mdb.Conn) error {
+	err = mdb.DB().WithNoTx(func(conn mdal.Conn) error {
 		count, err = conn.PostgresqlConn.Model(&notes).
 			Where(model.Note_IsDeleted+" = ?", false).
 			Where(model.Note_WriteBy+" = ?", userID).
@@ -83,7 +84,7 @@ func (tn *NotePostgresql) QueryPageInPublic(
 	pageNum int,
 	userID string,
 ) (notes []*model.Note, count int, err error) {
-	err = mdb.DB().WithNoTx(func(conn mdb.Conn) error {
+	err = mdb.DB().WithNoTx(func(conn mdal.Conn) error {
 		permission := conn.PostgresqlConn.Model((*model.User)(nil)).Column(model.User_Permission).Where(model.Common_ID+" = ?", userID)
 		userIDs := conn.PostgresqlConn.Model((*model.User)(nil)).Column(model.Common_ID).Where(model.User_Permission+" <= (?)", permission)
 
@@ -109,7 +110,7 @@ func (tn *NotePostgresql) QueryPageInPublic(
 func (tn *NotePostgresql) UpdateColumnsByNoteID(note *model.Note, columns ...string) error {
 	note.UpdateTime = time.Duration(time.Now().Unix())
 
-	return mdb.DB().WithTx(func(conn mdb.Conn) error {
+	return mdb.DB().WithTx(func(conn mdal.Conn) error {
 		query := conn.PostgresqlConn.Model(note).Column(model.Common_UpdateTime)
 		for i := range columns {
 			query.Column(columns[i])

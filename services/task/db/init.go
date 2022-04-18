@@ -2,7 +2,7 @@ package db
 
 import (
 	"github.com/mats9693/unnamed_plan/services/shared/const"
-	"github.com/mats9693/unnamed_plan/services/shared/db/dal"
+	"github.com/mats9693/unnamed_plan/services/shared/db"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
 	"github.com/mats9693/unnamed_plan/services/task/db/dao"
 	"os"
