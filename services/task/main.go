@@ -26,7 +26,7 @@ func main() {
 	server := grpc.NewServer()
 	taskServer, err := rpc.GetTaskServer(config.GetConfig().UserServerAddress)
 	if err != nil {
-		mlog.Logger().Error("init thinking note server failed", zap.Error(err))
+		mlog.Logger().Error("init task server failed", zap.Error(err))
 		return
 	}
 	rpc_impl.RegisterITaskServer(server, taskServer)

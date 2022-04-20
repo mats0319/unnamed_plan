@@ -13,22 +13,20 @@ import (
 type noteServerImpl struct {
 	rpc_impl.UnimplementedINoteServer
 
-	UserClient rpc_impl.IUserClient
+	userClient rpc_impl.IUserClient
 }
 
-var thinkingNoteServerImplIns = &noteServerImpl{}
+var noteServerImplIns = &noteServerImpl{}
 
-var _ rpc_impl.INoteServer = (*noteServerImpl)(nil)
-
-func GetNoteServer(userServerTarget string) (*noteServerImpl, error) {
+func GetNoteServer(userServerTarget string) (rpc_impl.INoteServer, error) {
 	userClient, err := client.ConnectUserServer(userServerTarget)
 	if err != nil {
 		return nil, err
 	}
 
-	thinkingNoteServerImplIns.UserClient = userClient
+	noteServerImplIns.userClient = userClient
 
-	return thinkingNoteServerImplIns, nil
+	return noteServerImplIns, nil
 }
 
 func (t *noteServerImpl) ListByWriter(_ context.Context, req *rpc_impl.Note_ListByWriterReq) (*rpc_impl.Note_ListByWriterRes, error) {
@@ -92,7 +90,7 @@ func (t *noteServerImpl) Modify(ctx context.Context, req *rpc_impl.Note_ModifyRe
 		return nil, utils.NewError(mconst.Error_InvalidParams)
 	}
 
-	_, err := t.UserClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
+	_, err := t.userClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
 		UserId:   req.OperatorId,
 		Password: req.Password,
 	})
@@ -105,7 +103,7 @@ func (t *noteServerImpl) Modify(ctx context.Context, req *rpc_impl.Note_ModifyRe
 		return nil, err
 	}
 	if noteRecord.WriteBy != req.OperatorId {
-		return nil, utils.NewError(mconst.Error_ModifyOthersThinkingNote)
+		return nil, utils.NewError(mconst.Error_ModifyOthersNote)
 	}
 
 	if req.Topic == noteRecord.Topic && req.Content == noteRecord.Content && req.IsPublic == noteRecord.IsPublic {
@@ -139,7 +137,7 @@ func (t *noteServerImpl) Delete(ctx context.Context, req *rpc_impl.Note_DeleteRe
 		return nil, utils.NewError(mconst.Error_InvalidParams)
 	}
 
-	_, err := t.UserClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
+	_, err := t.userClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
 		UserId:   req.OperatorId,
 		Password: req.Password,
 	})

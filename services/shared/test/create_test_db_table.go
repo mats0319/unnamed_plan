@@ -12,9 +12,10 @@ import (
 )
 
 func init() {
+    timestamp := time.Now().Unix()
     // test table have '_[timestamp]' suffix which can distinguish with formal table
     orm.SetTableNameInflector(func(s string) string {
-        return fmt.Sprintf("%s_%d", s, time.Now().Unix())
+        return fmt.Sprintf("%s_%d", s, timestamp) // make all tables have same timestamp suffix
     })
 }
 

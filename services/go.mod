@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/go-pg/pg/v10 v10.10.5
+	github.com/golang/mock v1.6.0
 	github.com/mats9693/utils v0.0.0
 	github.com/pkg/errors v0.9.1
 	go.uber.org/zap v1.19.1

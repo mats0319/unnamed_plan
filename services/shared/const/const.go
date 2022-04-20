@@ -34,10 +34,10 @@ const (
 	Error_PermissionDenied         = "permission denied"
 	Error_NoValidModification      = "not any valid modification"
 
-	Error_UserAlreadyLocked        = "user already locked"
-	Error_UserAlreadyUnlocked      = "user already unlocked"
-	Error_FileAlreadyDeleted       = "file already deleted"
-	Error_NoteAlreadyDeleted       = "note already deleted"
-	Error_ModifyOthersThinkingNote = "not allowed to modify others' thinking note"
-	Error_ModifyOthersTask         = "not allowed to modify others' task"
+	Error_UserAlreadyLocked   = "user already locked"
+	Error_UserAlreadyUnlocked = "user already unlocked"
+	Error_FileAlreadyDeleted  = "file already deleted"
+	Error_NoteAlreadyDeleted  = "note already deleted"
+	Error_ModifyOthersNote    = "not allowed to modify others' note"
+	Error_ModifyOthersTask    = "not allowed to modify others' task"
 )

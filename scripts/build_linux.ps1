@@ -30,10 +30,10 @@ Start-Transcript "build_linux_services.log" -Force
 
         Write-Output "> build cloud file service finished."
 
-        # thinking note service
+        # note service
         powershell -executionpolicy bypass -File "./build_linux_note.ps1"
 
-        Write-Output "> build thinking note service finished."
+        Write-Output "> build note service finished."
 
         # task service
         powershell -executionpolicy bypass -File "./build_linux_task.ps1"

@@ -77,34 +77,6 @@ type ResponseData struct {
 这就导致两个网站会共用session storage，因为我将登录信息保存在vuex、使用session storage做的vuex防刷新，  
 以至于当我登录了前台界面之后，在当前浏览器标签页，通过修改url的方式访问后台界面，后台界面能够读到前台界面的vuex
 
-```ts vue  
-// vuex防刷新
-export default class App extends Vue {
-  private created() {
-    if (sessionStorage.getItem(process.env.VUE_APP_axios_source_sign)) {
-      this.$store.replaceState(
-        Object.assign(
-          {},
-          this.$store.state,
-          JSON.parse(sessionStorage.getItem(process.env.VUE_APP_axios_source_sign))
-        )
-      );
-
-      sessionStorage.removeItem(process.env.VUE_APP_axios_source_sign);
-    }
-  }
-
-  private mounted() {
-    window.addEventListener("beforeunload", () => {
-      sessionStorage.setItem(process.env.VUE_APP_axios_source_sign, JSON.stringify(this.$store.state));
-    });
-  }
-}
-
-// 登录成功，写session storage
-sessionStorage.setItem("auth", process.env.VUE_APP_axios_source_sign);
-```
-
 又因为我没有为两个网站做代码区分，即**是否登录**字段都叫`isLogin`，所以仅从界面来看，我做到了特殊情况下的单点登录...
 
 对此，我的解决办法是，不同的网站，vuex写session storage时，使用不同的key，以避免与其他网站的session storage混用
@@ -115,9 +87,7 @@ sessionStorage.setItem("auth", process.env.VUE_APP_axios_source_sign);
 2. 访问前台界面，登录，访问后台界面，访问前台界面：登录
 3. 访问前台界面，登录，访问后台界面，登录，访问前台界面：登录
 
-## 服务测试(draft)
-
-> 编写完全部测试代码后，取消该标签的*draft*标识
+## 服务测试
 
 ### 为什么想要写服务测试：
 
@@ -151,14 +121,21 @@ sessionStorage.setItem("auth", process.env.VUE_APP_axios_source_sign);
 ### 思考
 
 1. 测试可能需要新的数据库查询语句，是否应与正式代码写在一起？  
-   不应该，写在一起是为了蹭正式代码的DBMS切换，但会在正式代码中打包部分未使用函数；  
+   不应该，写在一起是为了蹭正式代码的DBMS切换，同时会在正式代码中打包部分未使用函数；  
    问题主要在于蹭DBMS切换，还得把建测试表、删测试表的代码也加进去，这样才能做到和正式代码一样的**改配置就能切换数据库**，  
-   可这样一来，写另一种数据库支持的时候，就得把测试的内容全写了才能用，与最初引入DBMS切换的目的——简单切换DBMS——相悖，  
-   所以测试单独写，与正式代码完全分割开
+   可这样一来，写另一种数据库支持的时候，就得把测试的内容全写了才能用，与最初引入数据访问层的目的——简单切换DBMS——相悖，  
+   所以测试单独写，与正式代码完全分割开，如果需要使用另一种数据库测试，现写对应的测试代码，  
+   后续考虑取消使用orm，通过拼sql的方式，打通数据库之间的差异
+2. 为什么将测试与正式代码写在一起？  
+   如果一个服务依赖另一个服务，例如云文件服务依赖用户服务，则在测试时，需要mock底层服务的接口，  
+   因为设计上，服务的实现是非导出的结构体，所以把测试写在一起，是为了自定义服务的实现结构体（方便mock），  
+   进一步的，因为不想引入无用全局变量（最初的设计是将测试数据定义为全局变量），所以定义了新的测试结构，包含所有测试数据
+3. 为什么只写正常流程的测试？  
+   因为是自用，所以只在设计与实现环节考虑异常流程
 
 ## 配置中心(draft)
 
-> 因未达成设计意图（没想明白），于下一个提交中删除配置中心模块，恢复草稿状态
+场景：随着测试的引入，假设现在我要改一个数据库的地址，我需要改四个服务x每个服务三个配置文件一共十二处，所以能不能统一管理配置？
 
 ## 服务注册中心(draft)
 

@@ -68,7 +68,7 @@ func (tn *NotePostgresql) QueryPageByWriter(
 /**
 Core: sub-query
 	select *
-	from thinking_note tn
+	from note tn
 	where tn.write_by in (
 		select "id"
 		from users u

@@ -14,20 +14,18 @@ import (
 type taskServerImpl struct {
 	rpc_impl.UnimplementedITaskServer
 
-	UserClient rpc_impl.IUserClient
+	userClient rpc_impl.IUserClient
 }
-
-var _ rpc_impl.ITaskServer = (*taskServerImpl)(nil)
 
 var taskServerImplIns = &taskServerImpl{}
 
-func GetTaskServer(userServerTarget string) (*taskServerImpl, error) {
+func GetTaskServer(userServerTarget string) (rpc_impl.ITaskServer, error) {
 	userClient, err := client.ConnectUserServer(userServerTarget)
 	if err != nil {
 		return nil, err
 	}
 
-	taskServerImplIns.UserClient = userClient
+	taskServerImplIns.userClient = userClient
 
 	return taskServerImplIns, nil
 }
@@ -76,7 +74,7 @@ func (t *taskServerImpl) Modify(ctx context.Context, req *rpc_impl.Task_ModifyRe
 		return nil, utils.NewError(mconst.Error_InvalidParams)
 	}
 
-	_, err := t.UserClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
+	_, err := t.userClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
 		UserId:   req.OperatorId,
 		Password: req.Password,
 	})

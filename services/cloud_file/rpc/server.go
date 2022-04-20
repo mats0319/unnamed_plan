@@ -19,12 +19,12 @@ const backupFileSuffix = ".backup"
 type cloudFileServerImpl struct {
 	rpc_impl.UnimplementedICloudFileServer
 
-	UserClient rpc_impl.IUserClient
+	userClient rpc_impl.IUserClient
 }
 
-var cloudFileServerImplIns = &cloudFileServerImpl{}
-
 var _ rpc_impl.ICloudFileServer = (*cloudFileServerImpl)(nil)
+
+var cloudFileServerImplIns = &cloudFileServerImpl{}
 
 func GetCloudFileServer(userServerTarget string) (*cloudFileServerImpl, error) {
 	userClient, err := client.ConnectUserServer(userServerTarget)
@@ -32,7 +32,7 @@ func GetCloudFileServer(userServerTarget string) (*cloudFileServerImpl, error) {
 		return nil, err
 	}
 
-	cloudFileServerImplIns.UserClient = userClient
+	cloudFileServerImplIns.userClient = userClient
 
 	return cloudFileServerImplIns, nil
 }
@@ -121,7 +121,7 @@ func (c *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFil
 		return nil, utils.NewError(mconst.Error_InvalidParams)
 	}
 
-	_, err := c.UserClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
+	_, err := c.userClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
 		UserId:   req.OperatorId,
 		Password: req.Password,
 	})
@@ -206,7 +206,7 @@ func (c *cloudFileServerImpl) Delete(ctx context.Context, req *rpc_impl.CloudFil
 		return nil, utils.NewError(mconst.Error_InvalidParams)
 	}
 
-	_, err := c.UserClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
+	_, err := c.userClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
 		UserId:   req.OperatorId,
 		Password: req.Password,
 	})

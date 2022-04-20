@@ -12,7 +12,7 @@ type noteClient struct {
 
 var _ rpc_impl.INoteClient = (*noteClient)(nil)
 
-var thinkingNoteClientIns = &noteClient{}
+var noteClientIns = &noteClient{}
 
 func ConnectNoteServer(target string) (*noteClient, error) {
 	conn, err := grpc.Dial(target, grpc.WithInsecure())
@@ -20,9 +20,9 @@ func ConnectNoteServer(target string) (*noteClient, error) {
 		return nil, err
 	}
 
-	thinkingNoteClientIns.client = rpc_impl.NewINoteClient(conn)
+	noteClientIns.client = rpc_impl.NewINoteClient(conn)
 
-	return thinkingNoteClientIns, nil
+	return noteClientIns, nil
 }
 
 func (t *noteClient) ListByWriter(ctx context.Context, in *rpc_impl.Note_ListByWriterReq, opts ...grpc.CallOption) (*rpc_impl.Note_ListByWriterRes, error) {
