@@ -111,14 +111,16 @@ func (u *UserPostgresql) QueryPageLEPermission(
 
 func (u *UserPostgresql) UpdateColumnsByUserID(user *model.User, columns ...string) error {
 	user.UpdateTime = time.Duration(time.Now().Unix())
+	user.OptimisticLock++
 
 	return mdb.DB().WithTx(func(conn mdal.Conn) error {
-		query := conn.PostgresqlConn.Model(user).Column(model.Common_UpdateTime)
+		query := conn.PostgresqlConn.Model(user).Column(model.Common_UpdateTime, model.Common_OptimisticLock)
 		for i := range columns {
 			query.Column(columns[i])
 		}
 
-		_, err := query.Where(model.Common_ID + " = ?" + model.Common_ID).Update()
+		_, err := query.Where(model.Common_ID+" = ?"+model.Common_ID).
+			Where(model.Common_OptimisticLock+" = ?", user.OptimisticLock-1).Update()
 		return err
 	})
 }

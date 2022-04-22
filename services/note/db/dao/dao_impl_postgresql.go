@@ -109,15 +109,17 @@ func (tn *NotePostgresql) QueryPageInPublic(
 
 func (tn *NotePostgresql) UpdateColumnsByNoteID(note *model.Note, columns ...string) error {
 	note.UpdateTime = time.Duration(time.Now().Unix())
+	note.OptimisticLock++
 
 	return mdb.DB().WithTx(func(conn mdal.Conn) error {
-		query := conn.PostgresqlConn.Model(note).Column(model.Common_UpdateTime)
+		query := conn.PostgresqlConn.Model(note).Column(model.Common_UpdateTime, model.Common_OptimisticLock)
 		for i := range columns {
 			query.Column(columns[i])
 		}
 
 		res, err := query.Where(model.Note_IsDeleted+" = ?", false).
-			Where(model.Common_ID + " = ?" + model.Common_ID).Update()
+			Where(model.Common_ID+" = ?"+model.Common_ID).
+			Where(model.Common_OptimisticLock+" = ?", note.OptimisticLock-1).Update()
 		if err != nil {
 			return err
 		}

@@ -2,8 +2,8 @@ package dao
 
 import (
 	"github.com/mats9693/unnamed_plan/services/shared/const"
-    "github.com/mats9693/unnamed_plan/services/shared/db"
-    "github.com/mats9693/unnamed_plan/services/shared/db/dal"
+	"github.com/mats9693/unnamed_plan/services/shared/db"
+	"github.com/mats9693/unnamed_plan/services/shared/db/dal"
 	"github.com/mats9693/unnamed_plan/services/shared/db/model"
 	"time"
 )
@@ -56,14 +56,16 @@ func (t *TaskPostgresql) QueryOne(taskID string) (note *model.Task, err error) {
 
 func (t *TaskPostgresql) UpdateColumnsByTaskID(task *model.Task, columns ...string) error {
 	task.UpdateTime = time.Duration(time.Now().Unix())
+	task.OptimisticLock++
 
 	return mdb.DB().WithTx(func(conn mdal.Conn) error {
-		query := conn.PostgresqlConn.Model(task).Column(model.Common_UpdateTime)
+		query := conn.PostgresqlConn.Model(task).Column(model.Common_UpdateTime, model.Common_OptimisticLock)
 		for i := range columns {
 			query.Column(columns[i])
 		}
 
-		_, err := query.Where(model.Common_ID + " = ?" + model.Common_ID).Update()
+		_, err := query.Where(model.Common_ID+" = ?"+model.Common_ID).
+			Where(model.Common_OptimisticLock+" = ?", task.OptimisticLock-1).Update()
 		return err
 	})
 }

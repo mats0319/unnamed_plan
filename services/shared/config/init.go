@@ -18,14 +18,16 @@ type configItem struct {
 	Json json.RawMessage `json:"json"`
 }
 
-var (
-	conf = &config{}
+var conf = &config{}
 
-	executableDir string
-)
+// InitFromConfigCenter load config from config center, use for services
+func InitFromConfigCenter(serviceID string, level string) {
+	// todo: impl
+}
 
-func Init(configFileName string) {
-	if len(conf.Level) > 0 { // have initialized
+// InitFromFile load config from config file, use for config center and test
+func InitFromFile(configFileName string) {
+	if len(conf.Level) > 0 { // have initialized, require any config version have its level
 		return
 	}
 
@@ -62,8 +64,4 @@ func GetConfig(uid string) []byte {
 	}
 
 	return res
-}
-
-func GetExecDir() string {
-	return executableDir
 }

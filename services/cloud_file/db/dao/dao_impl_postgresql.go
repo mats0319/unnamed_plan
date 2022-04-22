@@ -2,8 +2,8 @@ package dao
 
 import (
 	"github.com/mats9693/unnamed_plan/services/shared/const"
-    "github.com/mats9693/unnamed_plan/services/shared/db"
-    "github.com/mats9693/unnamed_plan/services/shared/db/dal"
+	"github.com/mats9693/unnamed_plan/services/shared/db"
+	"github.com/mats9693/unnamed_plan/services/shared/db/dal"
 	"github.com/mats9693/unnamed_plan/services/shared/db/model"
 	"github.com/mats9693/unnamed_plan/services/shared/utils"
 	"time"
@@ -113,17 +113,19 @@ func (cf *CloudFilePostgresql) QueryPageInPublic(
 	return files, count, err
 }
 
-func (cf *CloudFilePostgresql) UpdateColumnsByFileID(data *model.CloudFile, columns ...string) error {
-	data.UpdateTime = time.Duration(time.Now().Unix())
+func (cf *CloudFilePostgresql) UpdateColumnsByFileID(file *model.CloudFile, columns ...string) error {
+	file.UpdateTime = time.Duration(time.Now().Unix())
+	file.OptimisticLock++
 
 	return mdb.DB().WithTx(func(conn mdal.Conn) error {
-		query := conn.PostgresqlConn.Model(data).Column(model.Common_UpdateTime)
+		query := conn.PostgresqlConn.Model(file).Column(model.Common_UpdateTime, model.Common_OptimisticLock)
 		for i := range columns {
 			query.Column(columns[i])
 		}
 
 		res, err := query.Where(model.CloudFile_IsDeleted+" = ?", false).
-			Where(model.CloudFile_FileID + " = ?" + model.CloudFile_FileID).Update()
+			Where(model.CloudFile_FileID+" = ?"+model.CloudFile_FileID).
+			Where(model.Common_OptimisticLock+" = ?", file.OptimisticLock-1).Update()
 		if err != nil {
 			return err
 		}

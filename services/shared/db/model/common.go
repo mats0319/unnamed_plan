@@ -6,18 +6,19 @@ import (
 )
 
 type Common struct {
-	ID          string        `pg:",pk"`
-	CreatedTime time.Duration `pg:",use_zero,notnull"`
-	UpdateTime  time.Duration `pg:",use_zero,notnull"`
-	// todo: 乐观锁
+	ID             string        `pg:",pk"`
+	CreatedTime    time.Duration `pg:",use_zero,notnull"`
+	UpdateTime     time.Duration `pg:",use_zero,notnull"`
+	OptimisticLock int           `pg:",use_zero,notnull"`
 }
 
 func NewCommon() Common {
 	currTime := time.Duration(time.Now().Unix())
 
 	return Common{
-		ID:          uuid.New(),
-		UpdateTime:  currTime,
-		CreatedTime: currTime,
+		ID:             uuid.New(),
+		UpdateTime:     currTime,
+		CreatedTime:    currTime,
+		OptimisticLock: 0,
 	}
 }

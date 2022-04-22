@@ -1,9 +1,10 @@
 package model
 
 const (
-	Common_ID          = "id"
-	Common_CreatedTime = "created_time"
-	Common_UpdateTime  = "update_time"
+	Common_ID             = "id"
+	Common_CreatedTime    = "created_time"
+	Common_UpdateTime     = "update_time"
+	Common_OptimisticLock = "optimistic_lock"
 )
 
 // services

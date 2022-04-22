@@ -6,7 +6,7 @@ import (
 )
 
 func Init(configFileName string, initFunc ...func()) {
-    mconfig.Init(configFileName)
+    mconfig.InitFromFile(configFileName)
     mlog.Init()
 
     for i := range initFunc {
