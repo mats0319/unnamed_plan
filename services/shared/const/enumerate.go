@@ -15,3 +15,12 @@ const (
 	TaskStatus_InProgress
 	TaskStatus_Completed
 )
+
+type ConfigLevel string
+
+const (
+	ConfigLevel_Default = "default"
+	ConfigLevel_Dev = "dev"
+	ConfigLevel_Product = "product"
+	ConfigLevel_Test = "test"
+)

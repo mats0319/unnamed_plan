@@ -45,3 +45,19 @@ const (
 	Task_PreTaskIDs  = "pre_task_ids"
 	Task_Status      = "status"
 )
+
+const (
+	ServiceConfig_ServiceID     = "service_id"
+	ServiceConfig_Level         = "level"
+	ServiceConfig_ServiceName   = "service_name"
+	ServiceConfig_ConfigItemIDs = "config_item_ids"
+	ServiceConfig_IsDelete      = "is_delete"
+)
+
+const (
+	ConfigItem_ConfigItemID   = "config_item_id"
+	ConfigItem_ConfigItemName = "config_item_name"
+	ConfigItem_ConfigItemTag  = "config_item_tag"
+	ConfigItem_ConfigSubItems = "config_sub_items"
+	ConfigItem_UsedIn         = "used_in"
+)
