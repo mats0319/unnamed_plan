@@ -8,12 +8,15 @@ type ServiceConfig struct {
 	ServiceName   string   `pg:",notnull"`
 	ConfigItemIDs []string `pg:"config_item_ids"`
 	IsDelete      bool     `pg:",use_zero,notnull"`
+
+	Common
 }
 
 type ConfigItem struct {
-	ConfigItemID   string `pg:",notnull"`
-	ConfigItemName string `pg:",notnull"`
-	ConfigItemTag  string
+	ConfigItemID   string          `pg:",notnull"`
+	ConfigItemName string          `pg:",notnull"`
 	ConfigSubItems json.RawMessage `pg:",notnull"`
-	UsedIn         []string        // service ids
+	BeUsed         []string        // service ids
+
+	Common
 }

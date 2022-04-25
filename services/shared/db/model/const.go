@@ -46,6 +46,8 @@ const (
 	Task_Status      = "status"
 )
 
+// config center
+
 const (
 	ServiceConfig_ServiceID     = "service_id"
 	ServiceConfig_Level         = "level"
@@ -59,5 +61,5 @@ const (
 	ConfigItem_ConfigItemName = "config_item_name"
 	ConfigItem_ConfigItemTag  = "config_item_tag"
 	ConfigItem_ConfigSubItems = "config_sub_items"
-	ConfigItem_UsedIn         = "used_in"
+	ConfigItem_BeUsed         = "be_used"
 )

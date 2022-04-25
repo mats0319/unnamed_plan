@@ -7,18 +7,18 @@ import (
 	"os"
 )
 
-type config struct {
+type Config struct {
 	Level       string        `json:"level"`
-	ConfigItems []*configItem `json:"config"`
+	ConfigItems []*ConfigItem `json:"config"`
 }
 
-type configItem struct {
+type ConfigItem struct {
 	UID  string          `json:"uid"`
 	Name string          `json:"name"`
 	Json json.RawMessage `json:"json"`
 }
 
-var conf = &config{}
+var conf = &Config{}
 
 // InitFromConfigCenter load config from config center, use for services
 func InitFromConfigCenter(serviceID string, level string) {

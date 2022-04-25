@@ -4,7 +4,7 @@ Set-Location $PSScriptRoot
 
     Set-Location "../services/user"
 
-    go build -o service_exec.exe
+    go build -race -o service_exec.exe
 
     Start-Process ./service_exec.exe
 

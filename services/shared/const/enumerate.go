@@ -19,8 +19,8 @@ const (
 type ConfigLevel string
 
 const (
-	ConfigLevel_Default = "default"
-	ConfigLevel_Dev = "dev"
-	ConfigLevel_Product = "product"
-	ConfigLevel_Test = "test"
+	ConfigLevel_Default    = "default"
+	ConfigLevel_Dev        = "dev"
+	ConfigLevel_Production = "production"
+	ConfigLevel_Test       = "test"
 )

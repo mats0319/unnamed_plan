@@ -29,6 +29,9 @@ func main() {
 		(*model.CloudFile)(nil),
 		(*model.Note)(nil),
 		(*model.Task)(nil),
+
+		(*model.ServiceConfig)(nil),
+		(*model.ConfigItem)(nil),
 	}
 
 	for i, m := range models {
@@ -41,6 +44,9 @@ func main() {
 	// built-in data
 	{
 		setDefaultUser(db)
+
+		setDefaultServiceConfig(db)
+		setDefaultConfigItem(db)
 	}
 
 	log.Println("db init finish.")
