@@ -22,7 +22,7 @@ type httpConfig struct {
 func StartServer(handlers *Handlers) {
 	handlers.config = getHttpConfig()
 
-	handlers.isDev = mconfig.GetConfigLevel() == mconst.ConfigDevLevel
+	handlers.isDev = mconfig.GetConfigLevel() == mconst.ConfigLevel_Dev
 
 	if handlers.config.LimitMultiLoginConfig.LimitMultiLogin {
 		handlers.plugins = append(handlers.plugins, limit_multi_login.Init(&handlers.config.LimitMultiLoginConfig,
@@ -39,12 +39,12 @@ func StartServer(handlers *Handlers) {
 }
 
 func getHttpConfig() *httpConfig {
-	byteSlice := mconfig.GetConfig(mconst.UID_HTTP)
+	byteSlice := mconfig.GetConfig(mconst.UID_Gateway_HTTP)
 
 	conf := &httpConfig{}
 	err := json.Unmarshal(byteSlice, conf)
 	if err != nil {
-		mlog.Logger().Error("json unmarshal failed", zap.String("uid", mconst.UID_HTTP), zap.Error(err))
+		mlog.Logger().Error("json unmarshal failed", zap.String("uid", mconst.UID_Gateway_HTTP), zap.Error(err))
 		return nil
 	}
 

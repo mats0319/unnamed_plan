@@ -3,13 +3,15 @@ package mconst
 const (
 	LogFileName    = "log.log"
 	ConfigFileName = "config.json"
-	ConfigDevLevel = "dev"
-	EmptyHTTPRes   = ""
+
+	EmptyHTTPRes = ""
 
 	// uid
-	UID_Config = "612fbb57-c44c-4b54-8188-13d1dd598306"
-	UID_DB     = "658e06f7-71d5-4ada-b715-8c1a4489e5d2"
-	UID_HTTP   = "3b839c1f-9f1e-474b-b3da-7b5e9bc792ec"
+	UID_Config             = "612fbb57-c44c-4b54-8188-13d1dd598306"
+	UID_DB_Dev             = "658e06f7-71d5-4ada-b715-8c1a4489e5d2"
+	UID_DB_Production      = "658e06f7-71d5-4ada-b715-8c1a4489e5d3"
+	UID_Gateway_HTTP       = "3b839c1f-9f1e-474b-b3da-7b5e9bc792ec"
+	UID_Gateway_RPC_Client = "1cd10cb8-ecf5-4855-a886-76b148ed104a"
 
 	UID_Gateway_Service    = "84d1fecc-3be9-439e-8144-209ffc00a975"
 	UID_User_Service       = "eafbda7d-c951-4fc9-8b45-8c90189c1e36"

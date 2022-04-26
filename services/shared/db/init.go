@@ -69,12 +69,12 @@ func (dbi *db) GetDBMSName() string {
 }
 
 func getDBConfig() *dbConfig {
-	byteSlice := mconfig.GetConfig(mconst.UID_DB)
+	byteSlice := mconfig.GetConfig(mconst.UID_DB_Dev)
 
 	conf := &dbConfig{}
 	err := json.Unmarshal(byteSlice, conf)
 	if err != nil {
-		mlog.Logger().Error("json unmarshal failed", zap.String("uid", mconst.UID_DB), zap.Error(err))
+		mlog.Logger().Error("json unmarshal failed", zap.String("uid", mconst.UID_DB_Dev), zap.Error(err))
 		return nil
 	}
 

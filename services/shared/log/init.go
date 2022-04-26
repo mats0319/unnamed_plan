@@ -56,7 +56,7 @@ func logWriteSyncer() zapcore.WriteSyncer {
 }
 
 func logLevel() (level zapcore.Level) {
-	if mconfig.GetConfigLevel() == mconst.ConfigDevLevel {
+	if mconfig.GetConfigLevel() == mconst.ConfigLevel_Dev {
 		level = zapcore.DebugLevel
 	} else {
 		level = zapcore.InfoLevel
