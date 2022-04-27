@@ -1,0 +1,20 @@
+syntax = "proto3";
+package cloudFile;
+
+option go_package = "./rpc_impl";
+option optimize_for = LITE_RUNTIME;
+
+service IConfigCenter {
+  rpc GetServiceConfig(ConfigCenter.GetServiceConfigReq) returns (ConfigCenter.GetServiceConfigRes);
+}
+
+message ConfigCenter {
+  message GetServiceConfigReq {
+    string service_id = 1;
+    string level = 2;
+  }
+
+  message GetServiceConfigRes {
+    string config = 1; // json string
+  }
+}

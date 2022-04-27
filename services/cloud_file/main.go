@@ -19,7 +19,7 @@ import (
 )
 
 func main() {
-	initialize.Init("config.json", mdb.Init, config.Init, db.Init, InitCloudFileDir)
+	initialize.InitFromFile("config.json", mdb.Init, config.Init, db.Init, initCloudFileDir)
 
 	listener, err := net.Listen("tcp", config.GetConfig().Address)
 	if err != nil {
@@ -45,7 +45,7 @@ func main() {
 	}
 }
 
-func InitCloudFileDir() {
+func initCloudFileDir() {
 	root := config.GetConfig().CloudFileRootPath
 	if len(root) < 1 {
 		executableAbsolutePath, err := os.Executable()

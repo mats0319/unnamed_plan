@@ -153,7 +153,7 @@ func (s *noteServiceTest) testDelete() {
 }
 
 func (s *noteServiceTest) beforeTest(t *testing.T) {
-    initialize.Init("../config_test.json", mdb.Init, db.Init)
+    initialize.InitFromFile("../config_test.json", mdb.Init, db.Init)
 
     s.passed = true
 

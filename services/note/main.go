@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	initialize.Init("config.json", mdb.Init, config.Init, db.Init)
+	initialize.InitFromFile("config.json", mdb.Init, config.Init, db.Init)
 
 	listener, err := net.Listen("tcp", config.GetConfig().Address)
 	if err != nil {

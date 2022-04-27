@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	initialize.Init("config.json", http.Init, rpc.Init)
+	initialize.InitFromFile("config.json", http.Init, rpc.Init)
 
 	mhttp.StartServer(http.GetHandler())
 }

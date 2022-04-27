@@ -23,6 +23,8 @@ var conf = &Config{}
 // InitFromConfigCenter load config from config center, use for services
 func InitFromConfigCenter(serviceID string, level string) {
 	// todo: impl
+	// init rpc client for config center,
+	// deserialize config
 }
 
 // InitFromFile load config from config file, use for config center and test
@@ -41,7 +43,11 @@ func InitFromFile(configFileName string) {
 		os.Exit(-1)
 	}
 
-	err = json.Unmarshal(configBytes, conf)
+	deserializeConfig(configBytes)
+}
+
+func deserializeConfig(configBytes []byte) {
+	err := json.Unmarshal(configBytes, conf)
 	if err != nil {
 		log.Println("json unmarshal failed, error:", err)
 		os.Exit(-1)

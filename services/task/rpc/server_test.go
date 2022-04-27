@@ -107,7 +107,7 @@ func (s *taskServiceTest) testModify() {
 }
 
 func (s *taskServiceTest) beforeTest(t *testing.T) {
-	initialize.Init("../config_test.json", mdb.Init, config.Init, db.Init)
+	initialize.InitFromFile("../config_test.json", mdb.Init, config.Init, db.Init)
 
 	s.passed = true
 
