@@ -5,8 +5,8 @@ import (
     "github.com/mats9693/unnamed_plan/services/shared/log"
 )
 
-func InitFromConfigCenter(serviceID string, level string, initFunc ...func()) {
-    mconfig.InitFromConfigCenter(serviceID, level)
+func InitFromConfigCenter(serviceID string, initFunc ...func()) {
+    mconfig.InitFromConfigCenter(serviceID)
     mlog.Init()
 
     for i := range initFunc {

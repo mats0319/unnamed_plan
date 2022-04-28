@@ -7,6 +7,7 @@ build: scripts/build_linux.ps1
 	powershell -executionpolicy bypass -File "./scripts/build_linux.ps1"
 
 start:
+	make start_local_config_center
 	make start_local_gateway
 	make start_local_user
 	make start_local_cloud_file
@@ -17,7 +18,10 @@ test: scripts/test.ps1
 	powershell -executionpolicy bypass -File "./scripts/test.ps1"
 
 # build one service
-.PHONY: build_linux_gateway build_linux_user build_linux_cloud_file build_linux_note build_linux_task
+.PHONY: build_linux_config_center build_linux_gateway build_linux_user build_linux_cloud_file build_linux_note build_linux_task
+
+build_linux_config_center: scripts/build_linux_config_center.ps1
+	powershell -executionpolicy bypass -File "./scripts/build_linux_config_center.ps1"
 
 build_linux_gateway: scripts/build_linux_gateway.ps1
 	powershell -executionpolicy bypass -File "./scripts/build_linux_gateway.ps1"
@@ -35,7 +39,10 @@ build_linux_task: scripts/build_linux_task.ps1
 	powershell -executionpolicy bypass -File "./scripts/build_linux_task.ps1"
 
 # start one service
-.PHONY: start_local_gateway start_local_user start_local_cloud_file start_local_note start_local_task
+.PHONY: start_local_config_center start_local_gateway start_local_user start_local_cloud_file start_local_note start_local_task
+
+start_local_config_center: scripts/start_local_config_center.ps1
+	powershell -executionpolicy bypass -File "./scripts/start_local_config_center.ps1"
 
 start_local_gateway: scripts/start_local_gateway.ps1
 	powershell -executionpolicy bypass -File "./scripts/start_local_gateway.ps1"

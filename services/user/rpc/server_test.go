@@ -193,7 +193,7 @@ func (s *userServiceTest) testModifyPermission() {
 }
 
 func (s *userServiceTest) beforeTest(t *testing.T) {
-	initialize.InitFromFile("../config_test.json", mdb.Init, config.Init, db.Init)
+	initialize.InitFromFile("server_test.json", mdb.Init, config.Init, db.Init)
 
 	s.passed = true
 

@@ -145,11 +145,14 @@ func (t *noteServerImpl) Delete(ctx context.Context, req *rpc_impl.Note_DeleteRe
 		return nil, err
 	}
 
-	note := &model.Note{}
-	note.ID = req.NoteId
-	note.IsDeleted = true
+	noteRecord, err := db.GetNoteDao().QueryOne(req.NoteId)
+	if err != nil {
+		return nil, err
+	}
 
-	err = db.GetNoteDao().UpdateColumnsByNoteID(note, model.Note_IsDeleted)
+	noteRecord.IsDeleted = true
+
+	err = db.GetNoteDao().UpdateColumnsByNoteID(noteRecord, model.Note_IsDeleted)
 	if err != nil {
 		return nil, err
 	}

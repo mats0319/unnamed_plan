@@ -3,12 +3,11 @@ package config
 import (
 	"encoding/json"
 	"github.com/mats9693/unnamed_plan/services/shared/config"
+	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
 	"go.uber.org/zap"
 	"os"
 )
-
-const uid_CloudFileServiceConfig = "76175dee-ffee-4198-8f97-94dfd4f960fd"
 
 type cloudFileServiceConfig struct {
 	init bool
@@ -26,11 +25,11 @@ func Init() {
 		return
 	}
 
-	byteSlice := mconfig.GetConfig(uid_CloudFileServiceConfig)
+	byteSlice := mconfig.GetConfig(mconst.UID_Service_Cloud_File)
 
 	err := json.Unmarshal(byteSlice, cloudFileServiceConfigIns)
 	if err != nil {
-		mlog.Logger().Error("json unmarshal failed", zap.String("uid", uid_CloudFileServiceConfig), zap.Error(err))
+		mlog.Logger().Error("json unmarshal failed", zap.String("uid", mconst.UID_Service_Cloud_File), zap.Error(err))
 		os.Exit(-1)
 	}
 

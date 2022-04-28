@@ -3,12 +3,11 @@ package config
 import (
 	"encoding/json"
 	"github.com/mats9693/unnamed_plan/services/shared/config"
+	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
 	"go.uber.org/zap"
 	"os"
 )
-
-const uid_TaskServiceConfig = "034ac632-8329-4045-94a6-92219b22a263"
 
 type taskServiceConfig struct {
 	init bool
@@ -25,11 +24,11 @@ func Init() {
 		return
 	}
 
-	byteSlice := mconfig.GetConfig(uid_TaskServiceConfig)
+	byteSlice := mconfig.GetConfig(mconst.UID_Service_Task)
 
 	err := json.Unmarshal(byteSlice, taskServiceConfigIns)
 	if err != nil {
-		mlog.Logger().Error("json unmarshal failed", zap.String("uid", uid_TaskServiceConfig), zap.Error(err))
+		mlog.Logger().Error("json unmarshal failed", zap.String("uid", mconst.UID_Service_Task), zap.Error(err))
 		os.Exit(-1)
 	}
 

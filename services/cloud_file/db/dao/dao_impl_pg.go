@@ -130,8 +130,8 @@ func (cf *CloudFilePostgresql) UpdateColumnsByFileID(file *model.CloudFile, colu
 			return err
 		}
 
-		if res.RowsAffected() < 0 {
-			return utils.NewError(mconst.Error_FileAlreadyDeleted)
+		if res.RowsAffected() <= 0 {
+			return utils.NewError(mconst.Error_NoAffectedRows)
 		}
 
 		return nil

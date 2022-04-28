@@ -1,10 +1,14 @@
 package mconfig
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
+	"github.com/mats9693/unnamed_plan/services/shared/proto/client"
+	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
 	"log"
 	"os"
+	"time"
 )
 
 type Config struct {
@@ -21,10 +25,45 @@ type ConfigItem struct {
 var conf = &Config{}
 
 // InitFromConfigCenter load config from config center, use for services
-func InitFromConfigCenter(serviceID string, level string) {
-	// todo: impl
-	// init rpc client for config center,
-	// deserialize config
+func InitFromConfigCenter(serviceID string) {
+	// init service public config
+	InitFromFile("../config.json")
+
+	initServicePublicConfig()
+
+	// init rpc client for config center service and get config
+	configCenterClient, err := client.ConnectConfigCenterServer(servicePublicConfigIns.ConfigCenterTarget)
+	if err != nil {
+		log.Printf("establish connection with services failed, error: %v", err)
+		os.Exit(-1)
+	}
+
+	var res *rpc_impl.ConfigCenter_GetServiceConfigRes
+	for i := 0; i < servicePublicConfigIns.RetryTimes; i++ {
+		res, err = configCenterClient.GetServiceConfig(context.Background(), &rpc_impl.ConfigCenter_GetServiceConfigReq{
+			ServiceId: serviceID,
+			Level:     GetConfigLevel(),
+		})
+		if err == nil {
+			break
+		}
+
+		if err != nil {
+			log.Printf("get config from config center failed, retry in %d seconds in %d times, err: %v\n",
+				servicePublicConfigIns.RetryInterval, servicePublicConfigIns.RetryTimes-i, err)
+			time.Sleep(time.Duration(servicePublicConfigIns.RetryInterval) * time.Second)
+		}
+	}
+	if err != nil || res == nil {
+		log.Printf("get config from config center failed, error: %v", err)
+		os.Exit(-1)
+	}
+
+	err = json.Unmarshal([]byte(res.Config), conf)
+	if err != nil {
+		log.Println("json unmarshal failed, error:", err)
+		os.Exit(-1)
+	}
 }
 
 // InitFromFile load config from config file, use for config center and test
@@ -43,17 +82,11 @@ func InitFromFile(configFileName string) {
 		os.Exit(-1)
 	}
 
-	deserializeConfig(configBytes)
-}
-
-func deserializeConfig(configBytes []byte) {
-	err := json.Unmarshal(configBytes, conf)
+	err = json.Unmarshal(configBytes, conf)
 	if err != nil {
 		log.Println("json unmarshal failed, error:", err)
 		os.Exit(-1)
 	}
-
-	log.Println("> Config init finish, more log will be redirect to log file.")
 }
 
 func GetConfigLevel() string {

@@ -2,6 +2,13 @@
   "level": "dev",
   "config": [
     {
+      "name": "config center",
+      "uid": "612fbb57-c44c-4b54-8188-13d1dd598306",
+      "json": {
+        "address": "127.0.0.1:10000"
+      }
+    },
+    {
       "name": "db",
       "uid": "658e06f7-71d5-4ada-b715-8c1a4489e5d2",
       "json": {

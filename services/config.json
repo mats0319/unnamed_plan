@@ -1,0 +1,14 @@
+{
+  "level": "dev",
+  "config": [
+    {
+      "name": "public config",
+      "uid": "659c1fb2-ec76-48a2-82c0-5e02ecb7c7fc",
+      "json": {
+        "configCenterTarget": "127.0.0.1:10000",
+        "retryTimes": 3,
+        "retryInterval": 10
+      }
+    }
+  ]
+}

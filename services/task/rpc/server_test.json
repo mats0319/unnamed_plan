@@ -3,11 +3,9 @@
   "config": [
     {
       "name": "config",
-      "uid": "6d31fac1-346c-4b03-8596-8b3e1ee5b960",
+      "uid": "a4802e2b-113b-4132-b125-ca5f97239a6e",
       "json": {
-        "address": "127.0.0.1:10001",
-        "ARankAdminPermission": 6,
-        "SRankAdminPermission": 8
+        "maxRecords": 200
       }
     },
     {

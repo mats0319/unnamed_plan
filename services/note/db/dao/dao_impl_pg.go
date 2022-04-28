@@ -124,8 +124,8 @@ func (tn *NotePostgresql) UpdateColumnsByNoteID(note *model.Note, columns ...str
 			return err
 		}
 
-		if res.RowsAffected() < 0 {
-			return utils.NewError(mconst.Error_NoteAlreadyDeleted)
+		if res.RowsAffected() <= 0 {
+			return utils.NewError(mconst.Error_NoAffectedRows)
 		}
 
 		return nil

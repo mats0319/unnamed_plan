@@ -2,12 +2,10 @@
   "level": "production",
   "config": [
     {
-      "name": "config",
-      "uid": "034ac632-8329-4045-94a6-92219b22a263",
+      "name": "config center",
+      "uid": "612fbb57-c44c-4b54-8188-13d1dd598306",
       "json": {
-        "address": "127.0.0.1:10004",
-        "userServerAddress": "127.0.0.1:10001",
-        "maxRecords": 200
+        "address": "127.0.0.1:10000"
       }
     },
     {

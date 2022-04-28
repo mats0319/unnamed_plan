@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/db"
 	"github.com/mats9693/unnamed_plan/services/shared/init"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
@@ -15,7 +16,7 @@ import (
 )
 
 func main() {
-	initialize.InitFromFile("config.json", mdb.Init, config.Init, db.Init)
+	initialize.InitFromConfigCenter(mconst.UID_Service_User, mdb.Init, config.Init, db.Init)
 
 	listener, err := net.Listen("tcp", config.GetConfig().Address)
 	if err != nil {

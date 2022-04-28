@@ -214,10 +214,14 @@ func (c *cloudFileServerImpl) Delete(ctx context.Context, req *rpc_impl.CloudFil
 		return nil, err
 	}
 
-	err = db.GetCloudFileDao().UpdateColumnsByFileID(&model.CloudFile{
-		FileID:    req.FileId,
-		IsDeleted: true,
-	}, model.CloudFile_IsDeleted)
+	fileRecord, err := db.GetCloudFileDao().QueryOne(req.FileId)
+	if err != nil {
+		return nil, err
+	}
+
+	fileRecord.IsDeleted = true
+
+	err = db.GetCloudFileDao().UpdateColumnsByFileID(fileRecord, model.CloudFile_IsDeleted)
 	if err != nil {
 		return nil, err
 	}

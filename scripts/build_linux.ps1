@@ -15,6 +15,11 @@ Start-Transcript "build_linux_services.log" -Force
 
     Set-Location $PSScriptRoot
 
+        # config center service
+        powershell -executionpolicy bypass -File "./build_linux_config_center.ps1"
+
+        Write-Output "> build config center service finished."
+
         # gateway service
         powershell -executionpolicy bypass -File "./build_linux_gateway.ps1"
 

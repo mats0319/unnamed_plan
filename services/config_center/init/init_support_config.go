@@ -1,7 +1,6 @@
 package initialize
 
 import (
-	"fmt"
 	"github.com/mats9693/unnamed_plan/services/config_center/db"
 	"github.com/mats9693/unnamed_plan/services/shared/config"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
@@ -63,8 +62,6 @@ func InitSupportConfig() {
 	}
 
 	supportValidServiceConfig()
-
-	fmt.Println()
 }
 
 func supportValidServiceConfig() {

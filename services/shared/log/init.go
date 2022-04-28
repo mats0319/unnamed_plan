@@ -21,7 +21,13 @@ func Init() {
 		return
 	}
 
-	core := zapcore.NewCore(logEncoder(), logWriteSyncer(), logLevel())
+	coreSlice := make([]zapcore.Core, 0, 2)
+	coreSlice = append(coreSlice, zapcore.NewCore(logEncoder(), logWriteSyncer(), logLevel())) // log file
+	if mconfig.GetConfigLevel() == mconst.ConfigLevel_Dev || mconfig.GetConfigLevel() == mconst.ConfigLevel_Default {
+		coreSlice = append(coreSlice, zapcore.NewCore(logEncoder(), os.Stdout, logLevel())) // console
+	}
+
+	core := zapcore.NewTee(coreSlice...)
 	zlog = zap.New(core, zap.AddCaller())
 
 	zlog.Info("> Config init finish.")
