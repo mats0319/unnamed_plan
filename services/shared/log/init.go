@@ -52,7 +52,7 @@ func logEncoder() zapcore.Encoder {
 }
 
 func logWriteSyncer() zapcore.WriteSyncer {
-	file, err := os.Create(mconst.LogFileName)
+	file, err := os.OpenFile(mconst.LogFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Println("create log file failed, error:", err)
 		os.Exit(-1)

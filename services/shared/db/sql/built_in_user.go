@@ -25,6 +25,16 @@ var users = []*model.User{
 		Common:     model.NewCommon(),
 	},
 	{
+		UserName:   "mario",
+		Nickname:   "mario",
+		Password:   "123456", // password text
+		Salt:       utils.RandomHexString(10),
+		IsLocked:   false,
+		Permission: 10,
+		CreatedBy:  "MaTongShuai",
+		Common:     model.NewCommon(),
+	},
+	{
 		UserName:   "admin",
 		Nickname:   "admin",
 		Password:   "admin", // password text
