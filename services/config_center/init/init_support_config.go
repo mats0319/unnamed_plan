@@ -8,10 +8,11 @@ import (
 	"github.com/mats9693/unnamed_plan/services/shared/log"
 	"go.uber.org/zap"
 	"os"
+	"sync"
 )
 
 var (
-	serviceConfigMap = make(map[string]*configWrapper) // service id - config wrapper
+	serviceConfigMap = sync.Map{} // service id - *configWrapper
 
 	serviceConfigs []*model.ServiceConfig
 	configItems    []*model.ConfigItem
@@ -26,7 +27,17 @@ type configWrapper struct {
 
 // GetServiceConfig return nil if un-support
 func GetServiceConfig(serviceID string, level string) (res *mconfig.Config) {
-	config := serviceConfigMap[serviceID]
+	configI, ok := serviceConfigMap.Load(serviceID)
+	if !ok {
+		mlog.Logger().Info("unsupported service id: "+serviceID)
+		return
+	}
+
+	config, ok := configI.(*configWrapper)
+	if !ok {
+		mlog.Logger().Error("type assert failed")
+		return
+	}
 
 	switch level {
 	case mconst.ConfigLevel_Default:
@@ -66,18 +77,18 @@ func InitSupportConfig() {
 
 func supportValidServiceConfig() {
 	for i := range serviceConfigs {
-		serviceConfigItem := serviceConfigs[i]
+		serviceConfigRecord := serviceConfigs[i]
 
 		// a 'service config' is valid when all 'config item ids' are existed
-		config := &mconfig.Config{Level: serviceConfigItem.Level}
+		config := &mconfig.Config{Level: serviceConfigRecord.Level}
 
 		// if 'service config' is valid, format and support it
-		configItemList := make([]*mconfig.ConfigItem, 0, len(serviceConfigItem.ConfigItemIDs))
+		configItemList := make([]*mconfig.ConfigItem, 0, len(serviceConfigRecord.ConfigItemIDs))
 		isValid := false
-		for j := range serviceConfigItem.ConfigItemIDs {
+		for j := range serviceConfigRecord.ConfigItemIDs {
 			isValid = false
 
-			configItemID := serviceConfigItem.ConfigItemIDs[j]
+			configItemID := serviceConfigRecord.ConfigItemIDs[j]
 			for k := range configItems {
 				if configItemID == configItems[k].ID {
 					item := configItems[k]
@@ -93,9 +104,9 @@ func supportValidServiceConfig() {
 			}
 
 			if !isValid {
-				// under normal circumstances, all service config record are valid, if not, log it
+				// usually, all 'service config record' are valid, if not, log it
 				mlog.Logger().Error("un-support service config",
-					zap.String("service id", serviceConfigItem.ID),
+					zap.String("service id", serviceConfigRecord.ID),
 					zap.String("config item id", configItemID))
 				break
 			}
@@ -108,12 +119,21 @@ func supportValidServiceConfig() {
 		// support valid 'service config'
 		config.ConfigItems = configItemList
 
-		serviceConfig, ok := serviceConfigMap[serviceConfigItem.ServiceID]
-		if !ok {
-			serviceConfig = &configWrapper{}
+		var serviceConfig *configWrapper
+		{
+			serviceConfigI, ok := serviceConfigMap.Load(serviceConfigRecord.ServiceID)
+			if !ok { // first config of target service
+				serviceConfig = &configWrapper{}
+			} else {
+				serviceConfig, ok = serviceConfigI.(*configWrapper)
+				if !ok { // type assert failed, log and skip this service config level
+					mlog.Logger().Error("type assert failed")
+					continue
+				}
+			}
 		}
 
-		switch serviceConfigItem.Level {
+		switch serviceConfigRecord.Level {
 		case mconst.ConfigLevel_Default:
 			serviceConfig.Default = config
 		case mconst.ConfigLevel_Dev:
@@ -124,6 +144,6 @@ func supportValidServiceConfig() {
 			serviceConfig.Test = config
 		}
 
-		serviceConfigMap[serviceConfigItem.ServiceID] = serviceConfig
+		serviceConfigMap.Store(serviceConfigRecord.ServiceID, serviceConfig)
 	}
 }

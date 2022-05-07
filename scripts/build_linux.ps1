@@ -13,6 +13,7 @@ Start-Transcript "build_linux_services.log" -Force
         mkdir "./build"
     }
 
+    # services public config, for all services except config center
     Copy-Item "config.json" -Destination "./build/config.json"
 
     Set-Location $PSScriptRoot
