@@ -7,7 +7,7 @@ $path = Get-Location
 
 Set-Location $PSScriptRoot
 
-    Set-Location "../services/cloud_file"
+    Set-Location "../services/2_cloud_file"
 
     if (Test-Path "../build/service_cloud_file/") {
         Remove-Item "../build/service_cloud_file/*"

@@ -43,70 +43,70 @@ var serviceConfig = []*model.ServiceConfig{
 		Common:   model.NewCommon(),
 	}, // user service, production
 	{
-		ServiceID:     "1b5ab1d2-de6d-4377-9a4e-a184b24d1a0f",
-		Level:         mconst.ConfigLevel_Dev,
-		ServiceName:   "cloud file",
+		ServiceID:   "1b5ab1d2-de6d-4377-9a4e-a184b24d1a0f",
+		Level:       mconst.ConfigLevel_Dev,
+		ServiceName: "cloud file",
 		ConfigItemIDs: []string{
 			configItem[2].Common.ID,
 			configItem[5].Common.ID,
 		},
-		IsDelete:      false,
-		Common:        model.NewCommon(),
+		IsDelete: false,
+		Common:   model.NewCommon(),
 	}, // cloud file service, dev
 	{
-		ServiceID:     "1b5ab1d2-de6d-4377-9a4e-a184b24d1a0f",
-		Level:         mconst.ConfigLevel_Production,
-		ServiceName:   "cloud file",
+		ServiceID:   "1b5ab1d2-de6d-4377-9a4e-a184b24d1a0f",
+		Level:       mconst.ConfigLevel_Production,
+		ServiceName: "cloud file",
 		ConfigItemIDs: []string{
 			configItem[3].Common.ID,
 			configItem[6].Common.ID,
 		},
-		IsDelete:      false,
-		Common:        model.NewCommon(),
+		IsDelete: false,
+		Common:   model.NewCommon(),
 	}, // cloud file service, production
 	{
-		ServiceID:     "23d062e4-3c36-45f0-9e1c-3f339742903b",
-		Level:         mconst.ConfigLevel_Dev,
-		ServiceName:   "note",
+		ServiceID:   "23d062e4-3c36-45f0-9e1c-3f339742903b",
+		Level:       mconst.ConfigLevel_Dev,
+		ServiceName: "note",
 		ConfigItemIDs: []string{
 			configItem[2].Common.ID,
 			configItem[7].Common.ID,
 		},
-		IsDelete:      false,
-		Common:        model.NewCommon(),
+		IsDelete: false,
+		Common:   model.NewCommon(),
 	}, // note service, dev
 	{
-		ServiceID:     "23d062e4-3c36-45f0-9e1c-3f339742903b",
-		Level:         mconst.ConfigLevel_Production,
-		ServiceName:   "note",
+		ServiceID:   "23d062e4-3c36-45f0-9e1c-3f339742903b",
+		Level:       mconst.ConfigLevel_Production,
+		ServiceName: "note",
 		ConfigItemIDs: []string{
 			configItem[3].Common.ID,
 			configItem[7].Common.ID,
 		},
-		IsDelete:      false,
-		Common:        model.NewCommon(),
+		IsDelete: false,
+		Common:   model.NewCommon(),
 	}, // note service, production
 	{
-		ServiceID:     "a4802e2b-113b-4132-b125-ca5f97239a6e",
-		Level:         mconst.ConfigLevel_Dev,
-		ServiceName:   "task",
+		ServiceID:   "a4802e2b-113b-4132-b125-ca5f97239a6e",
+		Level:       mconst.ConfigLevel_Dev,
+		ServiceName: "task",
 		ConfigItemIDs: []string{
 			configItem[2].Common.ID,
 			configItem[8].Common.ID,
 		},
-		IsDelete:      false,
-		Common:        model.NewCommon(),
+		IsDelete: false,
+		Common:   model.NewCommon(),
 	}, // task service, dev
 	{
-		ServiceID:     "a4802e2b-113b-4132-b125-ca5f97239a6e",
-		Level:         mconst.ConfigLevel_Production,
-		ServiceName:   "task",
+		ServiceID:   "a4802e2b-113b-4132-b125-ca5f97239a6e",
+		Level:       mconst.ConfigLevel_Production,
+		ServiceName: "task",
 		ConfigItemIDs: []string{
 			configItem[3].Common.ID,
 			configItem[8].Common.ID,
 		},
-		IsDelete:      false,
-		Common:        model.NewCommon(),
+		IsDelete: false,
+		Common:   model.NewCommon(),
 	}, // task service, production
 }
 
@@ -138,7 +138,7 @@ var configItem = []*model.ConfigItem{
 	}, // gateway http
 	{
 		ConfigItemID:   "658e06f7-71d5-4ada-b715-8c1a4489e5d2",
-		ConfigItemName: "db_"+mconst.ConfigLevel_Dev,
+		ConfigItemName: "db_" + mconst.ConfigLevel_Dev,
 		ConfigSubItems: json.RawMessage(`{
           "DBMS": "postgresql",
           "addr": "117.50.177.201:5432",
@@ -152,7 +152,7 @@ var configItem = []*model.ConfigItem{
 	}, // db, dev
 	{
 		ConfigItemID:   "658e06f7-71d5-4ada-b715-8c1a4489e5d2",
-		ConfigItemName: "db_"+mconst.ConfigLevel_Production,
+		ConfigItemName: "db_" + mconst.ConfigLevel_Production,
 		ConfigSubItems: json.RawMessage(`{
           "DBMS": "postgresql",
           "addr": "127.0.0.1:5432",
@@ -172,29 +172,29 @@ var configItem = []*model.ConfigItem{
           "ARankAdminPermission": 6,
           "SRankAdminPermission": 8
         }`),
-		Common:         model.NewCommon(),
+		Common: model.NewCommon(),
 	}, // user service basic config
 	{
 		ConfigItemID:   "1b5ab1d2-de6d-4377-9a4e-a184b24d1a0f",
-		ConfigItemName: "cloud file service basic config_"+mconst.ConfigLevel_Dev,
+		ConfigItemName: "cloud file service basic config_" + mconst.ConfigLevel_Dev,
 		ConfigSubItems: json.RawMessage(`{
           "address": "127.0.0.1:10002",
           "userServerAddress": "127.0.0.1:10001",
           "cloudFileRootPath": "",
           "cloudFilePublicDir": "public"
         }`),
-		Common:         model.NewCommon(),
+		Common: model.NewCommon(),
 	}, // cloud file service basic config, dev
 	{
 		ConfigItemID:   "1b5ab1d2-de6d-4377-9a4e-a184b24d1a0f",
-		ConfigItemName: "cloud file service basic config_"+mconst.ConfigLevel_Production,
+		ConfigItemName: "cloud file service basic config_" + mconst.ConfigLevel_Production,
 		ConfigSubItems: json.RawMessage(`{
           "address": "127.0.0.1:10002",
           "userServerAddress": "127.0.0.1:10001",
           "cloudFileRootPath": "/home/mario/cloud_file/",
           "cloudFilePublicDir": "public"
         }`),
-		Common:         model.NewCommon(),
+		Common: model.NewCommon(),
 	}, // cloud file service basic config, production
 	{
 		ConfigItemID:   "23d062e4-3c36-45f0-9e1c-3f339742903b",
@@ -203,7 +203,7 @@ var configItem = []*model.ConfigItem{
           "address": "127.0.0.1:10003",
           "userServerAddress": "127.0.0.1:10001"
         }`),
-		Common:         model.NewCommon(),
+		Common: model.NewCommon(),
 	}, // note service basic config
 	{
 		ConfigItemID:   "a4802e2b-113b-4132-b125-ca5f97239a6e",
@@ -213,7 +213,7 @@ var configItem = []*model.ConfigItem{
           "userServerAddress": "127.0.0.1:10001",
           "maxRecords": 200
         }`),
-		Common:         model.NewCommon(),
+		Common: model.NewCommon(),
 	}, // task service basic config
 }
 

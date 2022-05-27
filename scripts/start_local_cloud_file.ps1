@@ -2,7 +2,7 @@ $path = Get-Location
 
 Set-Location $PSScriptRoot
 
-    Set-Location "../services/cloud_file"
+    Set-Location "../services/2_cloud_file"
 
     go build -race -o service_exec.exe
 

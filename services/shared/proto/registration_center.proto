@@ -1,0 +1,48 @@
+syntax = "proto3";
+package cloudFile;
+
+option go_package = "./rpc_impl";
+option optimize_for = LITE_RUNTIME;
+
+import "common.proto";
+
+service IRegistrationCenterCore {
+  rpc Register(RegistrationCenterCore.RegisterReq) returns (RegistrationCenterCore.RegisterRes);
+  rpc ListServiceTarget(RegistrationCenterCore.ListServiceTargetReq) returns (RegistrationCenterCore.ListServiceTargetRes);
+}
+
+message RegistrationCenterCore {
+  message RegisterReq {
+    string origin = 1; // origin: from protocol to port
+  }
+
+  message RegisterRes {
+    common.Error err = 15;
+  }
+
+  message ListServiceTargetReq {
+    repeated string service_ids = 1;
+  }
+
+  message ServiceTarget {
+    repeated string target = 1;
+  }
+
+  message ListServiceTargetRes {
+    repeated ServiceTarget data = 1;
+  }
+}
+
+service IRegistrationCenterEmbedded {
+  rpc CheckHealth(RegistrationCenterEmbedded.CheckHealthReq) returns (RegistrationCenterEmbedded.CheckHealthRes);
+}
+
+message RegistrationCenterEmbedded {
+  message CheckHealthReq {
+    string data = 1; // use less data, like 'ping'
+  }
+
+  message CheckHealthRes {
+    common.Error err = 15;
+  }
+}

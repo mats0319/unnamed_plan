@@ -1,0 +1,98 @@
+syntax = "proto3";
+package cloudFile;
+
+option go_package = "./rpc_impl";
+option optimize_for = LITE_RUNTIME;
+
+import "common.proto";
+
+service ICloudFile {
+  rpc ListByUploader(CloudFile.ListByUploaderReq) returns (CloudFile.ListByUploaderRes);
+  rpc ListPublic(CloudFile.ListPublicReq) returns (CloudFile.ListPublicRes);
+  rpc Upload(CloudFile.UploadReq) returns (CloudFile.UploadRes);
+  rpc Modify(CloudFile.ModifyReq) returns (CloudFile.ModifyRes);
+  rpc Delete(CloudFile.DeleteReq) returns (CloudFile.DeleteRes);
+}
+
+message CloudFile {
+  message Data {
+    string file_id = 1;
+    string file_name = 2;
+    int64 last_modified_time = 3;
+    string file_url = 4;
+    bool is_public = 5;
+    int64 update_time = 6;
+    int64 created_time = 7;
+  }
+
+  message ListByUploaderReq {
+    string operator_id = 1;
+
+    common.Pagination page = 15;
+  }
+
+  message ListByUploaderRes {
+    uint32 total = 1;
+    repeated Data files = 2;
+
+    common.Error err = 15;
+  }
+
+  message ListPublicReq {
+    string operator_id = 1;
+
+    common.Pagination page = 15;
+  }
+
+  message ListPublicRes {
+    uint32 total = 1;
+    repeated Data files = 2;
+
+    common.Error err = 15;
+  }
+
+  message UploadReq {
+    string operator_id = 1;
+    bytes file = 2; // file content
+    string file_name = 3;
+    string extension_name = 4;
+    int64 file_size = 5;
+    int64 last_modified_time = 6;
+    bool is_public = 7;
+  }
+
+  message UploadRes {
+    common.Error err = 15;
+  }
+
+  message ModifyReq {
+    // required
+    string operator_id = 1;
+    string file_id = 2;
+    string password = 3;
+
+    // option
+    string file_name = 4;
+    string extension_name = 5;
+    bool is_public = 6;
+    bytes file = 7;
+
+    // required if 'file' is not null
+    int64 file_size = 8;
+    int64 last_modified_time = 9;
+  }
+
+  message ModifyRes {
+    common.Error err = 15;
+  }
+
+  message DeleteReq {
+    string operator_id = 1;
+    string password = 2;
+    string file_id = 3;
+  }
+
+  message DeleteRes {
+    common.Error err = 15;
+  }
+}

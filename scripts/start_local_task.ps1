@@ -2,7 +2,7 @@ $path = Get-Location
 
 Set-Location $PSScriptRoot
 
-    Set-Location "../services/task"
+    Set-Location "../services/4_task"
 
     go build -race -o service_exec.exe
 

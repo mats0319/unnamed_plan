@@ -35,13 +35,16 @@ const (
 	Error_LoadLoginInfoFailed = "invalid login info"
 	Error_InvalidToken        = "invalid token"
 	Error_InvalidTokenTimeout = "invalid token: timeout"
-	Error_InvalidParams       = "invalid param(s)"
 )
 
 const (
+	// common errors
+	Error_InvalidParams            = "invalid param(s)"
 	Error_InvalidAccountOrPassword = "invalid account or password"
 	Error_PermissionDenied         = "permission denied"
 	Error_NoValidModification      = "not any valid modification"
+	Error_DBError                  = "db error"
+	Error_ExecutionError           = "execution error"
 
 	Error_UserAlreadyLocked   = "user already locked"
 	Error_UserAlreadyUnlocked = "user already unlocked"

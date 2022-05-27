@@ -2,7 +2,7 @@ $path = Get-Location
 
 Set-Location $PSScriptRoot
 
-    Set-Location "../services/user"
+    Set-Location "../services/1_user"
 
     go build -race -o service_exec.exe
 

@@ -29,7 +29,7 @@ type configWrapper struct {
 func GetServiceConfig(serviceID string, level string) (res *mconfig.Config) {
 	configI, ok := serviceConfigMap.Load(serviceID)
 	if !ok {
-		mlog.Logger().Info("unsupported service id: "+serviceID)
+		mlog.Logger().Info("unsupported service id: " + serviceID)
 		return
 	}
 

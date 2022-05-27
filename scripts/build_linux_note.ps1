@@ -7,7 +7,7 @@ $path = Get-Location
 
 Set-Location $PSScriptRoot
 
-    Set-Location "../services/note"
+    Set-Location "../services/3_note"
 
     if (Test-Path "../build/service_note/") {
         Remove-Item "../build/service_note/*"

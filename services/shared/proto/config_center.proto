@@ -4,6 +4,8 @@ package cloudFile;
 option go_package = "./rpc_impl";
 option optimize_for = LITE_RUNTIME;
 
+import "common.proto";
+
 service IConfigCenter {
   rpc GetServiceConfig(ConfigCenter.GetServiceConfigReq) returns (ConfigCenter.GetServiceConfigRes);
 }
@@ -16,5 +18,7 @@ message ConfigCenter {
 
   message GetServiceConfigRes {
     string config = 1; // json string
+
+    common.Error err = 15;
   }
 }

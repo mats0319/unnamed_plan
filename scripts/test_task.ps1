@@ -2,7 +2,7 @@ $path = Get-Location
 
 Set-Location $PSScriptRoot
 
-Set-Location "../services/task/rpc"
+Set-Location "../services/4_task/rpc"
 
 go test
 
