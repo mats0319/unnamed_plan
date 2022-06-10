@@ -169,5 +169,5 @@ var ITask_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "task.proto",
+	Metadata: "4_task.proto",
 }

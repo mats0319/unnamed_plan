@@ -13,7 +13,8 @@ service IRegistrationCenterCore {
 
 message RegistrationCenterCore {
   message RegisterReq {
-    string origin = 1; // origin: from protocol to port
+    string service_id = 1;
+    string target = 2; // ip+port, like '127.0.0.1:8080'
   }
 
   message RegisterRes {
@@ -21,15 +22,13 @@ message RegistrationCenterCore {
   }
 
   message ListServiceTargetReq {
-    repeated string service_ids = 1;
-  }
-
-  message ServiceTarget {
-    repeated string target = 1;
+    string service_id = 1;
   }
 
   message ListServiceTargetRes {
-    repeated ServiceTarget data = 1;
+    repeated string targets = 1;
+
+    common.Error err = 15;
   }
 }
 
@@ -39,7 +38,7 @@ service IRegistrationCenterEmbedded {
 
 message RegistrationCenterEmbedded {
   message CheckHealthReq {
-    string data = 1; // use less data, like 'ping'
+    string data = 1; // useless data, like 'ping'
   }
 
   message CheckHealthRes {

@@ -101,9 +101,16 @@ func (h *Handlers) ServeHTTP(writer http.ResponseWriter, request *http.Request) 
 
 	response(writer, res)
 
-	mlog.Logger().Info("> Handle request result:",
+	logData := []zap.Field{
 		zap.String("uri", request.RequestURI),
-		zap.Bool("success", !res.HasError))
+		zap.Bool("is success", !res.HasError),
+	}
+
+	if res.HasError {
+		logData = append(logData, zap.String("error", res.Data))
+	}
+
+	mlog.Logger().Info("> Handle request result:", logData...)
 
 	return
 }

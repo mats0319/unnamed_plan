@@ -28,9 +28,8 @@ func ListNoteByWriter(r *http.Request) *mresponse.ResponseData {
 			PageNum:  uint32(params.PageNum),
 		},
 	})
-	if err != nil {
-		mlog.Logger().Error("list note by writer failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
+	if err != nil || (res != nil && res.Err != nil) {
+		return mhttp.ResponseWithError(err.Error(), res.Err.String())
 	}
 
 	return mhttp.Response(structure.MakeListNoteByWriterRes(res.Total, notesRPCToHTTP(res.Notes...)))
@@ -50,9 +49,8 @@ func ListPublicNote(r *http.Request) *mresponse.ResponseData {
 			PageNum:  uint32(params.PageNum),
 		},
 	})
-	if err != nil {
-		mlog.Logger().Error("list public note failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
+	if err != nil || (res != nil && res.Err != nil) {
+		return mhttp.ResponseWithError(err.Error(), res.Err.String())
 	}
 
 	return mhttp.Response(structure.MakeListPublicNoteRes(res.Total, notesRPCToHTTP(res.Notes...)))
@@ -65,15 +63,14 @@ func CreateNote(r *http.Request) *mresponse.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	_, err := rpc.GetRPCClient().NoteClient.Create(context.Background(), &rpc_impl.Note_CreateReq{
+	res, err := rpc.GetRPCClient().NoteClient.Create(context.Background(), &rpc_impl.Note_CreateReq{
 		OperatorId: params.OperatorID,
 		Topic:      params.Topic,
 		Content:    params.Content,
 		IsPublic:   params.IsPublic,
 	})
-	if err != nil {
-		mlog.Logger().Error("create note failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
+	if err != nil || (res != nil && res.Err != nil) {
+		return mhttp.ResponseWithError(err.Error(), res.Err.String())
 	}
 
 	return mhttp.Response(mconst.EmptyHTTPRes)
@@ -86,7 +83,7 @@ func ModifyNote(r *http.Request) *mresponse.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	_, err := rpc.GetRPCClient().NoteClient.Modify(context.Background(), &rpc_impl.Note_ModifyReq{
+	res, err := rpc.GetRPCClient().NoteClient.Modify(context.Background(), &rpc_impl.Note_ModifyReq{
 		OperatorId: params.OperatorID,
 		NoteId:     params.NoteID,
 		Password:   params.Password,
@@ -94,9 +91,8 @@ func ModifyNote(r *http.Request) *mresponse.ResponseData {
 		Content:    params.Content,
 		IsPublic:   params.IsPublic,
 	})
-	if err != nil {
-		mlog.Logger().Error("modify note failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
+	if err != nil || (res != nil && res.Err != nil) {
+		return mhttp.ResponseWithError(err.Error(), res.Err.String())
 	}
 
 	return mhttp.Response(mconst.EmptyHTTPRes)
@@ -109,14 +105,13 @@ func DeleteNote(r *http.Request) *mresponse.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	_, err := rpc.GetRPCClient().NoteClient.Delete(context.Background(), &rpc_impl.Note_DeleteReq{
+	res, err := rpc.GetRPCClient().NoteClient.Delete(context.Background(), &rpc_impl.Note_DeleteReq{
 		OperatorId: params.OperatorID,
 		Password:   params.Password,
 		NoteId:     params.NoteID,
 	})
-	if err != nil {
-		mlog.Logger().Error("delete note failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
+	if err != nil || (res != nil && res.Err != nil) {
+		return mhttp.ResponseWithError(err.Error(), res.Err.String())
 	}
 
 	return mhttp.Response(mconst.EmptyHTTPRes)

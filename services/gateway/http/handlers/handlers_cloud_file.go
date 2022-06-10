@@ -28,9 +28,8 @@ func ListCloudFileByUploader(r *http.Request) *mresponse.ResponseData {
 			PageNum:  uint32(params.PageNum),
 		},
 	})
-	if err != nil {
-		mlog.Logger().Error("list cloud file by uploader failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
+	if err != nil || (res != nil && res.Err != nil) {
+		return mhttp.ResponseWithError(err.Error(), res.Err.String())
 	}
 
 	return mhttp.Response(structure.MakeListCloudFileByUploaderRes(res.Total, filesRPCToHTTP(res.Files...)))
@@ -50,9 +49,8 @@ func ListPublicCloudFile(r *http.Request) *mresponse.ResponseData {
 			PageNum:  uint32(params.PageNum),
 		},
 	})
-	if err != nil {
-		mlog.Logger().Error("list public cloud file failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
+	if err != nil || (res != nil && res.Err != nil) {
+		return mhttp.ResponseWithError(err.Error(), res.Err.String())
 	}
 
 	return mhttp.Response(structure.MakeListPublicCloudFileRes(res.Total, filesRPCToHTTP(res.Files...)))
@@ -65,7 +63,7 @@ func UploadCloudFile(r *http.Request) *mresponse.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	_, err := rpc.GetRPCClient().CloudFileClient.Upload(context.Background(), &rpc_impl.CloudFile_UploadReq{
+	res, err := rpc.GetRPCClient().CloudFileClient.Upload(context.Background(), &rpc_impl.CloudFile_UploadReq{
 		OperatorId:       params.OperatorID,
 		File:             params.File,
 		FileName:         params.FileName,
@@ -74,9 +72,8 @@ func UploadCloudFile(r *http.Request) *mresponse.ResponseData {
 		LastModifiedTime: int64(params.LastModifiedTime),
 		IsPublic:         params.IsPublic,
 	})
-	if err != nil {
-		mlog.Logger().Error("upload cloud file failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
+	if err != nil || (res != nil && res.Err != nil) {
+		return mhttp.ResponseWithError(err.Error(), res.Err.String())
 	}
 
 	return mhttp.Response(mconst.EmptyHTTPRes)
@@ -89,7 +86,7 @@ func ModifyCloudFile(r *http.Request) *mresponse.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	_, err := rpc.GetRPCClient().CloudFileClient.Modify(context.Background(), &rpc_impl.CloudFile_ModifyReq{
+	res, err := rpc.GetRPCClient().CloudFileClient.Modify(context.Background(), &rpc_impl.CloudFile_ModifyReq{
 		OperatorId:       params.OperatorID,
 		FileId:           params.FileID,
 		Password:         params.Password,
@@ -100,9 +97,8 @@ func ModifyCloudFile(r *http.Request) *mresponse.ResponseData {
 		FileSize:         params.FileSize,
 		LastModifiedTime: int64(params.LastModifiedTime),
 	})
-	if err != nil {
-		mlog.Logger().Error("modify cloud file failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
+	if err != nil || (res != nil && res.Err != nil) {
+		return mhttp.ResponseWithError(err.Error(), res.Err.String())
 	}
 
 	return mhttp.Response(mconst.EmptyHTTPRes)
@@ -115,14 +111,13 @@ func DeleteCloudFile(r *http.Request) *mresponse.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	_, err := rpc.GetRPCClient().CloudFileClient.Delete(context.Background(), &rpc_impl.CloudFile_DeleteReq{
+	res, err := rpc.GetRPCClient().CloudFileClient.Delete(context.Background(), &rpc_impl.CloudFile_DeleteReq{
 		OperatorId: params.OperatorID,
 		Password:   params.Password,
 		FileId:     params.FileID,
 	})
-	if err != nil {
-		mlog.Logger().Error("delete cloud file failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
+	if err != nil || (res != nil && res.Err != nil) {
+		return mhttp.ResponseWithError(err.Error(), res.Err.String())
 	}
 
 	return mhttp.Response(mconst.EmptyHTTPRes)

@@ -10,6 +10,10 @@ service IConfigCenter {
   rpc GetServiceConfig(ConfigCenter.GetServiceConfigReq) returns (ConfigCenter.GetServiceConfigRes);
 }
 
+service IConfigCenterRC {
+  rpc SetRCCoreTarget(ConfigCenterRC.SetRCCoreTargetReq) returns (ConfigCenterRC.SetRCCoreTargetRes);
+}
+
 message ConfigCenter {
   message GetServiceConfigReq {
     string service_id = 1;
@@ -18,7 +22,18 @@ message ConfigCenter {
 
   message GetServiceConfigRes {
     string config = 1; // json string
+    string rc_core_target = 2;
 
+    common.Error err = 15;
+  }
+}
+
+message ConfigCenterRC {
+  message SetRCCoreTargetReq {
+    string target = 1;
+  }
+
+  message SetRCCoreTargetRes {
     common.Error err = 15;
   }
 }

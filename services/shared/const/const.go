@@ -38,7 +38,6 @@ const (
 )
 
 const (
-	// common errors
 	Error_InvalidParams            = "invalid param(s)"
 	Error_InvalidAccountOrPassword = "invalid account or password"
 	Error_PermissionDenied         = "permission denied"
@@ -51,4 +50,6 @@ const (
 	Error_NoAffectedRows      = "no affected rows"
 	Error_ModifyOthersNote    = "not allowed to modify others' note"
 	Error_ModifyOthersTask    = "not allowed to modify others' task"
+
+	Error_ShouldReTry = "should re-try" // for functions which have re-try design, distinguish with other errors
 )

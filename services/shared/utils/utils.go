@@ -4,10 +4,38 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"github.com/mats9693/unnamed_plan/services/shared/log"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 	"math/rand"
+	"net"
 	"strings"
 )
+
+// GetIP return 192.168.2.14 ?
+func GetIP() (string, error) {
+	conn, err := net.Dial("udp", "8.8.8.8:53")
+	if err != nil {
+		mlog.Logger().Error("udp dial failed", zap.Error(err))
+		return "", err
+	}
+
+	defer conn.Close()
+
+	return conn.LocalAddr().(*net.UDPAddr).IP.String(), nil
+}
+
+func GetFreePort() (int, error) {
+	listener, err := net.Listen("tcp", ":0")
+	if err != nil {
+		mlog.Logger().Error("tcp listen failed", zap.Error(err))
+		return -1, err
+	}
+
+	defer listener.Close()
+
+	return listener.Addr().(*net.TCPAddr).Port, nil // type assert is ok
+}
 
 // CalcSHA256 calc sha256('text'[+'extension'])
 func CalcSHA256(text string, append ...string) string {

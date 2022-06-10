@@ -241,5 +241,5 @@ var INote_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "note.proto",
+	Metadata: "3_note.proto",
 }

@@ -24,9 +24,8 @@ func ListTask(r *http.Request) *mresponse.ResponseData {
 	res, err := rpc.GetRPCClient().TaskClient.List(context.Background(), &rpc_impl.Task_ListReq{
 		OperatorId: params.OperatorID,
 	})
-	if err != nil {
-		mlog.Logger().Error("list task failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
+	if err != nil || (res != nil && res.Err != nil) {
+		return mhttp.ResponseWithError(err.Error(), res.Err.String())
 	}
 
 	return mhttp.Response(structure.MakeListTaskRes(res.Total, tasksRPCToHTTP(res.Tasks...)))
@@ -39,15 +38,14 @@ func CreateTask(r *http.Request) *mresponse.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	_, err := rpc.GetRPCClient().TaskClient.Create(context.Background(), &rpc_impl.Task_CreateReq{
+	res, err := rpc.GetRPCClient().TaskClient.Create(context.Background(), &rpc_impl.Task_CreateReq{
 		OperatorId:  params.OperatorID,
 		TaskName:    params.TaskName,
 		Description: params.Description,
 		PreTaskIds:  params.PreTaskIDs,
 	})
-	if err != nil {
-		mlog.Logger().Error("create task failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
+	if err != nil || (res != nil && res.Err != nil) {
+		return mhttp.ResponseWithError(err.Error(), res.Err.String())
 	}
 
 	return mhttp.Response(mconst.EmptyHTTPRes)
@@ -60,7 +58,7 @@ func ModifyTask(r *http.Request) *mresponse.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	_, err := rpc.GetRPCClient().TaskClient.Modify(context.Background(), &rpc_impl.Task_ModifyReq{
+	res, err := rpc.GetRPCClient().TaskClient.Modify(context.Background(), &rpc_impl.Task_ModifyReq{
 		OperatorId:  params.OperatorID,
 		TaskId:      params.TaskID,
 		Password:    params.Password,
@@ -69,9 +67,8 @@ func ModifyTask(r *http.Request) *mresponse.ResponseData {
 		PreTaskIds:  params.PreTaskIDs,
 		Status:      uint32(params.Status),
 	})
-	if err != nil {
-		mlog.Logger().Error("create task failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
+	if err != nil || (res != nil && res.Err != nil) {
+		return mhttp.ResponseWithError(err.Error(), res.Err.String())
 	}
 
 	return mhttp.Response(mconst.EmptyHTTPRes)

@@ -24,9 +24,8 @@ func Login(r *http.Request) *mresponse.ResponseData {
 		UserName: params.UserName,
 		Password: params.Password,
 	})
-	if err != nil {
-		mlog.Logger().Error("login failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
+	if err != nil || (res != nil && res.Err != nil) {
+		return mhttp.ResponseWithError(err.Error(), res.Err.String())
 	}
 
 	return mhttp.Response(structure.MakeLoginRes(res.UserId, res.Nickname, res.Permission), res.UserId)
@@ -46,9 +45,8 @@ func ListUser(r *http.Request) *mresponse.ResponseData {
 			PageNum:  uint32(params.PageNum),
 		},
 	})
-	if err != nil {
-		mlog.Logger().Error("list user failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
+	if err != nil || (res != nil && res.Err != nil) {
+		return mhttp.ResponseWithError(err.Error(), res.Err.String())
 	}
 
 	return mhttp.Response(structure.MakeListUserRes(res.Total, usersRPCToHTTP(res.Users...)))
@@ -61,15 +59,14 @@ func CreateUser(r *http.Request) *mresponse.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	_, err := rpc.GetRPCClient().UserClient.Create(context.Background(), &rpc_impl.User_CreateReq{
+	res, err := rpc.GetRPCClient().UserClient.Create(context.Background(), &rpc_impl.User_CreateReq{
 		OperatorId: params.OperatorID,
 		UserName:   params.UserName,
 		Password:   params.Password,
 		Permission: uint32(params.Permission),
 	})
-	if err != nil {
-		mlog.Logger().Error("create user failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
+	if err != nil || (res != nil && res.Err != nil) {
+		return mhttp.ResponseWithError(err.Error(), res.Err.String())
 	}
 
 	return mhttp.Response(mconst.EmptyHTTPRes)
@@ -82,13 +79,12 @@ func LockUser(r *http.Request) *mresponse.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	_, err := rpc.GetRPCClient().UserClient.Lock(context.Background(), &rpc_impl.User_LockReq{
+	res, err := rpc.GetRPCClient().UserClient.Lock(context.Background(), &rpc_impl.User_LockReq{
 		OperatorId: params.OperatorID,
 		UserId:     params.UserID,
 	})
-	if err != nil {
-		mlog.Logger().Error("lock user failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
+	if err != nil || (res != nil && res.Err != nil) {
+		return mhttp.ResponseWithError(err.Error(), res.Err.String())
 	}
 
 	return mhttp.Response(mconst.EmptyHTTPRes)
@@ -101,13 +97,12 @@ func UnlockUser(r *http.Request) *mresponse.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	_, err := rpc.GetRPCClient().UserClient.Unlock(context.Background(), &rpc_impl.User_UnlockReq{
+	res, err := rpc.GetRPCClient().UserClient.Unlock(context.Background(), &rpc_impl.User_UnlockReq{
 		OperatorId: params.OperatorID,
 		UserId:     params.UserID,
 	})
-	if err != nil {
-		mlog.Logger().Error("unlock user failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
+	if err != nil || (res != nil && res.Err != nil) {
+		return mhttp.ResponseWithError(err.Error(), res.Err.String())
 	}
 
 	return mhttp.Response(mconst.EmptyHTTPRes)
@@ -120,16 +115,15 @@ func ModifyUserInfo(r *http.Request) *mresponse.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	_, err := rpc.GetRPCClient().UserClient.ModifyInfo(context.Background(), &rpc_impl.User_ModifyInfoReq{
+	res, err := rpc.GetRPCClient().UserClient.ModifyInfo(context.Background(), &rpc_impl.User_ModifyInfoReq{
 		OperatorId: params.OperatorID,
 		UserId:     params.UserID,
 		CurrPwd:    params.CurrPwd,
 		Nickname:   params.Nickname,
 		Password:   params.Password,
 	})
-	if err != nil {
-		mlog.Logger().Error("modify user info failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
+	if err != nil || (res != nil && res.Err != nil) {
+		return mhttp.ResponseWithError(err.Error(), res.Err.String())
 	}
 
 	return mhttp.Response(mconst.EmptyHTTPRes)
@@ -142,14 +136,13 @@ func ModifyUserPermission(r *http.Request) *mresponse.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	_, err := rpc.GetRPCClient().UserClient.ModifyPermission(context.Background(), &rpc_impl.User_ModifyPermissionReq{
+	res, err := rpc.GetRPCClient().UserClient.ModifyPermission(context.Background(), &rpc_impl.User_ModifyPermissionReq{
 		OperatorId: params.OperatorID,
 		UserId:     params.UserID,
 		Permission: uint32(params.Permission),
 	})
-	if err != nil {
-		mlog.Logger().Error("modify user permission failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
+	if err != nil || (res != nil && res.Err != nil) {
+		return mhttp.ResponseWithError(err.Error(), res.Err.String())
 	}
 
 	return mhttp.Response(mconst.EmptyHTTPRes)

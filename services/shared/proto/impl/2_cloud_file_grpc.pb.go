@@ -241,5 +241,5 @@ var ICloudFile_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "cloud_file.proto",
+	Metadata: "2_cloud_file.proto",
 }
