@@ -4,8 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
-	"github.com/mats9693/unnamed_plan/services/shared/proto/client"
 	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
+	"github.com/mats9693/unnamed_plan/services/shared/utils"
+	"google.golang.org/grpc"
 	"log"
 	"os"
 	"time"
@@ -23,53 +24,80 @@ type ConfigItem struct {
 }
 
 var conf = &Config{}
+var registrationCenterTarget string
 
 // InitFromConfigCenter load config from config center, use for services
-func InitFromConfigCenter(serviceID string) {
+func InitFromConfigCenter(serviceID string) error {
 	// init service public config
-	InitFromFile("../config.json")
+	err := InitFromFile("../config.json")
+	if err != nil {
+		log.Println("init from file failed, error: ", err)
+		return err
+	}
 
-	initServicePublicConfig()
+	err = initServicePublicConfig()
+	if err != nil {
+		log.Println("init service public config failed, error: ", err)
+		return err
+	}
 
 	// init rpc client for config center service and get config
-	configCenterClient, err := client.ConnectConfigCenterServer(servicePublicConfigIns.ConfigCenterTarget)
+	conn, err := grpc.Dial(GetConfigCenterTarget(), grpc.WithInsecure())
 	if err != nil {
-		log.Printf("establish connection with services failed, error: %v", err)
-		os.Exit(-1)
+		log.Println("get grpc conn failed, error: ", err)
+		return err
 	}
 
 	var res *rpc_impl.ConfigCenter_GetServiceConfigRes
 	for i := 0; i < servicePublicConfigIns.RetryTimes; i++ {
-		res, err = configCenterClient.GetServiceConfig(context.Background(), &rpc_impl.ConfigCenter_GetServiceConfigReq{
+		res, err = rpc_impl.NewIConfigCenterClient(conn).GetServiceConfig(context.Background(), &rpc_impl.ConfigCenter_GetServiceConfigReq{
 			ServiceId: serviceID,
 			Level:     GetConfigLevel(),
 		})
-		if err == nil {
+		if err == nil && (res != nil && res.Err == nil) { // no error, exit loop
 			break
 		}
 
-		if err != nil {
-			log.Printf("get config from config center failed, retry in %d seconds in %d times, err: %v\n",
-				servicePublicConfigIns.RetryInterval, servicePublicConfigIns.RetryTimes-i, err)
-			time.Sleep(time.Duration(servicePublicConfigIns.RetryInterval) * time.Second)
-		}
+		log.Printf("get config from config center failed, retry in %d seconds in %d times, err: %v\n",
+			servicePublicConfigIns.RetryInterval, servicePublicConfigIns.RetryTimes-i-1, err)
+
+		time.Sleep(time.Duration(servicePublicConfigIns.RetryInterval) * time.Second)
 	}
-	if err != nil || res == nil {
-		log.Printf("get config from config center failed, error: %v", err)
-		os.Exit(-1)
+	if err != nil {
+		log.Println("get config from config center failed, with grpc connection error: ", err)
+		return err
 	}
+	if res == nil || res.Err != nil {
+		log.Println("get config from config center failed, error: ", res.Err.String())
+		return utils.NewError(res.Err.String())
+	}
+
+	targetSlice, err := utils.FormatTarget(res.RcCoreTarget)
+	if err != nil {
+		log.Println("format target failed, error: ", err)
+		return err
+	}
+	if len(targetSlice) < 1 {
+		log.Println("no valid data")
+		return utils.NewError("no valid data")
+	}
+
+	registrationCenterTarget = targetSlice[0]
 
 	err = json.Unmarshal([]byte(res.Config), conf)
 	if err != nil {
-		log.Println("json unmarshal failed, error:", err)
-		os.Exit(-1)
+		log.Println("json unmarshal failed, error: ", err)
+		return err
 	}
+
+	return nil
 }
 
 // InitFromFile load config from config file, use for config center and test
-func InitFromFile(configFileName string) {
+func InitFromFile(configFileName string) error {
 	if len(conf.Level) > 0 { // have initialized, require any config version have its level
-		return
+		log.Println("already initialized")
+		return nil
 	}
 
 	if len(configFileName) < 1 {
@@ -79,14 +107,16 @@ func InitFromFile(configFileName string) {
 	configBytes, err := os.ReadFile(configFileName)
 	if err != nil {
 		log.Printf("read config file failed, path: %s, error: %v\n", configFileName, err)
-		os.Exit(-1)
+		return err
 	}
 
 	err = json.Unmarshal(configBytes, conf)
 	if err != nil {
 		log.Println("json unmarshal failed, error:", err)
-		os.Exit(-1)
+		return err
 	}
+
+	return nil
 }
 
 func GetConfigLevel() string {
@@ -103,4 +133,8 @@ func GetConfig(uid string) []byte {
 	}
 
 	return res
+}
+
+func GetRegistrationCenterTarget() string {
+	return registrationCenterTarget
 }

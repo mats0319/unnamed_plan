@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"log"
-	"os"
 )
 
 type servicePublicConfig struct {
@@ -17,9 +16,10 @@ type servicePublicConfig struct {
 
 var servicePublicConfigIns = &servicePublicConfig{}
 
-func initServicePublicConfig() {
+func initServicePublicConfig() error {
 	if servicePublicConfigIns.init { // have initialized
-		return
+		log.Println("already initialized")
+		return nil
 	}
 
 	byteSlice := GetConfig(mconst.UID_Config)
@@ -27,8 +27,14 @@ func initServicePublicConfig() {
 	err := json.Unmarshal(byteSlice, servicePublicConfigIns)
 	if err != nil {
 		log.Printf("json unmarshal failed, uid: %s, error: %v\n", mconst.UID_Config, err)
-		os.Exit(-1)
+		return err
 	}
 
 	servicePublicConfigIns.init = true
+
+	return nil
+}
+
+func GetConfigCenterTarget() string {
+	return servicePublicConfigIns.ConfigCenterTarget
 }

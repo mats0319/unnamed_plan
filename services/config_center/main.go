@@ -16,10 +16,18 @@ import (
 )
 
 func main() {
-	initialize.InitFromFile("config.json", mdb.Init, db.Init, config.Init, i.InitSupportConfig)
+	err := initialize.InitFromFile("config.json", mdb.Init, db.Init, config.Init, i.InitSupportConfig)
+	if err != nil {
+		mlog.Logger().Error("init failed", zap.Error(err))
+		return
+	}
 
 	// todo: start http server for web
 
+	startConfigCenter()
+}
+
+func startConfigCenter() {
 	listener, err := net.Listen("tcp", config.GetConfig().Address)
 	if err != nil {
 		mlog.Logger().Error(fmt.Sprintf("listen on %s failed", config.GetConfig().Address), zap.Error(err))
@@ -27,7 +35,9 @@ func main() {
 	}
 
 	server := grpc.NewServer()
-	rpc_impl.RegisterIConfigCenterServer(server, rpc.GetConfigCenterServer())
+	serverIns := rpc.GetConfigCenterServer()
+	rpc_impl.RegisterIConfigCenterServer(server, serverIns)
+	rpc_impl.RegisterIConfigCenterRCServer(server, serverIns)
 
 	mlog.Logger().Info("> Listening at : " + config.GetConfig().Address)
 

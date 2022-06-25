@@ -3,16 +3,26 @@ package handlers
 import (
 	"context"
 	"github.com/mats9693/unnamed_plan/services/gateway/http/structure_defination"
-	"github.com/mats9693/unnamed_plan/services/gateway/rpc"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/http"
 	"github.com/mats9693/unnamed_plan/services/shared/http/response"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
 	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
+	"github.com/mats9693/unnamed_plan/services/shared/registration_center_embedded"
 	"go.uber.org/zap"
 	"net/http"
 	"time"
 )
+
+func getCloudFileClient() (rpc_impl.ICloudFileClient, error) {
+	conn, err := rc_embedded.GetClientConn(mconst.UID_Service_Cloud_File)
+	if err != nil {
+		mlog.Logger().Error("get client conn failed", zap.Error(err))
+		return nil, err
+	}
+
+	return rpc_impl.NewICloudFileClient(conn), nil
+}
 
 func ListCloudFileByUploader(r *http.Request) *mresponse.ResponseData {
 	params := &structure.ListCloudFileByUploaderReqParams{}
@@ -21,15 +31,24 @@ func ListCloudFileByUploader(r *http.Request) *mresponse.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	res, err := rpc.GetRPCClient().CloudFileClient.ListByUploader(context.Background(), &rpc_impl.CloudFile_ListByUploaderReq{
+	client, err := getCloudFileClient()
+	if err != nil {
+		mlog.Logger().Error("get cloud file client failed", zap.Error(err))
+		return mhttp.ResponseWithError(err.Error())
+	}
+
+	res, err := client.ListByUploader(context.Background(), &rpc_impl.CloudFile_ListByUploaderReq{
 		OperatorId: params.OperatorID,
 		Page: &rpc_impl.Pagination{
 			PageSize: uint32(params.PageSize),
 			PageNum:  uint32(params.PageNum),
 		},
 	})
-	if err != nil || (res != nil && res.Err != nil) {
-		return mhttp.ResponseWithError(err.Error(), res.Err.String())
+	if err != nil {
+		return mhttp.ResponseWithError(err.Error())
+	}
+	if res != nil && res.Err != nil {
+		return mhttp.ResponseWithError(res.Err.String())
 	}
 
 	return mhttp.Response(structure.MakeListCloudFileByUploaderRes(res.Total, filesRPCToHTTP(res.Files...)))
@@ -42,15 +61,24 @@ func ListPublicCloudFile(r *http.Request) *mresponse.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	res, err := rpc.GetRPCClient().CloudFileClient.ListPublic(context.Background(), &rpc_impl.CloudFile_ListPublicReq{
+	client, err := getCloudFileClient()
+	if err != nil {
+		mlog.Logger().Error("get cloud file client failed", zap.Error(err))
+		return mhttp.ResponseWithError(err.Error())
+	}
+
+	res, err := client.ListPublic(context.Background(), &rpc_impl.CloudFile_ListPublicReq{
 		OperatorId: params.OperatorID,
 		Page: &rpc_impl.Pagination{
 			PageSize: uint32(params.PageSize),
 			PageNum:  uint32(params.PageNum),
 		},
 	})
-	if err != nil || (res != nil && res.Err != nil) {
-		return mhttp.ResponseWithError(err.Error(), res.Err.String())
+	if err != nil {
+		return mhttp.ResponseWithError(err.Error())
+	}
+	if res != nil && res.Err != nil {
+		return mhttp.ResponseWithError(res.Err.String())
 	}
 
 	return mhttp.Response(structure.MakeListPublicCloudFileRes(res.Total, filesRPCToHTTP(res.Files...)))
@@ -63,7 +91,13 @@ func UploadCloudFile(r *http.Request) *mresponse.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	res, err := rpc.GetRPCClient().CloudFileClient.Upload(context.Background(), &rpc_impl.CloudFile_UploadReq{
+	client, err := getCloudFileClient()
+	if err != nil {
+		mlog.Logger().Error("get cloud file client failed", zap.Error(err))
+		return mhttp.ResponseWithError(err.Error())
+	}
+
+	res, err := client.Upload(context.Background(), &rpc_impl.CloudFile_UploadReq{
 		OperatorId:       params.OperatorID,
 		File:             params.File,
 		FileName:         params.FileName,
@@ -72,8 +106,11 @@ func UploadCloudFile(r *http.Request) *mresponse.ResponseData {
 		LastModifiedTime: int64(params.LastModifiedTime),
 		IsPublic:         params.IsPublic,
 	})
-	if err != nil || (res != nil && res.Err != nil) {
-		return mhttp.ResponseWithError(err.Error(), res.Err.String())
+	if err != nil {
+		return mhttp.ResponseWithError(err.Error())
+	}
+	if res != nil && res.Err != nil {
+		return mhttp.ResponseWithError(res.Err.String())
 	}
 
 	return mhttp.Response(mconst.EmptyHTTPRes)
@@ -86,7 +123,13 @@ func ModifyCloudFile(r *http.Request) *mresponse.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	res, err := rpc.GetRPCClient().CloudFileClient.Modify(context.Background(), &rpc_impl.CloudFile_ModifyReq{
+	client, err := getCloudFileClient()
+	if err != nil {
+		mlog.Logger().Error("get cloud file client failed", zap.Error(err))
+		return mhttp.ResponseWithError(err.Error())
+	}
+
+	res, err := client.Modify(context.Background(), &rpc_impl.CloudFile_ModifyReq{
 		OperatorId:       params.OperatorID,
 		FileId:           params.FileID,
 		Password:         params.Password,
@@ -97,8 +140,11 @@ func ModifyCloudFile(r *http.Request) *mresponse.ResponseData {
 		FileSize:         params.FileSize,
 		LastModifiedTime: int64(params.LastModifiedTime),
 	})
-	if err != nil || (res != nil && res.Err != nil) {
-		return mhttp.ResponseWithError(err.Error(), res.Err.String())
+	if err != nil {
+		return mhttp.ResponseWithError(err.Error())
+	}
+	if res != nil && res.Err != nil {
+		return mhttp.ResponseWithError(res.Err.String())
 	}
 
 	return mhttp.Response(mconst.EmptyHTTPRes)
@@ -111,13 +157,22 @@ func DeleteCloudFile(r *http.Request) *mresponse.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	res, err := rpc.GetRPCClient().CloudFileClient.Delete(context.Background(), &rpc_impl.CloudFile_DeleteReq{
+	client, err := getCloudFileClient()
+	if err != nil {
+		mlog.Logger().Error("get cloud file client failed", zap.Error(err))
+		return mhttp.ResponseWithError(err.Error())
+	}
+
+	res, err := client.Delete(context.Background(), &rpc_impl.CloudFile_DeleteReq{
 		OperatorId: params.OperatorID,
 		Password:   params.Password,
 		FileId:     params.FileID,
 	})
-	if err != nil || (res != nil && res.Err != nil) {
-		return mhttp.ResponseWithError(err.Error(), res.Err.String())
+	if err != nil {
+		return mhttp.ResponseWithError(err.Error())
+	}
+	if res != nil && res.Err != nil {
+		return mhttp.ResponseWithError(res.Err.String())
 	}
 
 	return mhttp.Response(mconst.EmptyHTTPRes)

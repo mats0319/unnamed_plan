@@ -12,7 +12,7 @@ func GetHandler() *mhttp.Handlers {
 	return handlersIns
 }
 
-func Init() {
+func Init() error {
 	handlersIns = mhttp.NewHandlers()
 
 	// user
@@ -42,4 +42,6 @@ func Init() {
 	handlersIns.HandleFunc("/api/task/list", handlers.ListTask)
 	handlersIns.HandleFunc("/api/task/create", handlers.CreateTask)
 	handlersIns.HandleFunc("/api/task/modify", handlers.ModifyTask)
+
+	return nil
 }

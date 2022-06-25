@@ -31,7 +31,7 @@ func NewIConfigCenterClient(cc grpc.ClientConnInterface) IConfigCenterClient {
 
 func (c *iConfigCenterClient) GetServiceConfig(ctx context.Context, in *ConfigCenter_GetServiceConfigReq, opts ...grpc.CallOption) (*ConfigCenter_GetServiceConfigRes, error) {
 	out := new(ConfigCenter_GetServiceConfigRes)
-	err := c.cc.Invoke(ctx, "/cloudFile.IConfigCenter/GetServiceConfig", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/configCenter.IConfigCenter/GetServiceConfig", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func _IConfigCenter_GetServiceConfig_Handler(srv interface{}, ctx context.Contex
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cloudFile.IConfigCenter/GetServiceConfig",
+		FullMethod: "/configCenter.IConfigCenter/GetServiceConfig",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(IConfigCenterServer).GetServiceConfig(ctx, req.(*ConfigCenter_GetServiceConfigReq))
@@ -88,7 +88,7 @@ func _IConfigCenter_GetServiceConfig_Handler(srv interface{}, ctx context.Contex
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var IConfigCenter_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "cloudFile.IConfigCenter",
+	ServiceName: "configCenter.IConfigCenter",
 	HandlerType: (*IConfigCenterServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -117,7 +117,7 @@ func NewIConfigCenterRCClient(cc grpc.ClientConnInterface) IConfigCenterRCClient
 
 func (c *iConfigCenterRCClient) SetRCCoreTarget(ctx context.Context, in *ConfigCenterRC_SetRCCoreTargetReq, opts ...grpc.CallOption) (*ConfigCenterRC_SetRCCoreTargetRes, error) {
 	out := new(ConfigCenterRC_SetRCCoreTargetRes)
-	err := c.cc.Invoke(ctx, "/cloudFile.IConfigCenterRC/SetRCCoreTarget", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/configCenter.IConfigCenterRC/SetRCCoreTarget", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +162,7 @@ func _IConfigCenterRC_SetRCCoreTarget_Handler(srv interface{}, ctx context.Conte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cloudFile.IConfigCenterRC/SetRCCoreTarget",
+		FullMethod: "/configCenter.IConfigCenterRC/SetRCCoreTarget",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(IConfigCenterRCServer).SetRCCoreTarget(ctx, req.(*ConfigCenterRC_SetRCCoreTargetReq))
@@ -174,7 +174,7 @@ func _IConfigCenterRC_SetRCCoreTarget_Handler(srv interface{}, ctx context.Conte
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var IConfigCenterRC_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "cloudFile.IConfigCenterRC",
+	ServiceName: "configCenter.IConfigCenterRC",
 	HandlerType: (*IConfigCenterRCServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

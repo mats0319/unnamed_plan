@@ -7,7 +7,6 @@ import (
 	"github.com/mats9693/unnamed_plan/services/shared/db/model"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
 	"go.uber.org/zap"
-	"os"
 	"sync"
 )
 
@@ -58,21 +57,22 @@ func GetServiceConfig(serviceID string, level string) (res *mconfig.Config) {
 	return
 }
 
-func InitSupportConfig() {
-	var err error
+func InitSupportConfig() (err error) {
 	serviceConfigs, err = db.GetServiceConfigDao().Query()
 	if err != nil {
 		mlog.Logger().Error("get service config failed", zap.Error(err))
-		os.Exit(-1)
+		return err
 	}
 
 	configItems, err = db.GetConfigItemDao().Query()
 	if err != nil {
 		mlog.Logger().Error("get config item failed", zap.Error(err))
-		os.Exit(-1)
+		return err
 	}
 
 	supportValidServiceConfig()
+
+	return nil
 }
 
 func supportValidServiceConfig() {
@@ -84,7 +84,7 @@ func supportValidServiceConfig() {
 
 		// if 'service config' is valid, format and support it
 		configItemList := make([]*mconfig.ConfigItem, 0, len(serviceConfigRecord.ConfigItemIDs))
-		isValid := false
+		isValid := true
 		for j := range serviceConfigRecord.ConfigItemIDs {
 			isValid = false
 

@@ -20,23 +20,14 @@ const backupFileSuffix = ".backup"
 
 type cloudFileServerImpl struct {
 	rpc_impl.UnimplementedICloudFileServer
-
-	userClient rpc_impl.IUserClient
 }
 
 var _ rpc_impl.ICloudFileServer = (*cloudFileServerImpl)(nil)
 
 var cloudFileServerImplIns = &cloudFileServerImpl{}
 
-func GetCloudFileServer(userServerTarget string) (*cloudFileServerImpl, error) {
-	userClient, err := client.ConnectUserServer(userServerTarget)
-	if err != nil {
-		return nil, err
-	}
-
-	cloudFileServerImplIns.userClient = userClient
-
-	return cloudFileServerImplIns, nil
+func GetCloudFileServer() *cloudFileServerImpl {
+	return cloudFileServerImplIns
 }
 
 func (c *cloudFileServerImpl) ListByUploader(_ context.Context, req *rpc_impl.CloudFile_ListByUploaderReq) (*rpc_impl.CloudFile_ListByUploaderRes, error) {
@@ -164,15 +155,10 @@ func (c *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFil
 		return res, nil
 	}
 
-	authRes, err := c.userClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
-		UserId:   req.OperatorId,
-		Password: req.Password,
-	})
-	if err != nil || (authRes != nil && authRes.Err != nil) {
-		mlog.Logger().Error(mconst.Error_ExecutionError,
-			zap.NamedError(mconst.Error_DBError, err),
-			zap.String(mconst.Error_ExecutionError, authRes.Err.String()))
-		res.Err = utils.NewExecError(err.Error() + authRes.Err.String()).ToRPC()
+	rpcErr := client.AuthUserInfo(ctx, req.OperatorId, req.Password)
+	if rpcErr != nil {
+		mlog.Logger().Error("auth user info failed", zap.String("error", rpcErr.String()))
+		res.Err = rpcErr
 		return res, nil
 	}
 
@@ -278,15 +264,10 @@ func (c *cloudFileServerImpl) Delete(ctx context.Context, req *rpc_impl.CloudFil
 		return res, nil
 	}
 
-	authRes, err := c.userClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
-		UserId:   req.OperatorId,
-		Password: req.Password,
-	})
-	if err != nil || (authRes != nil && authRes.Err != nil) {
-		mlog.Logger().Error(mconst.Error_ExecutionError,
-			zap.NamedError(mconst.Error_DBError, err),
-			zap.String(mconst.Error_ExecutionError, authRes.Err.String()))
-		res.Err = utils.NewExecError(err.Error() + authRes.Err.String()).ToRPC()
+	rpcErr := client.AuthUserInfo(ctx, req.OperatorId, req.Password)
+	if rpcErr != nil {
+		mlog.Logger().Error("auth user info failed", zap.String("error", rpcErr.String()))
+		res.Err = rpcErr
 		return res, nil
 	}
 

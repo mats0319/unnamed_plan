@@ -13,6 +13,7 @@ require (
 )
 
 require (
+	bou.ke/monkey v1.0.2 // indirect
 	github.com/go-pg/zerochecker v0.2.0 // indirect
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/google/uuid v1.2.0 // indirect

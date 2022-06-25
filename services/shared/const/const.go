@@ -7,17 +7,17 @@ const (
 	EmptyHTTPRes = ""
 
 	// uid, config item and service
-	UID_Config             = "659c1fb2-ec76-48a2-82c0-5e02ecb7c7fc"
-	UID_DB                 = "658e06f7-71d5-4ada-b715-8c1a4489e5d2"
-	UID_Gateway_HTTP       = "3b839c1f-9f1e-474b-b3da-7b5e9bc792ec"
-	UID_Gateway_RPC_Client = "1cd10cb8-ecf5-4855-a886-76b148ed104a"
+	UID_Config       = "659c1fb2-ec76-48a2-82c0-5e02ecb7c7fc"
+	UID_DB           = "658e06f7-71d5-4ada-b715-8c1a4489e5d2"
+	UID_Gateway_HTTP = "3b839c1f-9f1e-474b-b3da-7b5e9bc792ec"
 
-	UID_Service_Config_Center = "612fbb57-c44c-4b54-8188-13d1dd598306"
-	UID_Service_Gateway       = "84d1fecc-3be9-439e-8144-209ffc00a975"
-	UID_Service_User          = "eafbda7d-c951-4fc9-8b45-8c90189c1e36"
-	UID_Service_Cloud_File    = "1b5ab1d2-de6d-4377-9a4e-a184b24d1a0f"
-	UID_Service_Note          = "23d062e4-3c36-45f0-9e1c-3f339742903b"
-	UID_Service_Task          = "a4802e2b-113b-4132-b125-ca5f97239a6e"
+	UID_Service_Config_Center       = "612fbb57-c44c-4b54-8188-13d1dd598306"
+	UID_Service_Registration_center = "1cd10cb8-ecf5-4855-a886-76b148ed104a"
+	UID_Service_Gateway             = "84d1fecc-3be9-439e-8144-209ffc00a975"
+	UID_Service_User                = "eafbda7d-c951-4fc9-8b45-8c90189c1e36"
+	UID_Service_Cloud_File          = "1b5ab1d2-de6d-4377-9a4e-a184b24d1a0f"
+	UID_Service_Note                = "23d062e4-3c36-45f0-9e1c-3f339742903b"
+	UID_Service_Task                = "a4802e2b-113b-4132-b125-ca5f97239a6e"
 
 	// db
 	DB_PostgreSQL = "postgresql"
@@ -44,6 +44,7 @@ const (
 	Error_NoValidModification      = "not any valid modification"
 	Error_DBError                  = "db error"
 	Error_ExecutionError           = "execution error"
+	Error_GrpcConnectionError      = "grpc connection error"
 
 	Error_UserAlreadyLocked   = "user already locked"
 	Error_UserAlreadyUnlocked = "user already unlocked"

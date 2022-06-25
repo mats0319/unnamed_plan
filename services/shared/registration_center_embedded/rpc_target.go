@@ -1,24 +1,23 @@
 package rc_embedded
 
-import (
-	"github.com/pkg/errors"
-)
+import "github.com/pkg/errors"
 
 type rpcTarget struct {
-	list  []string
+	list []string
+
 	index int // polling index
 	// 后续拟添加“响应时间”等字段，以支持更多选择实例的方式，默认采用轮询
 }
 
-func newTarget(target []string) *rpcTarget {
+func newRPCTarget(targetSlice []string) *rpcTarget {
 	return &rpcTarget{
-		list:  target,
+		list:  targetSlice,
 		index: 0,
 	}
 }
 
 func (t *rpcTarget) getTarget() (string, error) {
-	if len(t.list) < 1 {
+	if t == nil || len(t.list) < 1 {
 		return "", errors.New("no valid target")
 	}
 

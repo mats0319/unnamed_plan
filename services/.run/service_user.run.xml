@@ -1,12 +1,12 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="service_user" type="GoApplicationRunConfiguration" factoryName="Go Application">
+  <configuration default="false" name="service_1_user" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="unnamed_plan" />
-    <working_directory value="$PROJECT_DIR$/services/user/" />
+    <working_directory value="$PROJECT_DIR$/services/1_user/" />
     <kind value="FILE" />
     <package value="github.com/mats9693/unnamed_plan" />
     <directory value="$PROJECT_DIR$" />
-    <filePath value="$PROJECT_DIR$/services/user/main.go" />
-    <output_directory value="$PROJECT_DIR$/services/user/" />
+    <filePath value="$PROJECT_DIR$/services/1_user/main.go" />
+    <output_directory value="$PROJECT_DIR$/services/1_user/" />
     <method v="2" />
   </configuration>
 </component>

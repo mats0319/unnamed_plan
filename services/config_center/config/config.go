@@ -6,7 +6,6 @@ import (
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
 	"go.uber.org/zap"
-	"os"
 )
 
 type configCenterServiceConfig struct {
@@ -17,9 +16,10 @@ type configCenterServiceConfig struct {
 
 var configCenterServiceConfigIns = &configCenterServiceConfig{}
 
-func Init() {
+func Init() error {
 	if configCenterServiceConfigIns.init { // have initialized
-		return
+		mlog.Logger().Error("already initialized")
+		return nil
 	}
 
 	byteSlice := mconfig.GetConfig(mconst.UID_Service_Config_Center)
@@ -27,12 +27,14 @@ func Init() {
 	err := json.Unmarshal(byteSlice, configCenterServiceConfigIns)
 	if err != nil {
 		mlog.Logger().Error("json unmarshal failed", zap.String("uid", mconst.UID_Service_Config_Center), zap.Error(err))
-		os.Exit(-1)
+		return err
 	}
 
 	configCenterServiceConfigIns.init = true
 
 	mlog.Logger().Info("> Config Center service config init finish.")
+
+	return nil
 }
 
 func GetConfig() *configCenterServiceConfig {

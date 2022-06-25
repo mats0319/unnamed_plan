@@ -193,12 +193,15 @@ func (s *userServiceTest) testModifyPermission() {
 }
 
 func (s *userServiceTest) beforeTest(t *testing.T) {
-	initialize.InitFromFile("server_test.json", mdb.Init, config.Init, db.Init)
+	err := initialize.InitFromFile("server_test.json", mdb.Init, config.Init, db.Init)
+	if err != nil {
+		t.Fail()
+	}
 
 	s.passed = true
 
 	// create test table
-	err := mtest.CreateTestTable_Postgresql([]interface{}{
+	err = mtest.CreateTestTable_Postgresql([]interface{}{
 		(*model.User)(nil),
 	})
 	if err != nil {

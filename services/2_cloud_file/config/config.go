@@ -5,24 +5,23 @@ import (
 	"github.com/mats9693/unnamed_plan/services/shared/config"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
+	"github.com/mats9693/unnamed_plan/services/shared/utils"
 	"go.uber.org/zap"
-	"os"
 )
 
 type cloudFileServiceConfig struct {
 	init bool
 
-	Address            string `json:"address"`
-	UserServerAddress  string `json:"userServerAddress"`
 	CloudFileRootPath  string `json:"cloudFileRootPath"`  // absolute path
 	CloudFilePublicDir string `json:"cloudFilePublicDir"` // public folder name
 }
 
 var cloudFileServiceConfigIns = &cloudFileServiceConfig{}
 
-func Init() {
+func Init() error {
 	if cloudFileServiceConfigIns.init { // have initialized
-		return
+		mlog.Logger().Error("already initialized")
+		return nil
 	}
 
 	byteSlice := mconfig.GetConfig(mconst.UID_Service_Cloud_File)
@@ -30,12 +29,14 @@ func Init() {
 	err := json.Unmarshal(byteSlice, cloudFileServiceConfigIns)
 	if err != nil {
 		mlog.Logger().Error("json unmarshal failed", zap.String("uid", mconst.UID_Service_Cloud_File), zap.Error(err))
-		os.Exit(-1)
+		return utils.NewError(err.Error())
 	}
 
 	cloudFileServiceConfigIns.init = true
 
 	mlog.Logger().Info("> Cloud file service config init finish.")
+
+	return nil
 }
 
 func GetConfig() *cloudFileServiceConfig {

@@ -15,21 +15,12 @@ import (
 
 type taskServerImpl struct {
 	rpc_impl.UnimplementedITaskServer
-
-	userClient rpc_impl.IUserClient
 }
 
 var taskServerImplIns = &taskServerImpl{}
 
-func GetTaskServer(userServerTarget string) (rpc_impl.ITaskServer, error) {
-	userClient, err := client.ConnectUserServer(userServerTarget)
-	if err != nil {
-		return nil, err
-	}
-
-	taskServerImplIns.userClient = userClient
-
-	return taskServerImplIns, nil
+func GetTaskServer() rpc_impl.ITaskServer {
+	return taskServerImplIns
 }
 
 func (t *taskServerImpl) List(_ context.Context, req *rpc_impl.Task_ListReq) (*rpc_impl.Task_ListRes, error) {
@@ -97,16 +88,11 @@ func (t *taskServerImpl) Modify(ctx context.Context, req *rpc_impl.Task_ModifyRe
 		return res, nil
 	}
 
-	authRes, err := t.userClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
-		UserId:   req.OperatorId,
-		Password: req.Password,
-	})
-	if err != nil || (authRes != nil && authRes.Err != nil) {
-		mlog.Logger().Error(mconst.Error_ExecutionError,
-			zap.NamedError(mconst.Error_DBError, err),
-			zap.String(mconst.Error_ExecutionError, authRes.Err.String()))
-		res.Err = utils.NewExecError(err.Error() + authRes.Err.String()).ToRPC()
-		return nil, err
+	rpcErr := client.AuthUserInfo(ctx, req.OperatorId, req.Password)
+	if rpcErr != nil {
+		mlog.Logger().Error("auth user info failed", zap.String("error", rpcErr.String()))
+		res.Err = rpcErr
+		return res, nil
 	}
 
 	task, err := db.GetTaskDao().QueryOne(req.TaskId)

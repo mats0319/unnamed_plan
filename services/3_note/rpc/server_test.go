@@ -3,7 +3,6 @@ package rpc
 import (
 	"context"
 	"fmt"
-	"github.com/golang/mock/gomock"
 	"github.com/mats9693/unnamed_plan/services/3_note/db"
 	"github.com/mats9693/unnamed_plan/services/shared/db"
 	"github.com/mats9693/unnamed_plan/services/shared/db/dal"
@@ -153,12 +152,15 @@ func (s *noteServiceTest) testDelete() {
 }
 
 func (s *noteServiceTest) beforeTest(t *testing.T) {
-	initialize.InitFromFile("server_test.json", mdb.Init, db.Init)
+	err := initialize.InitFromFile("server_test.json", mdb.Init, db.Init)
+	if err != nil {
+		t.Fail()
+	}
 
 	s.passed = true
 
 	// create test table
-	err := mtest.CreateTestTable_Postgresql([]interface{}{
+	err = mtest.CreateTestTable_Postgresql([]interface{}{
 		(*model.User)(nil),
 		(*model.Note)(nil),
 	})
@@ -172,10 +174,7 @@ func (s *noteServiceTest) beforeTest(t *testing.T) {
 	// create global service instance
 	s.service = noteServerImplIns
 
-	userClientMock := mock_rpc_impl.NewMockIUserClient(gomock.NewController(t))
-	userClientMock.EXPECT().Authenticate(gomock.Any(), gomock.Any()).Return(nil, nil).AnyTimes()
-
-	s.service.userClient = userClientMock
+	mock_rpc_impl.MockUserAuthenticate()
 }
 
 func (s *noteServiceTest) afterTest(t *testing.T) {

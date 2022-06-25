@@ -14,21 +14,12 @@ import (
 
 type noteServerImpl struct {
 	rpc_impl.UnimplementedINoteServer
-
-	userClient rpc_impl.IUserClient
 }
 
 var noteServerImplIns = &noteServerImpl{}
 
-func GetNoteServer(userServerTarget string) (rpc_impl.INoteServer, error) {
-	userClient, err := client.ConnectUserServer(userServerTarget)
-	if err != nil {
-		return nil, err
-	}
-
-	noteServerImplIns.userClient = userClient
-
-	return noteServerImplIns, nil
+func GetNoteServer() rpc_impl.INoteServer {
+	return noteServerImplIns
 }
 
 func (t *noteServerImpl) ListByWriter(_ context.Context, req *rpc_impl.Note_ListByWriterReq) (*rpc_impl.Note_ListByWriterRes, error) {
@@ -124,15 +115,10 @@ func (t *noteServerImpl) Modify(ctx context.Context, req *rpc_impl.Note_ModifyRe
 		return res, nil
 	}
 
-	authRes, err := t.userClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
-		UserId:   req.OperatorId,
-		Password: req.Password,
-	})
-	if err != nil || (authRes != nil && authRes.Err != nil) {
-		mlog.Logger().Error(mconst.Error_ExecutionError,
-			zap.NamedError(mconst.Error_DBError, err),
-			zap.String(mconst.Error_ExecutionError, authRes.Err.String()))
-		res.Err = utils.NewExecError(err.Error() + authRes.Err.String()).ToRPC()
+	rpcErr := client.AuthUserInfo(ctx, req.OperatorId, req.Password)
+	if rpcErr != nil {
+		mlog.Logger().Error("auth user info failed", zap.String("error", rpcErr.String()))
+		res.Err = rpcErr
 		return res, nil
 	}
 
@@ -191,15 +177,10 @@ func (t *noteServerImpl) Delete(ctx context.Context, req *rpc_impl.Note_DeleteRe
 		return res, nil
 	}
 
-	authRes, err := t.userClient.Authenticate(ctx, &rpc_impl.User_AuthenticateReq{
-		UserId:   req.OperatorId,
-		Password: req.Password,
-	})
-	if err != nil || (authRes != nil && authRes.Err != nil) {
-		mlog.Logger().Error(mconst.Error_ExecutionError,
-			zap.NamedError(mconst.Error_DBError, err),
-			zap.String(mconst.Error_ExecutionError, authRes.Err.String()))
-		res.Err = utils.NewExecError(err.Error() + authRes.Err.String()).ToRPC()
+	rpcErr := client.AuthUserInfo(ctx, req.OperatorId, req.Password)
+	if rpcErr != nil {
+		mlog.Logger().Error("auth user info failed", zap.String("error", rpcErr.String()))
+		res.Err = rpcErr
 		return res, nil
 	}
 

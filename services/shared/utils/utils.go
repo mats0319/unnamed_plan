@@ -4,19 +4,37 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"github.com/mats9693/unnamed_plan/services/shared/log"
 	"github.com/pkg/errors"
-	"go.uber.org/zap"
 	"math/rand"
 	"net"
 	"strings"
 )
 
+// FormatTarget rules:
+// 1. if 'target' has same ip with current service, replace target ip by '127.0.0.1'
+func FormatTarget(target ...string) ([]string, error) {
+	currentIP, err := GetIP()
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]string, 0, len(target))
+	for i := range target {
+		t := target[i]
+		if strings.HasPrefix(target[i], currentIP) {
+			t = "127.0.0.1"+strings.TrimPrefix(target[i], currentIP)
+		}
+
+		res = append(res, t)
+	}
+
+	return res, nil
+}
+
 // GetIP return 192.168.2.14 ?
 func GetIP() (string, error) {
 	conn, err := net.Dial("udp", "8.8.8.8:53")
 	if err != nil {
-		mlog.Logger().Error("udp dial failed", zap.Error(err))
 		return "", err
 	}
 
@@ -28,7 +46,6 @@ func GetIP() (string, error) {
 func GetFreePort() (int, error) {
 	listener, err := net.Listen("tcp", ":0")
 	if err != nil {
-		mlog.Logger().Error("tcp listen failed", zap.Error(err))
 		return -1, err
 	}
 

@@ -16,13 +16,19 @@ func Logger() *zap.Logger {
 	return zlog
 }
 
-func Init() {
+func Init() error {
 	if zlog != nil { // have initialized
-		return
+		log.Println("already initialized")
+		return nil
+	}
+
+	ws, err := logWriteSyncer()
+	if err != nil {
+		return err
 	}
 
 	coreSlice := make([]zapcore.Core, 0, 2)
-	coreSlice = append(coreSlice, zapcore.NewCore(logEncoder(), logWriteSyncer(), logLevel())) // log file
+	coreSlice = append(coreSlice, zapcore.NewCore(logEncoder(), ws, logLevel())) // log file
 	if mconfig.GetConfigLevel() == mconst.ConfigLevel_Dev || mconfig.GetConfigLevel() == mconst.ConfigLevel_Default {
 		coreSlice = append(coreSlice, zapcore.NewCore(logEncoder(), os.Stdout, logLevel())) // console
 	}
@@ -32,6 +38,8 @@ func Init() {
 
 	zlog.Info("> Config init finish.")
 	zlog.Info("> Log init finish.")
+
+	return nil
 }
 
 func logEncoder() zapcore.Encoder {
@@ -51,14 +59,14 @@ func logEncoder() zapcore.Encoder {
 	})
 }
 
-func logWriteSyncer() zapcore.WriteSyncer {
+func logWriteSyncer() (zapcore.WriteSyncer, error) {
 	file, err := os.OpenFile(mconst.LogFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Println("create log file failed, error:", err)
-		os.Exit(-1)
+		return nil, err
 	}
 
-	return zapcore.AddSync(file)
+	return zapcore.AddSync(file), nil
 }
 
 func logLevel() (level zapcore.Level) {

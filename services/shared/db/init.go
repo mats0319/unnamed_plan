@@ -7,8 +7,8 @@ import (
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/db/dal"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
+	"github.com/mats9693/unnamed_plan/services/shared/utils"
 	"go.uber.org/zap"
-	"os"
 )
 
 type dbConfig struct {
@@ -32,16 +32,17 @@ func DB() *db {
 	return dbIns
 }
 
-func Init() {
+func Init() error {
 	if dbIns.config != nil { // have initialized
-		return
+		mlog.Logger().Error("already initialized")
+		return nil
 	}
 
 	dbIns.config = getDBConfig()
 
 	if dbIns.config == nil {
 		mlog.Logger().Error("config not ready when init db")
-		os.Exit(-1)
+		return utils.NewError("config not ready when init db")
 	}
 
 	switch dbIns.config.DBMS {
@@ -50,10 +51,12 @@ func Init() {
 			dbIns.config.Password, dbIns.config.Timeout, dbIns.config.ShowSQL)
 	default:
 		mlog.Logger().Error("init db failed", zap.String(mconst.Error_UnsupportedDB, dbIns.config.DBMS))
-		os.Exit(-1)
+		return utils.NewError(mconst.Error_UnsupportedDB + dbIns.config.DBMS)
 	}
 
 	mlog.Logger().Info(fmt.Sprintf("> Database %s init finish.", dbIns.config.DBMS))
+
+	return nil
 }
 
 func (dbi *db) WithTx(task func(mdal.Conn) error) error {

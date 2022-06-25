@@ -32,7 +32,7 @@ func NewIRegistrationCenterCoreClient(cc grpc.ClientConnInterface) IRegistration
 
 func (c *iRegistrationCenterCoreClient) Register(ctx context.Context, in *RegistrationCenterCore_RegisterReq, opts ...grpc.CallOption) (*RegistrationCenterCore_RegisterRes, error) {
 	out := new(RegistrationCenterCore_RegisterRes)
-	err := c.cc.Invoke(ctx, "/cloudFile.IRegistrationCenterCore/Register", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/registrationCenter.IRegistrationCenterCore/Register", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (c *iRegistrationCenterCoreClient) Register(ctx context.Context, in *Regist
 
 func (c *iRegistrationCenterCoreClient) ListServiceTarget(ctx context.Context, in *RegistrationCenterCore_ListServiceTargetReq, opts ...grpc.CallOption) (*RegistrationCenterCore_ListServiceTargetRes, error) {
 	out := new(RegistrationCenterCore_ListServiceTargetRes)
-	err := c.cc.Invoke(ctx, "/cloudFile.IRegistrationCenterCore/ListServiceTarget", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/registrationCenter.IRegistrationCenterCore/ListServiceTarget", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +91,7 @@ func _IRegistrationCenterCore_Register_Handler(srv interface{}, ctx context.Cont
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cloudFile.IRegistrationCenterCore/Register",
+		FullMethod: "/registrationCenter.IRegistrationCenterCore/Register",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(IRegistrationCenterCoreServer).Register(ctx, req.(*RegistrationCenterCore_RegisterReq))
@@ -109,7 +109,7 @@ func _IRegistrationCenterCore_ListServiceTarget_Handler(srv interface{}, ctx con
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cloudFile.IRegistrationCenterCore/ListServiceTarget",
+		FullMethod: "/registrationCenter.IRegistrationCenterCore/ListServiceTarget",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(IRegistrationCenterCoreServer).ListServiceTarget(ctx, req.(*RegistrationCenterCore_ListServiceTargetReq))
@@ -121,7 +121,7 @@ func _IRegistrationCenterCore_ListServiceTarget_Handler(srv interface{}, ctx con
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var IRegistrationCenterCore_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "cloudFile.IRegistrationCenterCore",
+	ServiceName: "registrationCenter.IRegistrationCenterCore",
 	HandlerType: (*IRegistrationCenterCoreServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -154,7 +154,7 @@ func NewIRegistrationCenterEmbeddedClient(cc grpc.ClientConnInterface) IRegistra
 
 func (c *iRegistrationCenterEmbeddedClient) CheckHealth(ctx context.Context, in *RegistrationCenterEmbedded_CheckHealthReq, opts ...grpc.CallOption) (*RegistrationCenterEmbedded_CheckHealthRes, error) {
 	out := new(RegistrationCenterEmbedded_CheckHealthRes)
-	err := c.cc.Invoke(ctx, "/cloudFile.IRegistrationCenterEmbedded/CheckHealth", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/registrationCenter.IRegistrationCenterEmbedded/CheckHealth", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -200,7 +200,7 @@ func _IRegistrationCenterEmbedded_CheckHealth_Handler(srv interface{}, ctx conte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cloudFile.IRegistrationCenterEmbedded/CheckHealth",
+		FullMethod: "/registrationCenter.IRegistrationCenterEmbedded/CheckHealth",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(IRegistrationCenterEmbeddedServer).CheckHealth(ctx, req.(*RegistrationCenterEmbedded_CheckHealthReq))
@@ -212,7 +212,7 @@ func _IRegistrationCenterEmbedded_CheckHealth_Handler(srv interface{}, ctx conte
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var IRegistrationCenterEmbedded_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "cloudFile.IRegistrationCenterEmbedded",
+	ServiceName: "registrationCenter.IRegistrationCenterEmbedded",
 	HandlerType: (*IRegistrationCenterEmbeddedServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
