@@ -2,6 +2,7 @@ package http
 
 import (
 	"github.com/mats9693/unnamed_plan/services/gateway/http/handlers"
+	"github.com/mats9693/unnamed_plan/services/gateway/plugins/limit_multi_login"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/http"
 )
@@ -16,7 +17,7 @@ func Init() error {
 	handlersIns = mhttp.NewHandlers()
 
 	// user
-	handlersIns.HandleFunc("/api/login", handlers.Login, mconst.HTTPMultiLogin_SkipLimit, mconst.HTTPMultiLogin_ReSetParams)
+	handlersIns.HandleFunc("/api/login", handlers.Login)
 	handlersIns.HandleFunc("/api/user/list", handlers.ListUser)
 	handlersIns.HandleFunc("/api/user/create", handlers.CreateUser)
 	handlersIns.HandleFunc("/api/user/lock", handlers.LockUser)
@@ -42,6 +43,9 @@ func Init() error {
 	handlersIns.HandleFunc("/api/task/list", handlers.ListTask)
 	handlersIns.HandleFunc("/api/task/create", handlers.CreateTask)
 	handlersIns.HandleFunc("/api/task/modify", handlers.ModifyTask)
+
+	// plugins
+	limit_multi_login.HandleFunc("/api/login", mconst.HTTPMultiLogin_SkipLimit, mconst.HTTPMultiLogin_ReSetParams)
 
 	return nil
 }

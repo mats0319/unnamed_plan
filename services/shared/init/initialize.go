@@ -7,15 +7,15 @@ import (
 	"go.uber.org/zap"
 )
 
-func InitFromConfigCenter(serviceID string, initFunc ...func() error) (err error) {
-	err = mconfig.InitFromConfigCenter(serviceID)
+func InitFromConfigCenter(serviceID string, initFunc ...func() error) error {
+	err := mconfig.InitFromConfigCenter(serviceID)
 	if err != nil {
-		return
+		return err
 	}
 
 	err = mlog.Init()
 	if err != nil {
-		return
+		return err
 	}
 
 	for i := range initFunc {
@@ -25,18 +25,18 @@ func InitFromConfigCenter(serviceID string, initFunc ...func() error) (err error
 		}
 	}
 
-	return
+	return err
 }
 
-func InitFromFile(configFileName string, initFunc ...func() error) (err error) {
-	err = mconfig.InitFromFile(configFileName)
+func InitFromFile(configFileName string, initFunc ...func() error) error {
+	err := mconfig.InitFromFile(configFileName)
 	if err != nil {
-		return
+		return err
 	}
 
 	err = mlog.Init()
 	if err != nil {
-		return
+		return err
 	}
 
 	for i := range initFunc {
@@ -46,7 +46,7 @@ func InitFromFile(configFileName string, initFunc ...func() error) (err error) {
 		}
 	}
 
-	return
+	return err
 }
 
 func GetIPAndFreePort() (ip string, port int, err error) {

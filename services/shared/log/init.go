@@ -10,14 +10,14 @@ import (
 	"time"
 )
 
-var zlog *zap.Logger
+var zLog *zap.Logger
 
 func Logger() *zap.Logger {
-	return zlog
+	return zLog
 }
 
 func Init() error {
-	if zlog != nil { // have initialized
+	if zLog != nil { // have initialized
 		log.Println("already initialized")
 		return nil
 	}
@@ -34,10 +34,10 @@ func Init() error {
 	}
 
 	core := zapcore.NewTee(coreSlice...)
-	zlog = zap.New(core, zap.AddCaller())
+	zLog = zap.New(core, zap.AddCaller())
 
-	zlog.Info("> Config init finish.")
-	zlog.Info("> Log init finish.")
+	zLog.Info("> Config init finish.")
+	zLog.Info("> Log init finish.")
 
 	return nil
 }

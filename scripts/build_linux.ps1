@@ -5,48 +5,99 @@ Start-Transcript "build_linux_services.log" -Force
 
     Set-Location $PSScriptRoot
 
+    # prepare
     Set-Location "../services"
 
     go mod tidy
 
-    if (!(Test-Path "./build/")) {
+    if (Test-Path "./build/") {
+        Remove-Item "./build/*" -Recurse
+    } else {
         mkdir "./build"
     }
 
-    # services public config, for all services except config center
+    mkdir "./build/service_core/"
+    mkdir "./build/service_gateway/"
+    mkdir "./build/service_1_user/"
+    mkdir "./build/service_2_cloud_file/"
+    mkdir "./build/service_3_note/"
+    mkdir "./build/service_4_task/"
+
     Copy-Item "config.json" -Destination "./build/config.json"
 
     Set-Location $PSScriptRoot
 
-        # config center service
-        powershell -executionpolicy bypass -File "./build_linux_config_center.ps1"
+    # set env in powershell, only apply in this cmd-line window
+    $env:CGO_ENABLED=0
+    $env:GOOS="linux"
+    $env:GOARCH="amd64"
 
-        Write-Output "> build config center service finished."
+        # core service
+        Set-Location "../services/core/"
+
+        go build -o "service_exec"
+
+        Move-Item "service_exec" -Destination "../build/service_core/service_exec"
+        Copy-Item "config_production.json" -Destination "../build/service_core/config.json"
+
+        Set-Location $PSScriptRoot
+
+        Write-Output "> build core service finished"
 
         # gateway service
-        powershell -executionpolicy bypass -File "./build_linux_gateway.ps1"
+        Set-Location "../services/gateway/"
 
-        Write-Output "> build gateway service finished."
+        go build -o "service_exec"
 
-        # user service
-        powershell -executionpolicy bypass -File "./build_linux_user.ps1"
+        Move-Item "service_exec" -Destination "../build/service_gateway/service_exec"
 
-        Write-Output "> build user service finished."
+        Set-Location $PSScriptRoot
 
-        # cloud file service
-        powershell -executionpolicy bypass -File "./build_linux_cloud_file.ps1"
+        Write-Output "> build gateway service finished"
 
-        Write-Output "> build cloud file service finished."
+        # business service 1: user service
+        Set-Location "../services/1_user/"
 
-        # note service
-        powershell -executionpolicy bypass -File "./build_linux_note.ps1"
+        go build -o "service_exec"
 
-        Write-Output "> build note service finished."
+        Move-Item "service_exec" -Destination "../build/service_1_user/service_exec"
 
-        # task service
-        powershell -executionpolicy bypass -File "./build_linux_task.ps1"
+        Set-Location $PSScriptRoot
 
-        Write-Output "> build task service finished."
+        Write-Output "> build user service finished"
+
+        # business service 2: cloud file service
+        Set-Location "../services/2_cloud_file/"
+
+        go build -o "service_exec"
+
+        Move-Item "service_exec" -Destination "../build/service_2_cloud_file/service_exec"
+
+        Set-Location $PSScriptRoot
+
+        Write-Output "> build cloud file service finished"
+
+        # business service 3: note service
+        Set-Location "../services/3_note/"
+
+        go build -o "service_exec"
+
+        Move-Item "service_exec" -Destination "../build/service_3_note/service_exec"
+
+        Set-Location $PSScriptRoot
+
+        Write-Output "> build note service finished"
+
+        # business service 4: task service
+        Set-Location "../services/4_task/"
+
+        go build -o "service_exec"
+
+        Move-Item "service_exec" -Destination "../build/service_4_task/service_exec"
+
+        Set-Location $PSScriptRoot
+
+        Write-Output "> build task service finished"
 
     # reset path
     Set-Location $path

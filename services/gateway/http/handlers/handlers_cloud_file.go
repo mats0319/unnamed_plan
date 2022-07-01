@@ -5,7 +5,6 @@ import (
 	"github.com/mats9693/unnamed_plan/services/gateway/http/structure_defination"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/http"
-	"github.com/mats9693/unnamed_plan/services/shared/http/response"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
 	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
 	"github.com/mats9693/unnamed_plan/services/shared/registration_center_embedded"
@@ -15,7 +14,7 @@ import (
 )
 
 func getCloudFileClient() (rpc_impl.ICloudFileClient, error) {
-	conn, err := rc_embedded.GetClientConn(mconst.UID_Service_Cloud_File)
+	conn, err := rce.GetClientConn(mconst.UID_Service_Cloud_File)
 	if err != nil {
 		mlog.Logger().Error("get client conn failed", zap.Error(err))
 		return nil, err
@@ -24,7 +23,7 @@ func getCloudFileClient() (rpc_impl.ICloudFileClient, error) {
 	return rpc_impl.NewICloudFileClient(conn), nil
 }
 
-func ListCloudFileByUploader(r *http.Request) *mresponse.ResponseData {
+func ListCloudFileByUploader(r *http.Request) *mhttp.ResponseData {
 	params := &structure.ListCloudFileByUploaderReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
@@ -54,7 +53,7 @@ func ListCloudFileByUploader(r *http.Request) *mresponse.ResponseData {
 	return mhttp.Response(structure.MakeListCloudFileByUploaderRes(res.Total, filesRPCToHTTP(res.Files...)))
 }
 
-func ListPublicCloudFile(r *http.Request) *mresponse.ResponseData {
+func ListPublicCloudFile(r *http.Request) *mhttp.ResponseData {
 	params := &structure.ListPublicCloudFileReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
@@ -84,7 +83,7 @@ func ListPublicCloudFile(r *http.Request) *mresponse.ResponseData {
 	return mhttp.Response(structure.MakeListPublicCloudFileRes(res.Total, filesRPCToHTTP(res.Files...)))
 }
 
-func UploadCloudFile(r *http.Request) *mresponse.ResponseData {
+func UploadCloudFile(r *http.Request) *mhttp.ResponseData {
 	params := &structure.UploadCloudFileReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
@@ -116,7 +115,7 @@ func UploadCloudFile(r *http.Request) *mresponse.ResponseData {
 	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
-func ModifyCloudFile(r *http.Request) *mresponse.ResponseData {
+func ModifyCloudFile(r *http.Request) *mhttp.ResponseData {
 	params := &structure.ModifyCloudFileReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
@@ -150,7 +149,7 @@ func ModifyCloudFile(r *http.Request) *mresponse.ResponseData {
 	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
-func DeleteCloudFile(r *http.Request) *mresponse.ResponseData {
+func DeleteCloudFile(r *http.Request) *mhttp.ResponseData {
 	params := &structure.DeleteCloudFileReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))

@@ -35,30 +35,29 @@ func InitPostgresqlDB(addr string, dbName string, user string, password string, 
 	return postgresqlDBIns
 }
 
+// WithTx
+// 其实函数有两个error应该返回，一个是task函数的error，另一个是事务提交或回滚的error
+// 此处忽略事务的error、返回task函数的error，主要考虑是task函数出错概率更高，且我们更需要它来debug
 func (db *postgresqlDB) WithTx(task func(conn Conn) error) error {
 	if task == nil {
 		return nil
 	}
 
 	conn := db.postgresqlConn()
-	defer func() {
-		_ = conn.Close()
-	}()
+	defer conn.Close()
 
 	tx, err := conn.Begin()
 	if err != nil {
 		return err
 	}
 
-	defer func() {
-		if err == nil {
-			err = tx.Commit()
-		} else {
-			err = tx.Rollback()
-		}
-	}()
-
 	err = task(Conn{PostgresqlConn: tx})
+
+	if err == nil {
+		_ = tx.Commit()
+	} else {
+		_ = tx.Rollback()
+	}
 
 	return err
 }
@@ -69,13 +68,9 @@ func (db *postgresqlDB) WithNoTx(task func(conn Conn) error) error {
 	}
 
 	conn := db.postgresqlConn()
-	defer func() {
-		_ = conn.Close()
-	}()
+	defer conn.Close()
 
-	err := task(Conn{PostgresqlConn: conn})
-
-	return err
+	return task(Conn{PostgresqlConn: conn})
 }
 
 func (db *postgresqlDB) postgresqlConn() *pg.Conn {

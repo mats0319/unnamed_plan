@@ -24,7 +24,6 @@ type ConfigItem struct {
 }
 
 var conf = &Config{}
-var registrationCenterTarget string
 
 // InitFromConfigCenter load config from config center, use for services
 func InitFromConfigCenter(serviceID string) error {
@@ -42,7 +41,7 @@ func InitFromConfigCenter(serviceID string) error {
 	}
 
 	// init rpc client for config center service and get config
-	conn, err := grpc.Dial(GetConfigCenterTarget(), grpc.WithInsecure())
+	conn, err := grpc.Dial(GetCoreTarget(), grpc.WithInsecure())
 	if err != nil {
 		log.Println("get grpc conn failed, error: ", err)
 		return err
@@ -54,7 +53,7 @@ func InitFromConfigCenter(serviceID string) error {
 			ServiceId: serviceID,
 			Level:     GetConfigLevel(),
 		})
-		if err == nil && (res != nil && res.Err == nil) { // no error, exit loop
+		if err == nil && (res != nil && res.Err == nil) { // no error, stop re-try
 			break
 		}
 
@@ -71,18 +70,6 @@ func InitFromConfigCenter(serviceID string) error {
 		log.Println("get config from config center failed, error: ", res.Err.String())
 		return utils.NewError(res.Err.String())
 	}
-
-	targetSlice, err := utils.FormatTarget(res.RcCoreTarget)
-	if err != nil {
-		log.Println("format target failed, error: ", err)
-		return err
-	}
-	if len(targetSlice) < 1 {
-		log.Println("no valid data")
-		return utils.NewError("no valid data")
-	}
-
-	registrationCenterTarget = targetSlice[0]
 
 	err = json.Unmarshal([]byte(res.Config), conf)
 	if err != nil {
@@ -133,8 +120,4 @@ func GetConfig(uid string) []byte {
 	}
 
 	return res
-}
-
-func GetRegistrationCenterTarget() string {
-	return registrationCenterTarget
 }

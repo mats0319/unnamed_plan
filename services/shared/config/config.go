@@ -9,9 +9,9 @@ import (
 type servicePublicConfig struct {
 	init bool
 
-	ConfigCenterTarget string `json:"configCenterTarget"`
-	RetryTimes         int    `json:"retryTimes"`
-	RetryInterval      int64  `json:"retryInterval"` // unit: second
+	CoreTarget    string `json:"coreTarget"`
+	RetryTimes    int    `json:"retryTimes"`
+	RetryInterval int64  `json:"retryInterval"` // unit: second
 }
 
 var servicePublicConfigIns = &servicePublicConfig{}
@@ -22,11 +22,11 @@ func initServicePublicConfig() error {
 		return nil
 	}
 
-	byteSlice := GetConfig(mconst.UID_Config)
+	byteSlice := GetConfig(mconst.UID_Public_Config)
 
 	err := json.Unmarshal(byteSlice, servicePublicConfigIns)
 	if err != nil {
-		log.Printf("json unmarshal failed, uid: %s, error: %v\n", mconst.UID_Config, err)
+		log.Printf("json unmarshal failed, uid: %s, error: %v\n", mconst.UID_Public_Config, err)
 		return err
 	}
 
@@ -35,6 +35,6 @@ func initServicePublicConfig() error {
 	return nil
 }
 
-func GetConfigCenterTarget() string {
-	return servicePublicConfigIns.ConfigCenterTarget
+func GetCoreTarget() string {
+	return servicePublicConfigIns.CoreTarget
 }

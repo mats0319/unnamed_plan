@@ -1,4 +1,4 @@
-package rc_embedded
+package rce
 
 import (
 	"context"
@@ -10,8 +10,8 @@ import (
 	"google.golang.org/grpc"
 )
 
-// rcEmbeddedImpl communicate with RC core
-type rcEmbeddedImpl struct {
+// rceImpl communicate with RC core
+type rceImpl struct {
 	init bool
 
 	client rpc_impl.IRegistrationCenterCoreClient
@@ -20,14 +20,14 @@ type rcEmbeddedImpl struct {
 	rpc_impl.UnimplementedIRegistrationCenterEmbeddedServer
 }
 
-var _ rpc_impl.IRegistrationCenterEmbeddedServer = (*rcEmbeddedImpl)(nil)
+//var _ rpc_impl.IRegistrationCenterEmbeddedServer = (*rceImpl)(nil)
 
-func (r *rcEmbeddedImpl) CheckHealth(_ context.Context, _ *rpc_impl.RegistrationCenterEmbedded_CheckHealthReq) (*rpc_impl.RegistrationCenterEmbedded_CheckHealthRes, error) {
+func (r *rceImpl) CheckHealth(_ context.Context, _ *rpc_impl.RegistrationCenterEmbedded_CheckHealthReq) (*rpc_impl.RegistrationCenterEmbedded_CheckHealthRes, error) {
 	return &rpc_impl.RegistrationCenterEmbedded_CheckHealthRes{}, nil
 }
 
 // ListServiceTarget make sure 'r' is initialized before invoke
-func (r *rcEmbeddedImpl) ListServiceTarget(serviceID string) ([]string, error) {
+func (r *rceImpl) ListServiceTarget(serviceID string) ([]string, error) {
 	if !r.init {
 		return nil, errors.New("please init first")
 	}
@@ -53,7 +53,7 @@ func (r *rcEmbeddedImpl) ListServiceTarget(serviceID string) ([]string, error) {
 	return target, nil
 }
 
-func (r *rcEmbeddedImpl) initialize(target string) error {
+func (r *rceImpl) initialize(target string) error {
 	conn, err := grpc.Dial(target, grpc.WithInsecure())
 	if err != nil {
 		mlog.Logger().Error("grpc dial failed", zap.Error(err))
@@ -67,7 +67,7 @@ func (r *rcEmbeddedImpl) initialize(target string) error {
 	return nil
 }
 
-func (r *rcEmbeddedImpl) register(serviceID string, target string) error {
+func (r *rceImpl) register(serviceID string, target string) error {
 	if !r.init {
 		return errors.New("please init first")
 	}

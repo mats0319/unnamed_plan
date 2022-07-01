@@ -10,20 +10,12 @@ import (
 
 var serviceConfig = []*model.ServiceConfig{
 	{
-		ServiceID:   "1cd10cb8-ecf5-4855-a886-76b148ed104a",
-		Level:       mconst.ConfigLevel_Default,
-		ServiceName: "registration center",
-		ConfigItemIDs: []string{
-		},
-		IsDelete: false,
-		Common:   model.NewCommon(),
-	}, // registration center service
-	{
 		ServiceID:   "84d1fecc-3be9-439e-8144-209ffc00a975",
 		Level:       mconst.ConfigLevel_Default,
 		ServiceName: "gateway",
 		ConfigItemIDs: []string{
 			configItem[0].Common.ID,
+			configItem[1].Common.ID,
 		},
 		IsDelete: false,
 		Common:   model.NewCommon(),
@@ -33,8 +25,8 @@ var serviceConfig = []*model.ServiceConfig{
 		Level:       mconst.ConfigLevel_Dev,
 		ServiceName: "user",
 		ConfigItemIDs: []string{
-			configItem[1].Common.ID,
-			configItem[3].Common.ID,
+			configItem[2].Common.ID,
+			configItem[4].Common.ID,
 		},
 		IsDelete: false,
 		Common:   model.NewCommon(),
@@ -44,8 +36,8 @@ var serviceConfig = []*model.ServiceConfig{
 		Level:       mconst.ConfigLevel_Production,
 		ServiceName: "user",
 		ConfigItemIDs: []string{
-			configItem[2].Common.ID,
 			configItem[3].Common.ID,
+			configItem[4].Common.ID,
 		},
 		IsDelete: false,
 		Common:   model.NewCommon(),
@@ -55,8 +47,8 @@ var serviceConfig = []*model.ServiceConfig{
 		Level:       mconst.ConfigLevel_Dev,
 		ServiceName: "cloud file",
 		ConfigItemIDs: []string{
-			configItem[1].Common.ID,
-			configItem[4].Common.ID,
+			configItem[2].Common.ID,
+			configItem[5].Common.ID,
 		},
 		IsDelete: false,
 		Common:   model.NewCommon(),
@@ -66,8 +58,8 @@ var serviceConfig = []*model.ServiceConfig{
 		Level:       mconst.ConfigLevel_Production,
 		ServiceName: "cloud file",
 		ConfigItemIDs: []string{
-			configItem[2].Common.ID,
-			configItem[5].Common.ID,
+			configItem[3].Common.ID,
+			configItem[6].Common.ID,
 		},
 		IsDelete: false,
 		Common:   model.NewCommon(),
@@ -77,7 +69,7 @@ var serviceConfig = []*model.ServiceConfig{
 		Level:       mconst.ConfigLevel_Dev,
 		ServiceName: "note",
 		ConfigItemIDs: []string{
-			configItem[1].Common.ID,
+			configItem[2].Common.ID,
 		},
 		IsDelete: false,
 		Common:   model.NewCommon(),
@@ -87,7 +79,7 @@ var serviceConfig = []*model.ServiceConfig{
 		Level:       mconst.ConfigLevel_Production,
 		ServiceName: "note",
 		ConfigItemIDs: []string{
-			configItem[2].Common.ID,
+			configItem[3].Common.ID,
 		},
 		IsDelete: false,
 		Common:   model.NewCommon(),
@@ -97,8 +89,8 @@ var serviceConfig = []*model.ServiceConfig{
 		Level:       mconst.ConfigLevel_Dev,
 		ServiceName: "task",
 		ConfigItemIDs: []string{
-			configItem[1].Common.ID,
-			configItem[6].Common.ID,
+			configItem[2].Common.ID,
+			configItem[7].Common.ID,
 		},
 		IsDelete: false,
 		Common:   model.NewCommon(),
@@ -108,8 +100,8 @@ var serviceConfig = []*model.ServiceConfig{
 		Level:       mconst.ConfigLevel_Production,
 		ServiceName: "task",
 		ConfigItemIDs: []string{
-			configItem[2].Common.ID,
-			configItem[6].Common.ID,
+			configItem[3].Common.ID,
+			configItem[7].Common.ID,
 		},
 		IsDelete: false,
 		Common:   model.NewCommon(),
@@ -123,14 +115,22 @@ var configItem = []*model.ConfigItem{
 		ConfigSubItems: json.RawMessage(`{
 		  "port": "9693",
 		  "sources": ["public web", "admin web"],
-		  "unlimitedSources": ["public mobile"],
+		  "unlimitedSources": ["public mobile"]
+		}`),
+		Common: model.NewCommon(),
+	}, // gateway http
+	{
+		ConfigItemID:   "5c581355-06cf-465e-ae63-5b9c0284477d",
+		ConfigItemName: "gateway plugins",
+		ConfigSubItems: json.RawMessage(`{
 		  "limitMultiLoginConfig": {
 		    "limitMultiLogin": true,
+			"sources": ["public web", "admin web"],
 		    "keepTokenValid": 7200
 		  }
 		}`),
 		Common: model.NewCommon(),
-	}, // gateway http
+	}, // gateway plugins
 	{
 		ConfigItemID:   "658e06f7-71d5-4ada-b715-8c1a4489e5d2",
 		ConfigItemName: "db _ " + mconst.ConfigLevel_Dev,

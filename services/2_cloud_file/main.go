@@ -17,8 +17,6 @@ import (
 	"google.golang.org/grpc"
 	"net"
 	"os"
-	"path"
-	"strings"
 )
 
 func main() {
@@ -37,28 +35,21 @@ func main() {
 	localAddress := fmt.Sprintf("127.0.0.1:%d", port)
 	internetAddress := fmt.Sprintf("%s:%d", ip, port)
 
-	err = rc_embedded.InitAndRegister(mconfig.GetRegistrationCenterTarget(), mconst.UID_Service_Cloud_File, internetAddress)
+	rceServer, err := rce.InitAndRegister(mconfig.GetCoreTarget(), mconst.UID_Service_Cloud_File, internetAddress)
 	if err != nil {
 		mlog.Logger().Error("register server to rc failed", zap.Error(err))
 		return
 	}
 
-	startCloudFileServer(localAddress)
+	startCloudFileServer(localAddress, rceServer)
 }
 
 func initCloudFileDir() error {
 	root := config.GetConfig().CloudFileRootPath
 	if len(root) < 1 {
-		executableAbsolutePath, err := os.Executable()
-		if err != nil {
-			fmt.Println("get executable failed, error:", err)
-			return err
-		}
-		executableAbsolutePath = strings.ReplaceAll(executableAbsolutePath, "\\", "/")
-		executableDir := utils.FormatDirSuffix(path.Dir(executableAbsolutePath))
-
-		root = executableDir + "files/"
+		root = "./files/"
 	}
+
 	cloudFileDir := utils.FormatDirSuffix(root) + config.GetConfig().CloudFilePublicDir
 
 	err := os.MkdirAll(cloudFileDir, 0755)
@@ -72,16 +63,10 @@ func initCloudFileDir() error {
 	return nil
 }
 
-func startCloudFileServer(address string) {
+func startCloudFileServer(address string, rceServer rpc_impl.IRegistrationCenterEmbeddedServer) {
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		mlog.Logger().Error(fmt.Sprintf("listen on %s failed", address), zap.Error(err))
-		return
-	}
-
-	rceServer, err := rc_embedded.GetRCEServer()
-	if err != nil {
-		mlog.Logger().Error("get RCE server failed", zap.Error(err))
 		return
 	}
 

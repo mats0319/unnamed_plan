@@ -12,8 +12,8 @@ import (
 type userServiceConfig struct {
 	init bool
 
-	ARankAdminPermission uint8  `json:"ARankAdminPermission"`
-	SRankAdminPermission uint8  `json:"SRankAdminPermission"`
+	ARankAdminPermission uint8 `json:"ARankAdminPermission"`
+	SRankAdminPermission uint8 `json:"SRankAdminPermission"`
 }
 
 var userServiceConfigIns = &userServiceConfig{}

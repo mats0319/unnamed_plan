@@ -4,5 +4,6 @@
 
 services/build/
 
-services/cloud_file/files/
+services/2_cloud_file/files/
+
 services/go.sum

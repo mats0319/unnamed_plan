@@ -23,7 +23,8 @@ type dbConfig struct {
 
 type db struct {
 	config *dbConfig
-	ins    mdal.DAL
+
+	dal mdal.DAL
 }
 
 var dbIns = &db{}
@@ -47,24 +48,24 @@ func Init() error {
 
 	switch dbIns.config.DBMS {
 	case mconst.DB_PostgreSQL:
-		dbIns.ins = mdal.InitPostgresqlDB(dbIns.config.Addr, dbIns.config.Database, dbIns.config.User,
+		dbIns.dal = mdal.InitPostgresqlDB(dbIns.config.Addr, dbIns.config.Database, dbIns.config.User,
 			dbIns.config.Password, dbIns.config.Timeout, dbIns.config.ShowSQL)
 	default:
 		mlog.Logger().Error("init db failed", zap.String(mconst.Error_UnsupportedDB, dbIns.config.DBMS))
 		return utils.NewError(mconst.Error_UnsupportedDB + dbIns.config.DBMS)
 	}
 
-	mlog.Logger().Info(fmt.Sprintf("> Database %s init finish.", dbIns.config.DBMS))
+	mlog.Logger().Info(fmt.Sprintf("> DBMS %s init finish.", dbIns.config.DBMS))
 
 	return nil
 }
 
 func (dbi *db) WithTx(task func(mdal.Conn) error) error {
-	return dbi.ins.WithTx(task)
+	return dbi.dal.WithTx(task)
 }
 
 func (dbi *db) WithNoTx(task func(mdal.Conn) error) error {
-	return dbi.ins.WithNoTx(task)
+	return dbi.dal.WithNoTx(task)
 }
 
 func (dbi *db) GetDBMSName() string {

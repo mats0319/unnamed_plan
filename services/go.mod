@@ -3,8 +3,8 @@ module github.com/mats9693/unnamed_plan/services
 go 1.17
 
 require (
+	bou.ke/monkey v1.0.2
 	github.com/go-pg/pg/v10 v10.10.5
-	github.com/golang/mock v1.6.0
 	github.com/mats9693/utils v0.0.0
 	github.com/pkg/errors v0.9.1
 	go.uber.org/zap v1.19.1
@@ -13,7 +13,6 @@ require (
 )
 
 require (
-	bou.ke/monkey v1.0.2 // indirect
 	github.com/go-pg/zerochecker v0.2.0 // indirect
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/google/uuid v1.2.0 // indirect

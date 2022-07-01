@@ -10,8 +10,6 @@ import (
 	"strings"
 )
 
-// FormatTarget rules:
-// 1. if 'target' has same ip with current service, replace target ip by '127.0.0.1'
 func FormatTarget(target ...string) ([]string, error) {
 	currentIP, err := GetIP()
 	if err != nil {
@@ -20,15 +18,22 @@ func FormatTarget(target ...string) ([]string, error) {
 
 	res := make([]string, 0, len(target))
 	for i := range target {
-		t := target[i]
-		if strings.HasPrefix(target[i], currentIP) {
-			t = "127.0.0.1"+strings.TrimPrefix(target[i], currentIP)
-		}
-
-		res = append(res, t)
+		res = append(res, formatTarget(target[i], currentIP))
 	}
 
 	return res, nil
+}
+
+// formatTarget rules:
+// 1. if 'target' has same ip with current service, replace target ip by '127.0.0.1'
+func formatTarget(target string, ip string) (res string) {
+	if strings.HasPrefix(target, ip) {
+		res = "127.0.0.1" + strings.TrimPrefix(target, ip)
+	} else {
+		res = target
+	}
+
+	return
 }
 
 // GetIP return 192.168.2.14 ?

@@ -5,7 +5,6 @@ import (
 	"github.com/mats9693/unnamed_plan/services/gateway/http/structure_defination"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/http"
-	"github.com/mats9693/unnamed_plan/services/shared/http/response"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
 	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
 	"github.com/mats9693/unnamed_plan/services/shared/registration_center_embedded"
@@ -15,7 +14,7 @@ import (
 )
 
 func getNoteClient() (rpc_impl.INoteClient, error) {
-	conn, err := rc_embedded.GetClientConn(mconst.UID_Service_Note)
+	conn, err := rce.GetClientConn(mconst.UID_Service_Note)
 	if err != nil {
 		mlog.Logger().Error("get client conn failed", zap.Error(err))
 		return nil, err
@@ -24,7 +23,7 @@ func getNoteClient() (rpc_impl.INoteClient, error) {
 	return rpc_impl.NewINoteClient(conn), nil
 }
 
-func ListNoteByWriter(r *http.Request) *mresponse.ResponseData {
+func ListNoteByWriter(r *http.Request) *mhttp.ResponseData {
 	params := &structure.ListNoteByWriterReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
@@ -54,7 +53,7 @@ func ListNoteByWriter(r *http.Request) *mresponse.ResponseData {
 	return mhttp.Response(structure.MakeListNoteByWriterRes(res.Total, notesRPCToHTTP(res.Notes...)))
 }
 
-func ListPublicNote(r *http.Request) *mresponse.ResponseData {
+func ListPublicNote(r *http.Request) *mhttp.ResponseData {
 	params := &structure.ListPublicNoteReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
@@ -84,7 +83,7 @@ func ListPublicNote(r *http.Request) *mresponse.ResponseData {
 	return mhttp.Response(structure.MakeListPublicNoteRes(res.Total, notesRPCToHTTP(res.Notes...)))
 }
 
-func CreateNote(r *http.Request) *mresponse.ResponseData {
+func CreateNote(r *http.Request) *mhttp.ResponseData {
 	params := &structure.CreateNoteReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
@@ -113,7 +112,7 @@ func CreateNote(r *http.Request) *mresponse.ResponseData {
 	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
-func ModifyNote(r *http.Request) *mresponse.ResponseData {
+func ModifyNote(r *http.Request) *mhttp.ResponseData {
 	params := &structure.ModifyNoteReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
@@ -144,7 +143,7 @@ func ModifyNote(r *http.Request) *mresponse.ResponseData {
 	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
-func DeleteNote(r *http.Request) *mresponse.ResponseData {
+func DeleteNote(r *http.Request) *mhttp.ResponseData {
 	params := &structure.DeleteNoteReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))

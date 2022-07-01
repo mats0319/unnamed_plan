@@ -1,4 +1,4 @@
-package rc_embedded
+package rce
 
 import (
 	"github.com/mats9693/unnamed_plan/services/shared/log"
@@ -9,27 +9,19 @@ import (
 	"sync"
 )
 
-type rcEmbedded struct {
-	instance *rcEmbeddedImpl
+type rce struct {
+	instance *rceImpl
 
 	targetMap sync.Map // service id - *rpcTarget
 }
 
-var rcEmbeddedIns = &rcEmbedded{
-	instance: &rcEmbeddedImpl{},
-}
-
-func GetRCEServer() (rpc_impl.IRegistrationCenterEmbeddedServer, error) {
-	if !rcEmbeddedIns.instance.init {
-		return nil, errors.New("RCE module not init")
-	}
-
-	return rcEmbeddedIns.instance, nil
+var rceIns = &rce{
+	instance: &rceImpl{},
 }
 
 // Init for not-business service but need to invoke business services, like 'gateway'
 func Init(registrationCenterTarget string) error {
-	err := rcEmbeddedIns.instance.initialize(registrationCenterTarget)
+	err := rceIns.instance.initialize(registrationCenterTarget)
 	if err != nil {
 		mlog.Logger().Error("init rc embedded failed", zap.Error(err))
 		return err
@@ -39,31 +31,31 @@ func Init(registrationCenterTarget string) error {
 }
 
 // InitAndRegister for business service
-func InitAndRegister(registrationCenterTarget string, serviceID string, target string) error {
+func InitAndRegister(registrationCenterTarget string, serviceID string, target string) (rpc_impl.IRegistrationCenterEmbeddedServer, error) {
 	err := Init(registrationCenterTarget)
 	if err != nil {
 		mlog.Logger().Error("init rc embedded failed", zap.Error(err))
-		return err
+		return nil, err
 	}
 
-	err = rcEmbeddedIns.instance.register(serviceID, target)
+	err = rceIns.instance.register(serviceID, target)
 	if err != nil {
 		mlog.Logger().Error("register service failed", zap.Error(err))
-		return err
+		return nil, err
 	}
 
-	return nil
+	return rceIns.instance, nil
 }
 
 func GetClientConn(serviceID string) (*grpc.ClientConn, error) {
-	if !rcEmbeddedIns.instance.init {
+	if !rceIns.instance.init {
 		return nil, errors.New("RCE module not init")
 	}
 
-	rpcTargetI, ok := rcEmbeddedIns.targetMap.Load(serviceID)
+	rpcTargetI, ok := rceIns.targetMap.Load(serviceID)
 	rpcTargetIns, _ := rpcTargetI.(*rpcTarget) // make sure value type of map is '*rpcTarget'
 	if !ok || len(rpcTargetIns.list) < 1 {     // key is not exist or value is empty
-		targetList, err := rcEmbeddedIns.instance.ListServiceTarget(serviceID)
+		targetList, err := rceIns.instance.ListServiceTarget(serviceID)
 		if err != nil {
 			mlog.Logger().Error("list service target failed", zap.Error(err))
 			return nil, err
@@ -71,7 +63,7 @@ func GetClientConn(serviceID string) (*grpc.ClientConn, error) {
 
 		rpcTargetIns = newRPCTarget(targetList)
 
-		rcEmbeddedIns.targetMap.Store(serviceID, rpcTargetIns)
+		rceIns.targetMap.Store(serviceID, rpcTargetIns)
 	}
 
 	target, err := rpcTargetIns.getTarget()
@@ -96,7 +88,7 @@ func GetClientConn(serviceID string) (*grpc.ClientConn, error) {
 //
 // in this version, RCE module delete invalid target directly
 func ReportInvalidTarget(serviceID string, target string) {
-	rpcTargetI, ok := rcEmbeddedIns.targetMap.Load(serviceID)
+	rpcTargetI, ok := rceIns.targetMap.Load(serviceID)
 	rpcTargetIns, _ := (rpcTargetI).(*rpcTarget)
 	if !ok || len(rpcTargetIns.list) < 1 { // unexpected data type or empty data
 		return
@@ -122,5 +114,5 @@ func ReportInvalidTarget(serviceID string, target string) {
 
 	rpcTargetIns.index = 0
 
-	rcEmbeddedIns.targetMap.Store(serviceID, rpcTargetIns)
+	rceIns.targetMap.Store(serviceID, rpcTargetIns)
 }

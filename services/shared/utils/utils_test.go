@@ -14,18 +14,18 @@ func TestCalcPassword(t *testing.T) {
 	fmt.Println("> final password:", CalcSHA256(pwdHash, "zdoZPfZxsT"))
 }
 
-// TestJSONMarshalLevel 结论：使用匿名结构体嵌套，json marshal不会引入新的一层，匿名的指针结构体和值结构体都不会
+// TestJSONMarshalLevel 结论：使用匿名结构体嵌套，json marshal不会引入新的一层
 func TestJSONMarshalLevel(t *testing.T) {
 	type Inner struct {
 		Name string `json:"name"`
 	}
 
 	wrapper := &struct {
-		InnerIns Inner
+		InnerIns *Inner
 		*Inner
 		Password string `json:"pwd"`
 	}{
-		InnerIns: Inner{Name: "wrapper"},
+		InnerIns: &Inner{Name: "wrapper"},
 		Inner:    &Inner{Name: "direct"},
 		Password: "123",
 	}

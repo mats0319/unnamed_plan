@@ -5,7 +5,6 @@ import (
 	"github.com/mats9693/unnamed_plan/services/gateway/http/structure_defination"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/http"
-	"github.com/mats9693/unnamed_plan/services/shared/http/response"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
 	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
 	"github.com/mats9693/unnamed_plan/services/shared/registration_center_embedded"
@@ -15,7 +14,7 @@ import (
 )
 
 func getTaskClient() (rpc_impl.ITaskClient, error) {
-	conn, err := rc_embedded.GetClientConn(mconst.UID_Service_Task)
+	conn, err := rce.GetClientConn(mconst.UID_Service_Task)
 	if err != nil {
 		mlog.Logger().Error("get client conn failed", zap.Error(err))
 		return nil, err
@@ -24,7 +23,7 @@ func getTaskClient() (rpc_impl.ITaskClient, error) {
 	return rpc_impl.NewITaskClient(conn), nil
 }
 
-func ListTask(r *http.Request) *mresponse.ResponseData {
+func ListTask(r *http.Request) *mhttp.ResponseData {
 	params := &structure.ListTaskReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
@@ -50,7 +49,7 @@ func ListTask(r *http.Request) *mresponse.ResponseData {
 	return mhttp.Response(structure.MakeListTaskRes(res.Total, tasksRPCToHTTP(res.Tasks...)))
 }
 
-func CreateTask(r *http.Request) *mresponse.ResponseData {
+func CreateTask(r *http.Request) *mhttp.ResponseData {
 	params := &structure.CreateTaskReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
@@ -79,7 +78,7 @@ func CreateTask(r *http.Request) *mresponse.ResponseData {
 	return mhttp.Response(mconst.EmptyHTTPRes)
 }
 
-func ModifyTask(r *http.Request) *mresponse.ResponseData {
+func ModifyTask(r *http.Request) *mhttp.ResponseData {
 	params := &structure.ModifyTaskReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))

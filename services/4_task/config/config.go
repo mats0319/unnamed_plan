@@ -11,7 +11,7 @@ import (
 type taskServiceConfig struct {
 	init bool
 
-	MaxRecords        int    `json:"maxRecords"`
+	MaxRecords int `json:"maxRecords"`
 }
 
 var taskServiceConfigIns = &taskServiceConfig{}

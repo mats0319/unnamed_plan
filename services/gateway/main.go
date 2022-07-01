@@ -2,6 +2,8 @@ package main
 
 import (
 	"github.com/mats9693/unnamed_plan/services/gateway/http"
+	"github.com/mats9693/unnamed_plan/services/gateway/plugins"
+	"github.com/mats9693/unnamed_plan/services/gateway/plugins/config"
 	"github.com/mats9693/unnamed_plan/services/shared/config"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/http"
@@ -12,17 +14,17 @@ import (
 )
 
 func main() {
-	err := initialize.InitFromConfigCenter(mconst.UID_Service_Gateway, http.Init)
+	err := initialize.InitFromConfigCenter(mconst.UID_Service_Gateway, http.Init, config.Init)
 	if err != nil {
 		mlog.Logger().Error("init failed", zap.Error(err))
 		return
 	}
 
-	err = rc_embedded.Init(mconfig.GetRegistrationCenterTarget())
+	err = rce.Init(mconfig.GetCoreTarget())
 	if err != nil {
 		mlog.Logger().Error("register server to rc failed", zap.Error(err))
 		return
 	}
 
-	mhttp.StartServer(http.GetHandler())
+	mhttp.StartServer(http.GetHandler(), plugins.LoadValidPlugins()...)
 }

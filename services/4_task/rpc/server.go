@@ -7,8 +7,8 @@ import (
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/db/model"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
-	"github.com/mats9693/unnamed_plan/services/shared/proto/client"
 	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
+	"github.com/mats9693/unnamed_plan/services/shared/registration_center_embedded/invoke"
 	"github.com/mats9693/unnamed_plan/services/shared/utils"
 	"go.uber.org/zap"
 )
@@ -88,7 +88,7 @@ func (t *taskServerImpl) Modify(ctx context.Context, req *rpc_impl.Task_ModifyRe
 		return res, nil
 	}
 
-	rpcErr := client.AuthUserInfo(ctx, req.OperatorId, req.Password)
+	rpcErr := rce_invoke.AuthUserInfo(ctx, req.OperatorId, req.Password)
 	if rpcErr != nil {
 		mlog.Logger().Error("auth user info failed", zap.String("error", rpcErr.String()))
 		res.Err = rpcErr

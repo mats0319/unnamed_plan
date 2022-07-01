@@ -32,25 +32,19 @@ func main() {
 	localAddress := fmt.Sprintf("127.0.0.1:%d", port)
 	internetAddress := fmt.Sprintf("%s:%d", ip, port)
 
-	err = rc_embedded.InitAndRegister(mconfig.GetRegistrationCenterTarget(), mconst.UID_Service_User, internetAddress)
+	rceServer, err := rce.InitAndRegister(mconfig.GetCoreTarget(), mconst.UID_Service_User, internetAddress)
 	if err != nil {
 		mlog.Logger().Error("register server to rc failed", zap.Error(err))
 		return
 	}
 
-	startNoteServer(localAddress)
+	startNoteServer(localAddress, rceServer)
 }
 
-func startNoteServer(address string) {
+func startNoteServer(address string, rceServer rpc_impl.IRegistrationCenterEmbeddedServer) {
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		mlog.Logger().Error(fmt.Sprintf("listen on %s failed", address), zap.Error(err))
-		return
-	}
-
-	rceServer, err := rc_embedded.GetRCEServer()
-	if err != nil {
-		mlog.Logger().Error("get RCE server failed", zap.Error(err))
 		return
 	}
 

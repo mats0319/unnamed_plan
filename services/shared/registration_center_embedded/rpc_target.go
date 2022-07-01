@@ -1,4 +1,4 @@
-package rc_embedded
+package rce
 
 import "github.com/pkg/errors"
 
