@@ -10,14 +10,14 @@ Start-Transcript "process_code_report.log" -Force
         # go fmt
         Write-Output "> go fmt start"
 
-        gofmt -w -l .
+        gofmt -w -l -s .
 
         Write-Output "> go fmt finished"
 
         # go vet
         Write-Output "> go vet start"
 
-        go vet ./...
+        go vet -json ./...
 
         Write-Output "> go vet finished"
 

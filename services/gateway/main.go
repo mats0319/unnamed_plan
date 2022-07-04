@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/mats9693/unnamed_plan/services/gateway/http"
 	"github.com/mats9693/unnamed_plan/services/gateway/plugins"
-	"github.com/mats9693/unnamed_plan/services/gateway/plugins/config"
 	"github.com/mats9693/unnamed_plan/services/shared/config"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/http"
@@ -14,7 +13,7 @@ import (
 )
 
 func main() {
-	err := initialize.InitFromConfigCenter(mconst.UID_Service_Gateway, http.Init, config.Init)
+	err := initialize.InitFromConfigCenter(mconst.UID_Service_Gateway, http.Init)
 	if err != nil {
 		mlog.Logger().Error("init failed", zap.Error(err))
 		return
@@ -26,5 +25,11 @@ func main() {
 		return
 	}
 
-	mhttp.StartServer(http.GetHandler(), plugins.LoadValidPlugins()...)
+	pluginsSlice, err := plugins.LoadValidPlugins()
+	if err != nil {
+		mlog.Logger().Error("load plugins failed", zap.Error(err))
+		return
+	}
+
+	mhttp.StartServer(http.GetHandler(), pluginsSlice...)
 }

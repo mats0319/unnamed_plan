@@ -4,7 +4,6 @@ import (
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/http"
 	"github.com/mats9693/unnamed_plan/services/shared/utils"
-	"github.com/pkg/errors"
 	"net/http"
 	"sync"
 )
@@ -30,16 +29,10 @@ type flags struct {
 
 var limitMultiLoginIns = &LimitMultiLogin{}
 
-func Init(config *LimitMultiLoginConfig) {
+func Init(config *LimitMultiLoginConfig) mhttp.Plugins {
 	limitMultiLoginIns.config = config
-}
 
-func GetPlugins() (mhttp.Plugins, error) {
-	if limitMultiLoginIns.config == nil {
-		return nil, errors.New("plugins not support")
-	}
-
-	return limitMultiLoginIns, nil
+	return limitMultiLoginIns
 }
 
 func HandleFunc(pattern string, params ...uint8) {

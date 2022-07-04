@@ -13,14 +13,14 @@ import (
 )
 
 // getUserClient may contain re-connect or other common handles in the future
-func getUserClient() (rpc_impl.IUserClient, error) {
+func getUserClientAndConnTarget() (rpc_impl.IUserClient, string, error) {
 	conn, err := rce.GetClientConn(mconst.UID_Service_User)
 	if err != nil {
 		mlog.Logger().Error("get client conn failed", zap.Error(err))
-		return nil, err
+		return nil, "", err
 	}
 
-	return rpc_impl.NewIUserClient(conn), nil
+	return rpc_impl.NewIUserClient(conn), conn.Target(), nil
 }
 
 func Login(r *http.Request) *mhttp.ResponseData {
@@ -30,7 +30,7 @@ func Login(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	client, err := getUserClient()
+	client, target, err := getUserClientAndConnTarget()
 	if err != nil {
 		mlog.Logger().Error("get user client failed", zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
@@ -41,9 +41,12 @@ func Login(r *http.Request) *mhttp.ResponseData {
 		Password: params.Password,
 	})
 	if err != nil {
+		rce.ReportInvalidTarget(mconst.UID_Service_User, target)
+		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
 	}
 	if res != nil && res.Err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
 		return mhttp.ResponseWithError(res.Err.String())
 	}
 
@@ -57,7 +60,7 @@ func ListUser(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	client, err := getUserClient()
+	client, target, err := getUserClientAndConnTarget()
 	if err != nil {
 		mlog.Logger().Error("get user client failed", zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
@@ -71,9 +74,12 @@ func ListUser(r *http.Request) *mhttp.ResponseData {
 		},
 	})
 	if err != nil {
+		rce.ReportInvalidTarget(mconst.UID_Service_User, target)
+		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
 	}
 	if res != nil && res.Err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
 		return mhttp.ResponseWithError(res.Err.String())
 	}
 
@@ -87,7 +93,7 @@ func CreateUser(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	client, err := getUserClient()
+	client, target, err := getUserClientAndConnTarget()
 	if err != nil {
 		mlog.Logger().Error("get user client failed", zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
@@ -100,9 +106,12 @@ func CreateUser(r *http.Request) *mhttp.ResponseData {
 		Permission: uint32(params.Permission),
 	})
 	if err != nil {
+		rce.ReportInvalidTarget(mconst.UID_Service_User, target)
+		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
 	}
 	if res != nil && res.Err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
 		return mhttp.ResponseWithError(res.Err.String())
 	}
 
@@ -116,7 +125,7 @@ func LockUser(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	client, err := getUserClient()
+	client, target, err := getUserClientAndConnTarget()
 	if err != nil {
 		mlog.Logger().Error("get user client failed", zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
@@ -127,9 +136,12 @@ func LockUser(r *http.Request) *mhttp.ResponseData {
 		UserId:     params.UserID,
 	})
 	if err != nil {
+		rce.ReportInvalidTarget(mconst.UID_Service_User, target)
+		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
 	}
 	if res != nil && res.Err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
 		return mhttp.ResponseWithError(res.Err.String())
 	}
 
@@ -143,7 +155,7 @@ func UnlockUser(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	client, err := getUserClient()
+	client, target, err := getUserClientAndConnTarget()
 	if err != nil {
 		mlog.Logger().Error("get user client failed", zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
@@ -154,9 +166,12 @@ func UnlockUser(r *http.Request) *mhttp.ResponseData {
 		UserId:     params.UserID,
 	})
 	if err != nil {
+		rce.ReportInvalidTarget(mconst.UID_Service_User, target)
+		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
 	}
 	if res != nil && res.Err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
 		return mhttp.ResponseWithError(res.Err.String())
 	}
 
@@ -170,7 +185,7 @@ func ModifyUserInfo(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	client, err := getUserClient()
+	client, target, err := getUserClientAndConnTarget()
 	if err != nil {
 		mlog.Logger().Error("get user client failed", zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
@@ -184,9 +199,12 @@ func ModifyUserInfo(r *http.Request) *mhttp.ResponseData {
 		Password:   params.Password,
 	})
 	if err != nil {
+		rce.ReportInvalidTarget(mconst.UID_Service_User, target)
+		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
 	}
 	if res != nil && res.Err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
 		return mhttp.ResponseWithError(res.Err.String())
 	}
 
@@ -200,7 +218,7 @@ func ModifyUserPermission(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	client, err := getUserClient()
+	client, target, err := getUserClientAndConnTarget()
 	if err != nil {
 		mlog.Logger().Error("get user client failed", zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
@@ -212,9 +230,12 @@ func ModifyUserPermission(r *http.Request) *mhttp.ResponseData {
 		Permission: uint32(params.Permission),
 	})
 	if err != nil {
+		rce.ReportInvalidTarget(mconst.UID_Service_User, target)
+		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
 	}
 	if res != nil && res.Err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
 		return mhttp.ResponseWithError(res.Err.String())
 	}
 

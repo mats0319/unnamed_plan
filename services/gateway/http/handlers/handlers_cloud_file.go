@@ -13,14 +13,14 @@ import (
 	"time"
 )
 
-func getCloudFileClient() (rpc_impl.ICloudFileClient, error) {
+func getCloudFileClientAndConnTarget() (rpc_impl.ICloudFileClient, string, error) {
 	conn, err := rce.GetClientConn(mconst.UID_Service_Cloud_File)
 	if err != nil {
 		mlog.Logger().Error("get client conn failed", zap.Error(err))
-		return nil, err
+		return nil, "", err
 	}
 
-	return rpc_impl.NewICloudFileClient(conn), nil
+	return rpc_impl.NewICloudFileClient(conn), conn.Target(), nil
 }
 
 func ListCloudFileByUploader(r *http.Request) *mhttp.ResponseData {
@@ -30,7 +30,7 @@ func ListCloudFileByUploader(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	client, err := getCloudFileClient()
+	client, target, err := getCloudFileClientAndConnTarget()
 	if err != nil {
 		mlog.Logger().Error("get cloud file client failed", zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
@@ -44,9 +44,12 @@ func ListCloudFileByUploader(r *http.Request) *mhttp.ResponseData {
 		},
 	})
 	if err != nil {
+		rce.ReportInvalidTarget(mconst.UID_Service_Cloud_File, target)
+		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
 	}
 	if res != nil && res.Err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
 		return mhttp.ResponseWithError(res.Err.String())
 	}
 
@@ -60,7 +63,7 @@ func ListPublicCloudFile(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	client, err := getCloudFileClient()
+	client, target, err := getCloudFileClientAndConnTarget()
 	if err != nil {
 		mlog.Logger().Error("get cloud file client failed", zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
@@ -74,9 +77,12 @@ func ListPublicCloudFile(r *http.Request) *mhttp.ResponseData {
 		},
 	})
 	if err != nil {
+		rce.ReportInvalidTarget(mconst.UID_Service_Cloud_File, target)
+		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
 	}
 	if res != nil && res.Err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
 		return mhttp.ResponseWithError(res.Err.String())
 	}
 
@@ -90,7 +96,7 @@ func UploadCloudFile(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	client, err := getCloudFileClient()
+	client, target, err := getCloudFileClientAndConnTarget()
 	if err != nil {
 		mlog.Logger().Error("get cloud file client failed", zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
@@ -106,9 +112,12 @@ func UploadCloudFile(r *http.Request) *mhttp.ResponseData {
 		IsPublic:         params.IsPublic,
 	})
 	if err != nil {
+		rce.ReportInvalidTarget(mconst.UID_Service_Cloud_File, target)
+		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
 	}
 	if res != nil && res.Err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
 		return mhttp.ResponseWithError(res.Err.String())
 	}
 
@@ -122,7 +131,7 @@ func ModifyCloudFile(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	client, err := getCloudFileClient()
+	client, target, err := getCloudFileClientAndConnTarget()
 	if err != nil {
 		mlog.Logger().Error("get cloud file client failed", zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
@@ -140,9 +149,12 @@ func ModifyCloudFile(r *http.Request) *mhttp.ResponseData {
 		LastModifiedTime: int64(params.LastModifiedTime),
 	})
 	if err != nil {
+		rce.ReportInvalidTarget(mconst.UID_Service_Cloud_File, target)
+		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
 	}
 	if res != nil && res.Err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
 		return mhttp.ResponseWithError(res.Err.String())
 	}
 
@@ -156,7 +168,7 @@ func DeleteCloudFile(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	client, err := getCloudFileClient()
+	client, target, err := getCloudFileClientAndConnTarget()
 	if err != nil {
 		mlog.Logger().Error("get cloud file client failed", zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
@@ -168,9 +180,12 @@ func DeleteCloudFile(r *http.Request) *mhttp.ResponseData {
 		FileId:     params.FileID,
 	})
 	if err != nil {
+		rce.ReportInvalidTarget(mconst.UID_Service_Cloud_File, target)
+		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
 	}
 	if res != nil && res.Err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
 		return mhttp.ResponseWithError(res.Err.String())
 	}
 

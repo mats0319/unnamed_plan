@@ -13,14 +13,14 @@ import (
 	"time"
 )
 
-func getTaskClient() (rpc_impl.ITaskClient, error) {
+func getTaskClientAndConnTarget() (rpc_impl.ITaskClient, string, error) {
 	conn, err := rce.GetClientConn(mconst.UID_Service_Task)
 	if err != nil {
 		mlog.Logger().Error("get client conn failed", zap.Error(err))
-		return nil, err
+		return nil, "", err
 	}
 
-	return rpc_impl.NewITaskClient(conn), nil
+	return rpc_impl.NewITaskClient(conn), conn.Target(), nil
 }
 
 func ListTask(r *http.Request) *mhttp.ResponseData {
@@ -30,7 +30,7 @@ func ListTask(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	client, err := getTaskClient()
+	client, target, err := getTaskClientAndConnTarget()
 	if err != nil {
 		mlog.Logger().Error("get task client failed", zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
@@ -40,9 +40,12 @@ func ListTask(r *http.Request) *mhttp.ResponseData {
 		OperatorId: params.OperatorID,
 	})
 	if err != nil {
+		rce.ReportInvalidTarget(mconst.UID_Service_Task, target)
+		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
 	}
 	if res != nil && res.Err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
 		return mhttp.ResponseWithError(res.Err.String())
 	}
 
@@ -56,7 +59,7 @@ func CreateTask(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	client, err := getTaskClient()
+	client, target, err := getTaskClientAndConnTarget()
 	if err != nil {
 		mlog.Logger().Error("get task client failed", zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
@@ -69,9 +72,12 @@ func CreateTask(r *http.Request) *mhttp.ResponseData {
 		PreTaskIds:  params.PreTaskIDs,
 	})
 	if err != nil {
+		rce.ReportInvalidTarget(mconst.UID_Service_Task, target)
+		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
 	}
 	if res != nil && res.Err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
 		return mhttp.ResponseWithError(res.Err.String())
 	}
 
@@ -85,7 +91,7 @@ func ModifyTask(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	client, err := getTaskClient()
+	client, target, err := getTaskClientAndConnTarget()
 	if err != nil {
 		mlog.Logger().Error("get task client failed", zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
@@ -101,9 +107,12 @@ func ModifyTask(r *http.Request) *mhttp.ResponseData {
 		Status:      uint32(params.Status),
 	})
 	if err != nil {
+		rce.ReportInvalidTarget(mconst.UID_Service_Task, target)
+		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
 	}
 	if res != nil && res.Err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
 		return mhttp.ResponseWithError(res.Err.String())
 	}
 

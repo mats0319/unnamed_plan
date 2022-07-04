@@ -13,14 +13,14 @@ import (
 	"time"
 )
 
-func getNoteClient() (rpc_impl.INoteClient, error) {
+func getNoteClientAndConnTarget() (rpc_impl.INoteClient, string, error) {
 	conn, err := rce.GetClientConn(mconst.UID_Service_Note)
 	if err != nil {
 		mlog.Logger().Error("get client conn failed", zap.Error(err))
-		return nil, err
+		return nil, "", err
 	}
 
-	return rpc_impl.NewINoteClient(conn), nil
+	return rpc_impl.NewINoteClient(conn), conn.Target(), nil
 }
 
 func ListNoteByWriter(r *http.Request) *mhttp.ResponseData {
@@ -30,7 +30,7 @@ func ListNoteByWriter(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	client, err := getNoteClient()
+	client, target, err := getNoteClientAndConnTarget()
 	if err != nil {
 		mlog.Logger().Error("get note client failed", zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
@@ -44,9 +44,12 @@ func ListNoteByWriter(r *http.Request) *mhttp.ResponseData {
 		},
 	})
 	if err != nil {
+		rce.ReportInvalidTarget(mconst.UID_Service_Note, target)
+		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
 	}
 	if res != nil && res.Err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
 		return mhttp.ResponseWithError(res.Err.String())
 	}
 
@@ -60,7 +63,7 @@ func ListPublicNote(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	client, err := getNoteClient()
+	client, target, err := getNoteClientAndConnTarget()
 	if err != nil {
 		mlog.Logger().Error("get note client failed", zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
@@ -74,9 +77,12 @@ func ListPublicNote(r *http.Request) *mhttp.ResponseData {
 		},
 	})
 	if err != nil {
+		rce.ReportInvalidTarget(mconst.UID_Service_Note, target)
+		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
 	}
 	if res != nil && res.Err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
 		return mhttp.ResponseWithError(res.Err.String())
 	}
 
@@ -90,7 +96,7 @@ func CreateNote(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	client, err := getNoteClient()
+	client, target, err := getNoteClientAndConnTarget()
 	if err != nil {
 		mlog.Logger().Error("get note client failed", zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
@@ -103,9 +109,12 @@ func CreateNote(r *http.Request) *mhttp.ResponseData {
 		IsPublic:   params.IsPublic,
 	})
 	if err != nil {
+		rce.ReportInvalidTarget(mconst.UID_Service_Note, target)
+		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
 	}
 	if res != nil && res.Err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
 		return mhttp.ResponseWithError(res.Err.String())
 	}
 
@@ -119,7 +128,7 @@ func ModifyNote(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	client, err := getNoteClient()
+	client, target, err := getNoteClientAndConnTarget()
 	if err != nil {
 		mlog.Logger().Error("get note client failed", zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
@@ -134,9 +143,12 @@ func ModifyNote(r *http.Request) *mhttp.ResponseData {
 		IsPublic:   params.IsPublic,
 	})
 	if err != nil {
+		rce.ReportInvalidTarget(mconst.UID_Service_Note, target)
+		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
 	}
 	if res != nil && res.Err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
 		return mhttp.ResponseWithError(res.Err.String())
 	}
 
@@ -150,7 +162,7 @@ func DeleteNote(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(errMsg)
 	}
 
-	client, err := getNoteClient()
+	client, target, err := getNoteClientAndConnTarget()
 	if err != nil {
 		mlog.Logger().Error("get note client failed", zap.Error(err))
 		return mhttp.ResponseWithError(err.Error())
@@ -161,8 +173,14 @@ func DeleteNote(r *http.Request) *mhttp.ResponseData {
 		Password:   params.Password,
 		NoteId:     params.NoteID,
 	})
-	if err != nil || (res != nil && res.Err != nil) {
-		return mhttp.ResponseWithError(err.Error(), res.Err.String())
+	if err != nil {
+		rce.ReportInvalidTarget(mconst.UID_Service_Note, target)
+		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
+		return mhttp.ResponseWithError(err.Error())
+	}
+	if res != nil && res.Err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
+		return mhttp.ResponseWithError(res.Err.String())
 	}
 
 	return mhttp.Response(mconst.EmptyHTTPRes)

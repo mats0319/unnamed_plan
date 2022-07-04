@@ -112,8 +112,6 @@ func (h *Handlers) ServeHTTP(writer http.ResponseWriter, request *http.Request) 
 	}
 
 	mlog.Logger().Info("> Handle request result:", logData...)
-
-	return
 }
 
 // HandleFunc register pattern - handleFunc pair into http handlers
