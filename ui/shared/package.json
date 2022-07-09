@@ -4,7 +4,6 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "create-link": "npm link"
   },
   "dependencies": {
     "crypto-js": "^4.1.1",

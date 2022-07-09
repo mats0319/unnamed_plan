@@ -6,7 +6,8 @@ export function calcSHA256(message: string): string {
   return sha256(message);
 }
 
-const cloudFileURLPrefix = "https://117.50.177.201/cloud-file/";
+//@ts-ignore
+const cloudFileURLPrefix = process.env.VUE_APP_axios_base_url as string + "/cloud-file/";
 
 export function generateCloudFileURL(url: string): string {
   return cloudFileURLPrefix + url

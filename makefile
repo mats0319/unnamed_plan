@@ -1,6 +1,6 @@
-# process_code: use 'go fmt' / 'go vet' process go code
+# process_code: use 'go fmt' and 'go vet' process go code
 # build: build linux exec of back-end services
-# start: local start back-end services
+# start: local start back-end services，with '-race' flag
 .PHONY: process_code build start
 
 process_code: scripts/process_code.ps1

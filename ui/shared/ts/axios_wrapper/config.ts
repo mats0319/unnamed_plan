@@ -1,12 +1,12 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
 export const axiosWrapper: AxiosInstance = axios.create({
-  //@ts-ignore-next-line
+  //@ts-ignore
   baseURL: process.env.VUE_APP_axios_base_url as string,
   timeout: 3000
 });
 
-//@ts-ignore-next-line
+//@ts-ignore
 let sign = process.env.VUE_APP_axios_source_sign as string;
 
 export function initInterceptors(invalidLoginHandler: () => void): void {
