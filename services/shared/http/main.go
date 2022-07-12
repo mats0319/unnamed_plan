@@ -19,14 +19,15 @@ type httpConfig struct {
 func StartServer(handlers *Handlers, plugins ...Plugins) {
 	handlers.config = getHttpConfig()
 
-	handlers.isDev = mconfig.GetConfigLevel() == mconst.ConfigLevel_Dev
+	handlers.isDev = mconfig.GetConfigLevel() == mconst.ConfigLevel_Dev ||
+		mconfig.GetConfigLevel() == mconst.ConfigLevel_Default
 
 	handlers.plugins = plugins
 
-	mlog.Logger().Info("> Listening at : " + handlers.config.Port)
+	mlog.Logger().Info("> Listening at : 127.0.0.1:" + handlers.config.Port)
 
 	// blocked
-	err := http.ListenAndServe(":"+handlers.config.Port, handlers)
+	err := http.ListenAndServe("127.0.0.1:"+handlers.config.Port, handlers)
 	if err != nil {
 		mlog.Logger().Error("http listen and serve failed", zap.Error(err))
 	}
