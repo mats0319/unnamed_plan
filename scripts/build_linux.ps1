@@ -27,17 +27,21 @@ Start-Transcript "build_linux_services.log" -Force
 
     Set-Location $PSScriptRoot
 
+    Copy-Item "upgrade_services.sh" -Destination "../services/build/upgrade_services.sh"
+
     # set env in powershell, only apply in this cmd-line window
     $env:CGO_ENABLED=0
     $env:GOOS="linux"
     $env:GOARCH="amd64"
+
+        # services
 
         # core service
         Set-Location "../services/core/"
 
         go build -o "service_exec"
 
-        Move-Item "service_exec" -Destination "../build/service_core/service_exec"
+        Move-Item "service_exec" -Destination "../build/service_core/unnamed_plan_service_core"
         Copy-Item "config_production.json" -Destination "../build/service_core/config.json"
 
         Set-Location $PSScriptRoot
@@ -49,7 +53,7 @@ Start-Transcript "build_linux_services.log" -Force
 
         go build -o "service_exec"
 
-        Move-Item "service_exec" -Destination "../build/service_gateway/service_exec"
+        Move-Item "service_exec" -Destination "../build/service_gateway/unnamed_plan_service_gateway"
 
         Set-Location $PSScriptRoot
 
@@ -60,7 +64,7 @@ Start-Transcript "build_linux_services.log" -Force
 
         go build -o "service_exec"
 
-        Move-Item "service_exec" -Destination "../build/service_1_user/service_exec"
+        Move-Item "service_exec" -Destination "../build/service_1_user/unnamed_plan_service_1_user"
 
         Set-Location $PSScriptRoot
 
@@ -71,7 +75,7 @@ Start-Transcript "build_linux_services.log" -Force
 
         go build -o "service_exec"
 
-        Move-Item "service_exec" -Destination "../build/service_2_cloud_file/service_exec"
+        Move-Item "service_exec" -Destination "../build/service_2_cloud_file/unnamed_plan_service_2_cloud_file"
 
         Set-Location $PSScriptRoot
 
@@ -82,7 +86,7 @@ Start-Transcript "build_linux_services.log" -Force
 
         go build -o "service_exec"
 
-        Move-Item "service_exec" -Destination "../build/service_3_note/service_exec"
+        Move-Item "service_exec" -Destination "../build/service_3_note/unnamed_plan_service_3_note"
 
         Set-Location $PSScriptRoot
 
@@ -93,7 +97,7 @@ Start-Transcript "build_linux_services.log" -Force
 
         go build -o "service_exec"
 
-        Move-Item "service_exec" -Destination "../build/service_4_task/service_exec"
+        Move-Item "service_exec" -Destination "../build/service_4_task/unnamed_plan_service_4_task"
 
         Set-Location $PSScriptRoot
 
@@ -101,8 +105,6 @@ Start-Transcript "build_linux_services.log" -Force
 
     # reset path
     Set-Location $path
-
-    Write-Output "> build finished."
 
 Stop-Transcript
 
