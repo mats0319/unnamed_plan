@@ -21,7 +21,7 @@ func main() {
 
 	err = rce.Init(mconfig.GetCoreTarget())
 	if err != nil {
-		mlog.Logger().Error("register server to rc failed", zap.Error(err))
+		mlog.Logger().Error("connect and init to rc failed", zap.Error(err))
 		return
 	}
 

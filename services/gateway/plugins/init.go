@@ -24,7 +24,7 @@ func LoadValidPlugins() ([]mhttp.Plugins, error) {
 		return nil, err
 	}
 
-	// load plugins which has config
+	// load plugins which ones has config
 	pluginsSlice := make([]mhttp.Plugins, 0)
 	{
 		if pluginsConfig.LimitMultiLoginConfig != nil {

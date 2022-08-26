@@ -20,8 +20,6 @@ type rceImpl struct {
 	rpc_impl.UnimplementedIRegistrationCenterEmbeddedServer
 }
 
-//var _ rpc_impl.IRegistrationCenterEmbeddedServer = (*rceImpl)(nil)
-
 func (r *rceImpl) CheckHealth(_ context.Context, _ *rpc_impl.RegistrationCenterEmbedded_CheckHealthReq) (*rpc_impl.RegistrationCenterEmbedded_CheckHealthRes, error) {
 	return &rpc_impl.RegistrationCenterEmbedded_CheckHealthRes{}, nil
 }
@@ -69,7 +67,8 @@ func (r *rceImpl) initialize(target string) error {
 
 func (r *rceImpl) register(serviceID string, target string) error {
 	if !r.init {
-		return errors.New("please init first")
+		mlog.Logger().Error("RCE module not init")
+		return errors.New("uninitialized RCE module")
 	}
 
 	res, err := r.client.Register(context.Background(), &rpc_impl.RegistrationCenterCore_RegisterReq{

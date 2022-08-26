@@ -21,26 +21,18 @@ var rceIns = &rce{
 
 // Init for not-business service but need to invoke business services, like 'gateway'
 func Init(registrationCenterTarget string) error {
-	err := rceIns.instance.initialize(registrationCenterTarget)
-	if err != nil {
-		mlog.Logger().Error("init rc embedded failed", zap.Error(err))
-		return err
-	}
-
-	return nil
+	return rceIns.instance.initialize(registrationCenterTarget)
 }
 
 // InitAndRegister for business service
 func InitAndRegister(registrationCenterTarget string, serviceID string, target string) (rpc_impl.IRegistrationCenterEmbeddedServer, error) {
 	err := Init(registrationCenterTarget)
 	if err != nil {
-		mlog.Logger().Error("init rc embedded failed", zap.Error(err))
 		return nil, err
 	}
 
 	err = rceIns.instance.register(serviceID, target)
 	if err != nil {
-		mlog.Logger().Error("register service failed", zap.Error(err))
 		return nil, err
 	}
 
@@ -49,7 +41,8 @@ func InitAndRegister(registrationCenterTarget string, serviceID string, target s
 
 func GetClientConn(serviceID string) (*grpc.ClientConn, error) {
 	if !rceIns.instance.init {
-		return nil, errors.New("RCE module not init")
+		mlog.Logger().Error("RCE module not init")
+		return nil, errors.New("uninitialized RCE module")
 	}
 
 	rpcTargetI, ok := rceIns.targetMap.Load(serviceID)

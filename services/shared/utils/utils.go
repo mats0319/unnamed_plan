@@ -26,14 +26,12 @@ func FormatTarget(target ...string) ([]string, error) {
 
 // formatTarget rules:
 // 1. if 'target' has same ip with current service, replace target ip by '127.0.0.1'
-func formatTarget(target string, ip string) (res string) {
+func formatTarget(target string, ip string) string {
 	if strings.HasPrefix(target, ip) {
-		res = "127.0.0.1" + strings.TrimPrefix(target, ip)
-	} else {
-		res = target
+		target = "127.0.0.1" + strings.TrimPrefix(target, ip)
 	}
 
-	return
+	return target
 }
 
 // GetIP return 192.168.2.14 ?
@@ -76,7 +74,7 @@ func StringToBool(str string) (res bool, err error) {
 	case "false":
 		res = false
 	default:
-		err = errors.New("unknown str:" + str)
+		err = errors.New("unknown str: " + str)
 	}
 
 	return

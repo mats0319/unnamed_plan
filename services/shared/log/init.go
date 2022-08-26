@@ -18,7 +18,7 @@ func Logger() *zap.Logger {
 
 func Init() error {
 	if zLog != nil { // have initialized
-		log.Println("already initialized")
+		zLog.Info("already init")
 		return nil
 	}
 

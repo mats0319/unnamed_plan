@@ -25,8 +25,8 @@
 ### 构造与解析参数
 
 1. 根据参数名，从`request body`中获取参数的值
-2. 参考下方返回结构，`has error`字段表示请求是否正确执行，`data`字段的含义则根据`has error`，有所不同
-    1. 请求正常执行：`data`是`json string`
+2. 参考下方返回结构，`has error`字段表示请求是否正确执行，`data`字段的含义则根据`has error`，有所不同：
+    1. 请求正常执行：`data`是`json string`类型的执行结果
     2. 请求执行失败：`data`是`string`类型的错误信息
 
 ```go 
@@ -66,7 +66,7 @@ func (p *LoginReqParams) Decode(r *http.Request) string {
 
 限制一个用户到处登录的情况
 
-一个用户，可以同时登录`public web`/`admin web`/`public mobile`，但不能同时登录两个`public web`
+一个用户，可以同时登录`public web`/`admin web`，但不能同时登录两个`public web`
 
 #### 设计
 

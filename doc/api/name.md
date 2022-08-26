@@ -121,7 +121,7 @@ service ICloudFile {
 功能：
 
 1. e可以向c注册
-2. e可以向c获取指定服务的实例地址列表
+2. e可以向c申请获取指定服务的实例地址列表
 3. c可以向e发送心跳包
 
 代码：
@@ -136,3 +136,11 @@ service IRegistrationCenterEmbedded {
   rpc CheckHealth(RegistrationCenterEmbedded.CheckHealthReq) returns (RegistrationCenterEmbedded.CheckHealthRes);
 }
 ```
+
+## service & server (draft)
+
+什么时候使用`service`，什么时候使用`server`？
+
+1. 与rpc有关的部分，使用`server`，与grpc的定义保持一致
+2. 表示与`client`对应时，使用`server`
+3. 其他场景使用`service`

@@ -22,15 +22,14 @@ func AuthUserInfo(ctx context.Context, userID string, password string) *rpc_impl
 		Password: password,
 	})
 	if err != nil { // grpc connection error
-		rce.ReportInvalidTarget(mconst.UID_Service_User, conn.Target())
-
 		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
+
+		rce.ReportInvalidTarget(mconst.UID_Service_User, conn.Target())
 
 		return utils.NewGrpcConnectionError(err.Error()).ToRPC()
 	}
 	if authRes != nil && authRes.Err != nil { // service exec error
 		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", authRes.Err.String()))
-
 		return authRes.Err
 	}
 

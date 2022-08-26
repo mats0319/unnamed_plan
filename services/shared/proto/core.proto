@@ -6,6 +6,7 @@ option optimize_for = LITE_RUNTIME;
 
 import "common.proto";
 
+// cc
 service IConfigCenter {
   rpc GetServiceConfig(ConfigCenter.GetServiceConfigReq) returns (ConfigCenter.GetServiceConfigRes);
 }
@@ -23,6 +24,7 @@ message ConfigCenter {
   }
 }
 
+// rcc
 service IRegistrationCenterCore {
   rpc Register(RegistrationCenterCore.RegisterReq) returns (RegistrationCenterCore.RegisterRes);
   rpc ListServiceTarget(RegistrationCenterCore.ListServiceTargetReq) returns (RegistrationCenterCore.ListServiceTargetRes);
@@ -49,6 +51,7 @@ message RegistrationCenterCore {
   }
 }
 
+// rce
 service IRegistrationCenterEmbedded {
   rpc CheckHealth(RegistrationCenterEmbedded.CheckHealthReq) returns (RegistrationCenterEmbedded.CheckHealthRes);
 }
