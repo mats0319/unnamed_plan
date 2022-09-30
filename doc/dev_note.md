@@ -93,6 +93,7 @@
 1. ts代码优化，例如note的修改功能，使用了很多变量，可以优化为使用一个object
 2. 后台界面，任务模块，为不同状态的任务添加不同样式（例如已完成的整行置灰、进行中的状态栏加粗），调整代码：按照任务状态排序
 3. review code
+4. 尝试将开发环境和生产环境中的相同环境变量（VUE_APP_axios_source_sign）移除出环境变量，改用其他方式实现
 
 后端：
 
@@ -103,10 +104,10 @@
     4. github.com/zhenghaoz/gorse go语言推荐系统
     5. github.com/andydotxyz/chess go GUI开发
     6. go zero 一个微服务框架
-2. 考虑取消使用orm，全手写sql
 
 其他：
 
 1. makefile添加前端build脚本（powershell），包含build、dist文件夹移动
 2. 想一想什么时候用`service`，什么时候用`server`，然后把命名过一遍
 3. 微服务的循环依赖问题
+4. 让protocol buffer生成go、ts两套代码，然后前端在axios请求中使用ts代码中的输入、输出结构
