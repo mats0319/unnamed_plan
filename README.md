@@ -36,12 +36,12 @@
 
 结构图：
 
-![结构图](/doc/illustration/structure.png)
+![结构图](/doc/img/structure.png)
 
 启动图：
 
-![启动图](/doc/illustration/start.png)
+![启动图](/doc/img/start.png)
 
 请求执行过程：
 
-![请求执行过程](/doc/illustration/execute_request.png)
+![请求执行过程](/doc/img/execute_request.png)
