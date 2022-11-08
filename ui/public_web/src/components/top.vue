@@ -117,13 +117,10 @@ export default class Top extends Vue {
         sessionStorage.setItem("auth", process.env.VUE_APP_axios_source_sign as string);
 
         const payload = JSON.parse(response.data["data"] as string);
-        this.$store.state.userID = payload.userID;
-        this.$store.state.nickname = payload.nickname;
-        this.$store.state.permission = payload.permission;
 
         this.userName = "";
+        this.setLoginData(payload.userID, payload.nickname, payload.permission);
 
-        this.$store.state.isLogin = true;
         this.loginDialogController = false;
       })
       .catch(err => {
@@ -136,7 +133,7 @@ export default class Top extends Vue {
   }
 
   private exit(): void {
-    this.$store.state.isLogin = false;
+    this.emptyLoginData();
 
     sessionStorage.removeItem("auth");
 
@@ -162,6 +159,20 @@ export default class Top extends Vue {
 
   private cancelLogin(): void {
     this.loginDialogController = false;
+  }
+
+  private setLoginData(userID: string, nickname: string, permission: number): void {
+    this.$store.state.isLogin = true;
+    this.$store.state.userID = userID;
+    this.$store.state.nickname = nickname;
+    this.$store.state.permission = permission;
+  }
+
+  private emptyLoginData(): void {
+    this.$store.state.isLogin = false;
+    this.$store.state.userID = "";
+    this.$store.state.nickname = "";
+    this.$store.state.permission = 0;
   }
 }
 </script>

@@ -77,11 +77,18 @@ export default class Home extends Vue {
   }
 
   private exit(): void {
-    this.$store.state.userID = "";
+    this.emptyLoginData();
 
     sessionStorage.removeItem("auth");
 
     this.$router.push({ name: "login" });
+  }
+
+  private emptyLoginData(): void {
+    this.$store.state.isLogin = false;
+    this.$store.state.userID = "";
+    this.$store.state.nickname = "";
+    this.$store.state.permission = 0;
   }
 }
 </script>

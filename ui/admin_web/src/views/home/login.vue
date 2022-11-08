@@ -45,11 +45,9 @@ export default class Login extends Vue {
         sessionStorage.setItem("auth", process.env.VUE_APP_axios_source_sign as string);
 
         const payload = JSON.parse(response.data["data"] as string);
-        this.$store.state.userID = payload.userID;
-        this.$store.state.nickname = payload.nickname;
-        this.$store.state.permission = payload.permission;
 
-        this.$store.state.isLogin = true;
+        this.setLoginData(payload.userID, payload.nickname, payload.permission);
+
         this.$router.push({ name: "home" });
       })
       .catch(err => {
@@ -59,6 +57,13 @@ export default class Login extends Vue {
       .finally(() => {
         this.password = "";
       });
+  }
+
+  private setLoginData(userID: string, nickname: string, permission: number): void {
+    this.$store.state.isLogin = true;
+    this.$store.state.userID = userID;
+    this.$store.state.nickname = nickname;
+    this.$store.state.permission = permission;
   }
 }
 </script>
