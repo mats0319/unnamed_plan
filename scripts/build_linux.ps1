@@ -92,17 +92,6 @@ Start-Transcript "build_linux_services.log" -Force
 
         Write-Output "> build note service finished"
 
-        # business service 4: task service
-        Set-Location "../services/4_task/"
-
-        go build -o "service_exec"
-
-        Move-Item "service_exec" -Destination "../build/service_4_task/unnamed_plan_service_4_task"
-
-        Set-Location $PSScriptRoot
-
-        Write-Output "> build task service finished"
-
     # reset path
     Set-Location $path
 

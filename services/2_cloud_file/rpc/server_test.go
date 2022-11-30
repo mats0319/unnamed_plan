@@ -10,7 +10,7 @@ import (
 	"github.com/mats9693/unnamed_plan/services/shared/db/model"
 	"github.com/mats9693/unnamed_plan/services/shared/init"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
-	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
+	"github.com/mats9693/unnamed_plan/services/shared/proto/go"
 	"github.com/mats9693/unnamed_plan/services/shared/proto/mock"
 	"github.com/mats9693/unnamed_plan/services/shared/test"
 	"github.com/mats9693/unnamed_plan/services/shared/utils"
@@ -30,8 +30,7 @@ func TestCloudFileService(t *testing.T) {
 
 	serviceIns.beforeTest(t)
 
-	serviceIns.testListByUploader()
-	serviceIns.testListPublic()
+	serviceIns.testList()
 	serviceIns.testUpload()
 	serviceIns.testModify()
 	serviceIns.testDelete()
@@ -39,9 +38,10 @@ func TestCloudFileService(t *testing.T) {
 	serviceIns.afterTest(t)
 }
 
-func (s *cloudFileServiceTest) testListByUploader() {
+func (s *cloudFileServiceTest) testList() {
 	// make grpc req param
-	req := &rpc_impl.CloudFile_ListByUploaderReq{
+	req := &rpc_impl.CloudFile_ListReq{
+		Rule:       1,
 		OperatorId: s.testData.testUserID,
 		Page: &rpc_impl.Pagination{
 			PageSize: 10,
@@ -50,32 +50,12 @@ func (s *cloudFileServiceTest) testListByUploader() {
 	}
 
 	// invoke method
-	res, err := s.service.ListByUploader(context.Background(), req)
+	res, err := s.service.List(context.Background(), req)
 
 	// check res
 	if err != nil || res == nil || res.Err != nil || res.Total != 1 || res.Files[0].FileId != s.testData.testFileID {
 		s.passed = false
-		mlog.Logger().Error(fmt.Sprintf("> test cloud file list by uploader failed, res: %+v\n", res), zap.Error(err))
-	}
-}
-
-func (s *cloudFileServiceTest) testListPublic() {
-	// make grpc req param
-	req := &rpc_impl.CloudFile_ListPublicReq{
-		OperatorId: s.testData.testUserID,
-		Page: &rpc_impl.Pagination{
-			PageSize: 10,
-			PageNum:  1,
-		},
-	}
-
-	// invoke method
-	res, err := s.service.ListPublic(context.Background(), req)
-
-	// check res
-	if err != nil || res == nil || res.Err != nil || res.Total != 1 || res.Files[0].FileId != s.testData.testFileID {
-		s.passed = false
-		mlog.Logger().Error(fmt.Sprintf("> test cloud file list public failed, res: %+v\n", res), zap.Error(err))
+		mlog.Logger().Error(fmt.Sprintf("> test list cloud file failed, res: %+v\n", res), zap.Error(err))
 	}
 }
 

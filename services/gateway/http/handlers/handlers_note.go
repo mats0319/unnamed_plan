@@ -6,7 +6,7 @@ import (
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/http"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
-	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
+	"github.com/mats9693/unnamed_plan/services/shared/proto/go"
 	"github.com/mats9693/unnamed_plan/services/shared/registration_center_embedded"
 	"go.uber.org/zap"
 	"net/http"
@@ -23,8 +23,8 @@ func getNoteClientAndConnTarget() (rpc_impl.INoteClient, string, error) {
 	return rpc_impl.NewINoteClient(conn), conn.Target(), nil
 }
 
-func ListNoteByWriter(r *http.Request) *mhttp.ResponseData {
-	params := &structure.ListNoteByWriterReqParams{}
+func ListNote(r *http.Request) *mhttp.ResponseData {
+	params := &structure.ListNoteReqParams{}
 	if errMsg := params.Decode(r); len(errMsg) > 0 {
 		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
 		return mhttp.ResponseWithError(errMsg)
@@ -36,7 +36,8 @@ func ListNoteByWriter(r *http.Request) *mhttp.ResponseData {
 		return mhttp.ResponseWithError(err.Error())
 	}
 
-	res, err := client.ListByWriter(context.Background(), &rpc_impl.Note_ListByWriterReq{
+	res, err := client.List(context.Background(), &rpc_impl.Note_ListReq{
+		Rule:       rpc_impl.Note_ListRule(params.Rule),
 		OperatorId: params.OperatorID,
 		Page: &rpc_impl.Pagination{
 			PageSize: uint32(params.PageSize),
@@ -54,39 +55,6 @@ func ListNoteByWriter(r *http.Request) *mhttp.ResponseData {
 	}
 
 	return mhttp.Response(structure.MakeListNoteByWriterRes(res.Total, notesRPCToHTTP(res.Notes...)))
-}
-
-func ListPublicNote(r *http.Request) *mhttp.ResponseData {
-	params := &structure.ListPublicNoteReqParams{}
-	if errMsg := params.Decode(r); len(errMsg) > 0 {
-		mlog.Logger().Error("parse request params failed", zap.String("err msg", errMsg))
-		return mhttp.ResponseWithError(errMsg)
-	}
-
-	client, target, err := getNoteClientAndConnTarget()
-	if err != nil {
-		mlog.Logger().Error("get note client failed", zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
-	}
-
-	res, err := client.ListPublic(context.Background(), &rpc_impl.Note_ListPublicReq{
-		OperatorId: params.OperatorID,
-		Page: &rpc_impl.Pagination{
-			PageSize: uint32(params.PageSize),
-			PageNum:  uint32(params.PageNum),
-		},
-	})
-	if err != nil {
-		rce.ReportInvalidTarget(mconst.UID_Service_Note, target)
-		mlog.Logger().Error(mconst.Error_GrpcConnectionError, zap.Error(err))
-		return mhttp.ResponseWithError(err.Error())
-	}
-	if res != nil && res.Err != nil {
-		mlog.Logger().Error(mconst.Error_ExecutionError, zap.String("error", res.Err.String()))
-		return mhttp.ResponseWithError(res.Err.String())
-	}
-
-	return mhttp.Response(structure.MakeListPublicNoteRes(res.Total, notesRPCToHTTP(res.Notes...)))
 }
 
 func CreateNote(r *http.Request) *mhttp.ResponseData {

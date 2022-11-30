@@ -25,7 +25,7 @@
 
 #### 登录
 
-/api/login
+/api/user/login
 
 输入：
 
@@ -175,10 +175,7 @@
 
 用户可查看自己上传的全部文件，以及其他权限等级**不高于**自身的用户上传的**公开文件**
 
-查询：
-
-1. 当前用户上传的全部文件 /api/cloudFile/listByUploader
-2. 当前用户可查看的公开文件 /api/cloudFile/listPublic
+/api/cloudFile/list
 
 规则：
 
@@ -187,8 +184,9 @@
 
 输入：
 
-1. 查询者ID operatorID
-2. 分页信息
+1. 查询规则 rule，枚举类型，分别表示**查询我上传的文件**以及**查询公开的文件**
+2. 查询者ID operatorID
+3. 分页信息
     1. 每页条数 pageSize
     2. 当前页码 pageNum
 
@@ -308,10 +306,7 @@
 
 #### 查询
 
-查询：
-
-1. 当前用户编辑的笔记 /api/note/listByWriter
-2. 当前用户可查看的公开笔记 /api/note/listPublic
+/api/note/list
 
 规则：
 
@@ -320,8 +315,9 @@
 
 输入：
 
-1. 查询者ID operatorID
-2. 分页信息
+1. 查询规则 rule，枚举类型，分别表示**查询我编写的笔记**以及**查询公开的笔记**
+2. 查询者ID operatorID
+3. 分页信息
     1. 每页条数：pageSize
     2. 当前页码：pageNum
 
@@ -362,10 +358,10 @@
 
 1. 修改者ID operatorID
 2. 待修改笔记ID noteID
-4. 修改者密码 password
-5. 新的主题 topic
-6. 新的内容 content
-7. 是否公开 isPublic
+3. 修改者密码 password
+4. 新的主题 topic
+5. 新的内容 content
+6. 是否公开 isPublic
 
 规则：
 
@@ -392,78 +388,3 @@
 #### 查询
 
 > 见前台对应模块
-
-## 任务系统
-
-记录和管理自己接下来一段时间要学习的知识
-
-### 后台(3)
-
-> 先做后台，不确定要不要做一个前台，感觉没啥必要
-
-#### 查询
-
-/api/task/list
-
-获取指定用户发布的所有任务，接口返回所有任务，前端计算各任务之间的关系
-
-输入：
-
-1. 发布者ID operatorID
-
-规则：
-
-1. 查询不分页，但如果目标数据量过大（拟>200），则返回部分（同上设定值）数据并查询失败，提示将部分任务设置为**历史任务**
-2. 查询结果按照**修改时间升序**，即越久未修改过的任务越容易被查询到，前端自行计算与展示
-
-返回：
-
-1. 符合条件的数据条数 total
-2. 任务 tasks
-    1. 任务ID taskID
-    2. 任务名 taskName
-    3. 描述 description
-    4. 前置任务ID列表 preTaskIDs
-    5. 任务状态 status
-    6. 上次更新 updateTime
-    7. 发布时间 createdTime
-
-#### 发布
-
-/api/task/create
-
-发布一个新的任务
-
-输入：
-
-1. 发布者ID operatorID
-2. 任务名 taskName
-3. 描述 description
-4. 前置任务ID列表 preTaskIDs
-
-规则：
-
-1. 若任务名为空或重复，则不应允许发布任务
-    1. 重复的任务：两个拥有相同**发布者**和**任务名**的任务
-
-#### 修改
-
-/api/task/modify
-
-修改一个任务，支持**挂载前置任务**功能、**设置任务状态**功能
-
-输入：
-
-1. 修改者ID operatorID
-2. 待修改任务ID taskID
-3. 修改者密码 password
-4. 新的任务名 taskName
-5. 新的描述 description
-6. 新的前置任务ID列表 preTaskIDs
-7. 新的任务状态 status
-
-规则：
-
-1. 仅允许修改自己发布的任务
-2. 前端会将原本的值填入修改框作为默认值，新的任务名不允许为空
-3. 若**任务名**、**描述**、**前置任务ID列表**与**状态**均无改动，则不应允许执行修改

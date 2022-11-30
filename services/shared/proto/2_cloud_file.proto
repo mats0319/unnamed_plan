@@ -25,9 +25,9 @@ message CloudFile {
   }
 
   enum ListRule {
-    LIST_RULE_UNSPECIFIED = 0;
-    LIST_RULE_UPLOADER = 1;
-    LIST_RULE_PUBLIC = 2;
+    UNSPECIFIED = 0;
+    UPLOADER = 1;
+    PUBLIC = 2;
   }
 
   message ListReq {

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package configCenter;
+package core;
 
 option go_package = "./rpc_impl";
 option optimize_for = LITE_RUNTIME;

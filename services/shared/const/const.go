@@ -50,7 +50,6 @@ const (
 	Error_UserAlreadyUnlocked = "user already unlocked"
 	Error_NoAffectedRows      = "no affected rows"
 	Error_ModifyOthersNote    = "not allowed to modify others' note"
-	Error_ModifyOthersTask    = "not allowed to modify others' task"
 
 	Error_ShouldReTry = "should re-try" // for functions which have re-try design, distinguish with other errors
 )

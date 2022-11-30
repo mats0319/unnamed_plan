@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "strict": false,
+    "strict": true,
     "jsx": "preserve",
     "importHelpers": true,
     "moduleResolution": "node",
@@ -28,8 +28,8 @@
     ]
   },
   "include": [
-    "ts/**/*.ts",
-    "ts/**/*.tsx",
+    "axios/**/*.ts",
+    "axios/**/*.tsx"
   ],
   "exclude": [
     "node_modules"

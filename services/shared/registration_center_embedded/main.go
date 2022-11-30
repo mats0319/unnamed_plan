@@ -2,7 +2,7 @@ package rce
 
 import (
 	"github.com/mats9693/unnamed_plan/services/shared/log"
-	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
+	"github.com/mats9693/unnamed_plan/services/shared/proto/go"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"

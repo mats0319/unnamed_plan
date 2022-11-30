@@ -17,7 +17,7 @@ func Init() error {
 	handlersIns = mhttp.NewHandlers()
 
 	// user
-	handlersIns.HandleFunc("/api/login", handlers.Login)
+	handlersIns.HandleFunc("/api/user/login", handlers.Login)
 	handlersIns.HandleFunc("/api/user/list", handlers.ListUser)
 	handlersIns.HandleFunc("/api/user/create", handlers.CreateUser)
 	handlersIns.HandleFunc("/api/user/lock", handlers.LockUser)
@@ -26,23 +26,16 @@ func Init() error {
 	handlersIns.HandleFunc("/api/user/modifyPermission", handlers.ModifyUserPermission)
 
 	// cloud file
-	handlersIns.HandleFunc("/api/cloudFile/listByUploader", handlers.ListCloudFileByUploader)
-	handlersIns.HandleFunc("/api/cloudFile/listPublic", handlers.ListPublicCloudFile)
+	handlersIns.HandleFunc("/api/cloudFile/list", handlers.ListCloudFile)
 	handlersIns.HandleFunc("/api/cloudFile/upload", handlers.UploadCloudFile)
 	handlersIns.HandleFunc("/api/cloudFile/modify", handlers.ModifyCloudFile)
 	handlersIns.HandleFunc("/api/cloudFile/delete", handlers.DeleteCloudFile)
 
 	// note
-	handlersIns.HandleFunc("/api/note/listByWriter", handlers.ListNoteByWriter)
-	handlersIns.HandleFunc("/api/note/listPublic", handlers.ListPublicNote)
+	handlersIns.HandleFunc("/api/note/list", handlers.ListNote)
 	handlersIns.HandleFunc("/api/note/create", handlers.CreateNote)
 	handlersIns.HandleFunc("/api/note/modify", handlers.ModifyNote)
 	handlersIns.HandleFunc("/api/note/delete", handlers.DeleteNote)
-
-	// task
-	handlersIns.HandleFunc("/api/task/list", handlers.ListTask)
-	handlersIns.HandleFunc("/api/task/create", handlers.CreateTask)
-	handlersIns.HandleFunc("/api/task/modify", handlers.ModifyTask)
 
 	// plugins
 	limit_multi_login.HandleFunc("/api/login", mconst.HTTPMultiLogin_SkipLimit, mconst.HTTPMultiLogin_ReSetParams)

@@ -8,7 +8,7 @@ import (
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/db/model"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
-	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
+	"github.com/mats9693/unnamed_plan/services/shared/proto/go"
 	"github.com/mats9693/unnamed_plan/services/shared/utils"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"

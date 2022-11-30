@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
-	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
+	"github.com/mats9693/unnamed_plan/services/shared/proto/go"
 	"github.com/mats9693/unnamed_plan/services/shared/registration_center_embedded"
 	"github.com/mats9693/unnamed_plan/services/shared/utils"
 	"go.uber.org/zap"

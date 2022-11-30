@@ -1,12 +1,10 @@
 package structure
 
 import (
-	mconst "github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/utils"
 	"mime/multipart"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 // user
@@ -130,42 +128,24 @@ func (p *ModifyUserPermissionReqParams) Decode(r *http.Request) string {
 
 // cloud file
 
-type ListCloudFileByUploaderReqParams struct {
+type ListCloudFileReqParams struct {
+	Rule       int
 	OperatorID string
 	PageSize   int
 	PageNum    int
 }
 
-func (p *ListCloudFileByUploaderReqParams) Decode(r *http.Request) string {
+func (p *ListCloudFileReqParams) Decode(r *http.Request) string {
+	rule, err := strconv.Atoi(r.PostFormValue(params_Rule))
 	p.OperatorID = r.PostFormValue(params_OperatorID)
-	pageSize, err := strconv.Atoi(r.PostFormValue(params_PageSize))
-	pageNum, err2 := strconv.Atoi(r.PostFormValue(params_PageNum))
+	pageSize, err2 := strconv.Atoi(r.PostFormValue(params_PageSize))
+	pageNum, err3 := strconv.Atoi(r.PostFormValue(params_PageNum))
 
-	if err != nil || err2 != nil {
-		return utils.ErrorsToString(err, err2)
+	if err != nil || err2 != nil || err3 != nil {
+		return utils.ErrorsToString(err, err2, err3)
 	}
 
-	p.PageSize = pageSize
-	p.PageNum = pageNum
-
-	return ""
-}
-
-type ListPublicCloudFileReqParams struct {
-	OperatorID string
-	PageSize   int
-	PageNum    int
-}
-
-func (p *ListPublicCloudFileReqParams) Decode(r *http.Request) string {
-	p.OperatorID = r.PostFormValue(params_OperatorID)
-	pageSize, err := strconv.Atoi(r.PostFormValue(params_PageSize))
-	pageNum, err2 := strconv.Atoi(r.PostFormValue(params_PageNum))
-
-	if err != nil || err2 != nil {
-		return utils.ErrorsToString(err, err2)
-	}
-
+	p.Rule = rule
 	p.PageSize = pageSize
 	p.PageNum = pageNum
 
@@ -278,42 +258,24 @@ func (p *DeleteCloudFileReqParams) Decode(r *http.Request) string {
 
 // note
 
-type ListNoteByWriterReqParams struct {
+type ListNoteReqParams struct {
+	Rule       int
 	OperatorID string
 	PageSize   int
 	PageNum    int
 }
 
-func (p *ListNoteByWriterReqParams) Decode(r *http.Request) string {
+func (p *ListNoteReqParams) Decode(r *http.Request) string {
+	rule, err := strconv.Atoi(r.PostFormValue(params_Rule))
 	p.OperatorID = r.PostFormValue(params_OperatorID)
-	pageSize, err := strconv.Atoi(r.PostFormValue(params_PageSize))
-	pageNum, err2 := strconv.Atoi(r.PostFormValue(params_PageNum))
+	pageSize, err2 := strconv.Atoi(r.PostFormValue(params_PageSize))
+	pageNum, err3 := strconv.Atoi(r.PostFormValue(params_PageNum))
 
-	if err != nil || err2 != nil {
-		return utils.ErrorsToString(err, err2)
+	if err != nil || err2 != nil || err3 != nil {
+		return utils.ErrorsToString(err, err2, err3)
 	}
 
-	p.PageSize = pageSize
-	p.PageNum = pageNum
-
-	return ""
-}
-
-type ListPublicNoteReqParams struct {
-	OperatorID string
-	PageSize   int
-	PageNum    int
-}
-
-func (p *ListPublicNoteReqParams) Decode(r *http.Request) string {
-	p.OperatorID = r.PostFormValue(params_OperatorID)
-	pageSize, err := strconv.Atoi(r.PostFormValue(params_PageSize))
-	pageNum, err2 := strconv.Atoi(r.PostFormValue(params_PageNum))
-
-	if err != nil || err2 != nil {
-		return utils.ErrorsToString(err, err2)
-	}
-
+	p.Rule = rule
 	p.PageSize = pageSize
 	p.PageNum = pageNum
 
@@ -378,72 +340,6 @@ func (p *DeleteNoteReqParams) Decode(r *http.Request) string {
 	p.OperatorID = r.PostFormValue(params_OperatorID)
 	p.Password = r.PostFormValue(params_Password)
 	p.NoteID = r.PostFormValue(params_NoteID)
-
-	return ""
-}
-
-// task
-
-type ListTaskReqParams struct {
-	OperatorID string
-}
-
-func (p *ListTaskReqParams) Decode(r *http.Request) string {
-	p.OperatorID = r.PostFormValue(params_OperatorID)
-
-	return ""
-}
-
-type CreateTaskReqParams struct {
-	OperatorID  string
-	TaskName    string
-	Description string
-	PreTaskIDs  []string
-}
-
-func (p *CreateTaskReqParams) Decode(r *http.Request) string {
-	p.OperatorID = r.PostFormValue(params_OperatorID)
-	p.TaskName = r.PostFormValue(params_TaskName)
-	p.Description = r.PostFormValue(params_Description)
-	p.PreTaskIDs = make([]string, 0)
-
-	preTaskIDs := r.PostFormValue(params_PreTaskIDs)
-	if len(preTaskIDs) > 0 {
-		p.PreTaskIDs = strings.Split(preTaskIDs, ",")
-	}
-
-	return ""
-}
-
-type ModifyTaskReqParams struct {
-	OperatorID  string
-	TaskID      string
-	Password    string
-	TaskName    string
-	Description string
-	PreTaskIDs  []string
-	Status      mconst.TaskStatus
-}
-
-func (p *ModifyTaskReqParams) Decode(r *http.Request) string {
-	p.OperatorID = r.PostFormValue(params_OperatorID)
-	p.TaskID = r.PostFormValue(params_TaskID)
-	p.Password = r.PostFormValue(params_Password)
-	p.TaskName = r.PostFormValue(params_TaskName)
-	p.Description = r.PostFormValue(params_Description)
-	p.PreTaskIDs = make([]string, 0)
-
-	preTaskIDs := r.PostFormValue(params_PreTaskIDs)
-	if len(preTaskIDs) > 0 {
-		p.PreTaskIDs = strings.Split(preTaskIDs, ",")
-	}
-	statusInt, err := strconv.Atoi(r.PostFormValue(params_Status))
-
-	if err != nil {
-		return err.Error()
-	}
-
-	p.Status = mconst.TaskStatus(statusInt)
 
 	return ""
 }

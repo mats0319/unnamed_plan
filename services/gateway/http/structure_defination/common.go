@@ -1,7 +1,6 @@
 package structure
 
 import (
-	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"time"
 )
 
@@ -17,6 +16,7 @@ const (
 	params_CurrPwd    = "currPwd"
 	params_Nickname   = "nickname"
 
+	params_Rule             = "rule"
 	params_FileName         = "fileName"
 	params_ExtensionName    = "extensionName"
 	params_LastModifiedTime = "lastModifiedTime"
@@ -27,12 +27,6 @@ const (
 	params_Topic   = "topic"
 	params_Content = "content"
 	params_NoteID  = "noteID"
-
-	params_TaskName    = "taskName"
-	params_Description = "description"
-	params_PreTaskIDs  = "preTaskIDs"
-	params_TaskID      = "taskID"
-	params_Status      = "status"
 )
 
 // common
@@ -98,20 +92,4 @@ type NoteRes struct {
 	IsPublic    bool          `json:"isPublic"`
 	UpdateTime  time.Duration `json:"updateTime"`
 	CreatedTime time.Duration `json:"createdTime"`
-}
-
-// task
-
-type Tasks struct {
-	Tasks []*TaskRes `json:"tasks"`
-}
-
-type TaskRes struct {
-	TaskID      string            `json:"taskID"`
-	TaskName    string            `json:"taskName"`
-	Description string            `json:"description"`
-	PreTaskIDs  []string          `json:"preTaskIDs"`
-	Status      mconst.TaskStatus `json:"status"`
-	UpdateTime  time.Duration     `json:"updateTime"`
-	CreatedTime time.Duration     `json:"createdTime"`
 }

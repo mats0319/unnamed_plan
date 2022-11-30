@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
-	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
+	"github.com/mats9693/unnamed_plan/services/shared/proto/go"
 	"github.com/mats9693/unnamed_plan/services/shared/utils"
 	"google.golang.org/grpc"
 	"log"

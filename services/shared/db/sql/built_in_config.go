@@ -84,28 +84,6 @@ var serviceConfig = []*model.ServiceConfig{
 		IsDelete: false,
 		Common:   model.NewCommon(),
 	}, // note service, production
-	{
-		ServiceID:   "a4802e2b-113b-4132-b125-ca5f97239a6e",
-		Level:       mconst.ConfigLevel_Dev,
-		ServiceName: "task",
-		ConfigItemIDs: []string{
-			configItem[2].Common.ID,
-			configItem[7].Common.ID,
-		},
-		IsDelete: false,
-		Common:   model.NewCommon(),
-	}, // task service, dev
-	{
-		ServiceID:   "a4802e2b-113b-4132-b125-ca5f97239a6e",
-		Level:       mconst.ConfigLevel_Production,
-		ServiceName: "task",
-		ConfigItemIDs: []string{
-			configItem[3].Common.ID,
-			configItem[7].Common.ID,
-		},
-		IsDelete: false,
-		Common:   model.NewCommon(),
-	}, // task service, production
 }
 
 var configItem = []*model.ConfigItem{
@@ -186,14 +164,6 @@ var configItem = []*model.ConfigItem{
         }`),
 		Common: model.NewCommon(),
 	}, // cloud file service basic config, production
-	{
-		ConfigItemID:   "a4802e2b-113b-4132-b125-ca5f97239a6e",
-		ConfigItemName: "task service basic config",
-		ConfigSubItems: json.RawMessage(`{
-          "maxRecords": 200
-        }`),
-		Common: model.NewCommon(),
-	}, // task service basic config
 }
 
 func setDefaultServiceConfig(db *pg.DB) {

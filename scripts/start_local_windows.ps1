@@ -47,15 +47,6 @@ Set-Location $PSScriptRoot
 
     Set-Location $PSScriptRoot
 
-    # business service 4: task service
-    Set-Location "../services/4_task/"
-
-    go build -race -o service_4_task.exe
-
-    Start-Process ./service_4_task.exe
-
-    Set-Location $PSScriptRoot
-
 Set-Location $path
 
 # windows not allow run ps script:

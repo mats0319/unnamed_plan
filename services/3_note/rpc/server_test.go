@@ -9,7 +9,7 @@ import (
 	"github.com/mats9693/unnamed_plan/services/shared/db/model"
 	"github.com/mats9693/unnamed_plan/services/shared/init"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
-	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
+	"github.com/mats9693/unnamed_plan/services/shared/proto/go"
 	"github.com/mats9693/unnamed_plan/services/shared/proto/mock"
 	"github.com/mats9693/unnamed_plan/services/shared/test"
 	"github.com/mats9693/unnamed_plan/services/shared/utils"
@@ -29,8 +29,7 @@ func TestNoteService(t *testing.T) {
 
 	serviceIns.beforeTest(t)
 
-	serviceIns.testListByWriter()
-	serviceIns.testListPublic()
+	serviceIns.testList()
 	serviceIns.testCreate()
 	serviceIns.testModify()
 	serviceIns.testDelete()
@@ -38,9 +37,10 @@ func TestNoteService(t *testing.T) {
 	serviceIns.afterTest(t)
 }
 
-func (s *noteServiceTest) testListByWriter() {
+func (s *noteServiceTest) testList() {
 	// make grpc req param
-	req := &rpc_impl.Note_ListByWriterReq{
+	req := &rpc_impl.Note_ListReq{
+		Rule:       1,
 		OperatorId: s.testData.testUserID,
 		Page: &rpc_impl.Pagination{
 			PageSize: 10,
@@ -49,32 +49,12 @@ func (s *noteServiceTest) testListByWriter() {
 	}
 
 	// invoke method
-	res, err := s.service.ListByWriter(context.Background(), req)
+	res, err := s.service.List(context.Background(), req)
 
 	// check res
 	if err != nil || res == nil || res.Err != nil || res.Total != 1 || res.Notes[0].Content != s.testData.testNoteContent {
 		s.passed = false
-		mlog.Logger().Error(fmt.Sprintf("> test note list by writer failed, res: %+v\n", res), zap.Error(err))
-	}
-}
-
-func (s *noteServiceTest) testListPublic() {
-	// make grpc req param
-	req := &rpc_impl.Note_ListPublicReq{
-		OperatorId: s.testData.testUserID,
-		Page: &rpc_impl.Pagination{
-			PageSize: 10,
-			PageNum:  1,
-		},
-	}
-
-	// invoke method
-	res, err := s.service.ListPublic(context.Background(), req)
-
-	// check res
-	if err != nil || res == nil || res.Err != nil || res.Total != 1 || res.Notes[0].Content != s.testData.testNoteContent {
-		s.passed = false
-		mlog.Logger().Error(fmt.Sprintf("> test note list public failed, res: %+v\n", res), zap.Error(err))
+		mlog.Logger().Error(fmt.Sprintf("> test list note failed, res: %+v\n", res), zap.Error(err))
 	}
 }
 

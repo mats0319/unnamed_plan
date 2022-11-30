@@ -6,7 +6,7 @@ import (
 	i "github.com/mats9693/unnamed_plan/services/core/init"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
-	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
+	"github.com/mats9693/unnamed_plan/services/shared/proto/go"
 	"github.com/mats9693/unnamed_plan/services/shared/utils"
 	"go.uber.org/zap"
 )
@@ -15,11 +15,9 @@ type configCenterServerImpl struct {
 	rpc_impl.UnimplementedIConfigCenterServer
 }
 
-//var _ rpc_impl.IConfigCenterServer = (*configCenterServerImpl)(nil)
-
 var configCenterServerImplIns = &configCenterServerImpl{}
 
-func GetConfigCenterServer() *configCenterServerImpl {
+func GetConfigCenterServer() rpc_impl.IConfigCenterServer {
 	return configCenterServerImplIns
 }
 

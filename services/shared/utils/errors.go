@@ -2,7 +2,7 @@ package utils
 
 import (
 	"github.com/mats9693/unnamed_plan/services/shared/const"
-	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
+	"github.com/mats9693/unnamed_plan/services/shared/proto/go"
 )
 
 type Error struct {

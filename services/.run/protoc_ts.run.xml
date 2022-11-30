@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="protoc_ts" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="unnamed_plan" />
+    <working_directory value="$PROJECT_DIR$/services/tools/protoc_ts" />
+    <parameters value="-d ./proto" />
+    <kind value="DIRECTORY" />
+    <package value="github.com/mats9693/unnamed_plan/services/tools/ts_generator" />
+    <directory value="$PROJECT_DIR$/services/tools/protoc_ts" />
+    <filePath value="$PROJECT_DIR$/services/tools/ts_generator/main.go" />
+    <output_directory value="$PROJECT_DIR$/services/tools/protoc_ts" />
+    <method v="2" />
+  </configuration>
+</component>

@@ -7,7 +7,7 @@ import (
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/db/model"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
-	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
+	"github.com/mats9693/unnamed_plan/services/shared/proto/go"
 	"github.com/mats9693/unnamed_plan/services/shared/registration_center_embedded/invoke"
 	"github.com/mats9693/unnamed_plan/services/shared/utils"
 	"go.uber.org/zap"
@@ -22,21 +22,21 @@ type cloudFileServerImpl struct {
 	rpc_impl.UnimplementedICloudFileServer
 }
 
-var _ rpc_impl.ICloudFileServer = (*cloudFileServerImpl)(nil)
-
 var cloudFileServerImplIns = &cloudFileServerImpl{}
 
-func GetCloudFileServer() *cloudFileServerImpl {
+func GetCloudFileServer() rpc_impl.ICloudFileServer {
 	return cloudFileServerImplIns
 }
 
-func (c *cloudFileServerImpl) ListByUploader(_ context.Context, req *rpc_impl.CloudFile_ListByUploaderReq) (*rpc_impl.CloudFile_ListByUploaderRes, error) {
-	res := &rpc_impl.CloudFile_ListByUploaderRes{}
+func (s *cloudFileServerImpl) List(_ context.Context, req *rpc_impl.CloudFile_ListReq) (*rpc_impl.CloudFile_ListRes, error) {
+	res := &rpc_impl.CloudFile_ListRes{}
 
-	if len(req.OperatorId) < 1 || req.GetPage() == nil || req.Page.PageSize < 1 || req.Page.PageNum < 1 {
+	if len(req.OperatorId) < 1 || req.Page == nil || req.Page.PageSize < 1 || req.Page.PageNum < 1 ||
+		(req.Rule != rpc_impl.CloudFile_UPLOADER && req.Rule != rpc_impl.CloudFile_PUBLIC) {
 		mlog.Logger().Error(mconst.Error_InvalidParams,
 			zap.String("operator", req.OperatorId),
-			zap.String("page info", req.Page.String()))
+			zap.String("page info", req.Page.String()),
+			zap.Int32("query condition", int32(req.Rule)))
 		res.Err = utils.Error_InvalidParams.ToRPC()
 		return res, nil
 	}
@@ -44,7 +44,17 @@ func (c *cloudFileServerImpl) ListByUploader(_ context.Context, req *rpc_impl.Cl
 	pageSize := int(req.Page.PageSize)
 	pageNum := int(req.Page.PageNum)
 
-	files, count, err := db.GetCloudFileDao().QueryPageByUploader(pageSize, pageNum, req.OperatorId)
+	var (
+		files []*model.CloudFile
+		count int
+		err   error
+	)
+	switch req.Rule {
+	case rpc_impl.CloudFile_UPLOADER:
+		files, count, err = db.GetCloudFileDao().QueryPageByUploader(pageSize, pageNum, req.OperatorId)
+	case rpc_impl.CloudFile_PUBLIC:
+		files, count, err = db.GetCloudFileDao().QueryPageInPublic(pageSize, pageNum, req.OperatorId)
+	}
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_DBError, zap.Error(err))
 		res.Err = utils.NewDBError(err.Error()).ToRPC()
@@ -57,34 +67,7 @@ func (c *cloudFileServerImpl) ListByUploader(_ context.Context, req *rpc_impl.Cl
 	return res, nil
 }
 
-func (c *cloudFileServerImpl) ListPublic(_ context.Context, req *rpc_impl.CloudFile_ListPublicReq) (*rpc_impl.CloudFile_ListPublicRes, error) {
-	res := &rpc_impl.CloudFile_ListPublicRes{}
-
-	if len(req.OperatorId) < 1 || req.GetPage() == nil || req.Page.PageSize < 1 || req.Page.PageNum < 1 {
-		mlog.Logger().Error(mconst.Error_InvalidParams,
-			zap.String("operator", req.OperatorId),
-			zap.String("page info", req.Page.String()))
-		res.Err = utils.Error_InvalidParams.ToRPC()
-		return res, nil
-	}
-
-	pageSize := int(req.Page.PageSize)
-	pageNum := int(req.Page.PageNum)
-
-	files, count, err := db.GetCloudFileDao().QueryPageInPublic(pageSize, pageNum, req.OperatorId)
-	if err != nil {
-		mlog.Logger().Error(mconst.Error_DBError, zap.Error(err))
-		res.Err = utils.NewDBError(err.Error()).ToRPC()
-		return res, nil
-	}
-
-	res.Total = uint32(count)
-	res.Files = filesDBToRPC(files...)
-
-	return res, nil
-}
-
-func (c *cloudFileServerImpl) Upload(_ context.Context, req *rpc_impl.CloudFile_UploadReq) (*rpc_impl.CloudFile_UploadRes, error) {
+func (s *cloudFileServerImpl) Upload(_ context.Context, req *rpc_impl.CloudFile_UploadReq) (*rpc_impl.CloudFile_UploadRes, error) {
 	res := &rpc_impl.CloudFile_UploadRes{}
 
 	if len(req.OperatorId) < 1 || len(req.FileName) < 1 || len(req.ExtensionName) < 1 ||
@@ -143,7 +126,7 @@ func (c *cloudFileServerImpl) Upload(_ context.Context, req *rpc_impl.CloudFile_
 	return res, nil
 }
 
-func (c *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFile_ModifyReq) (*rpc_impl.CloudFile_ModifyRes, error) {
+func (s *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFile_ModifyReq) (*rpc_impl.CloudFile_ModifyRes, error) {
 	res := &rpc_impl.CloudFile_ModifyRes{}
 
 	if len(req.OperatorId) < 1 || len(req.FileId) < 1 || len(req.Password) < 1 {
@@ -252,7 +235,7 @@ func (c *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFil
 	return res, nil
 }
 
-func (c *cloudFileServerImpl) Delete(ctx context.Context, req *rpc_impl.CloudFile_DeleteReq) (*rpc_impl.CloudFile_DeleteRes, error) {
+func (s *cloudFileServerImpl) Delete(ctx context.Context, req *rpc_impl.CloudFile_DeleteReq) (*rpc_impl.CloudFile_DeleteRes, error) {
 	res := &rpc_impl.CloudFile_DeleteRes{}
 
 	if len(req.OperatorId) < 1 || len(req.Password) < 1 || len(req.FileId) < 1 {

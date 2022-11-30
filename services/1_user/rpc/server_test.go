@@ -10,7 +10,7 @@ import (
 	"github.com/mats9693/unnamed_plan/services/shared/db/model"
 	"github.com/mats9693/unnamed_plan/services/shared/init"
 	"github.com/mats9693/unnamed_plan/services/shared/log"
-	"github.com/mats9693/unnamed_plan/services/shared/proto/impl"
+	"github.com/mats9693/unnamed_plan/services/shared/proto/go"
 	"github.com/mats9693/unnamed_plan/services/shared/test"
 	"github.com/mats9693/unnamed_plan/services/shared/utils"
 	"go.uber.org/zap"
