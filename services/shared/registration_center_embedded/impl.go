@@ -15,7 +15,6 @@ type rceImpl struct {
 	init bool
 
 	client rpc_impl.IRegistrationCenterCoreClient
-
 	server rpc_impl.IRegistrationCenterEmbeddedServer
 	rpc_impl.UnimplementedIRegistrationCenterEmbeddedServer
 }

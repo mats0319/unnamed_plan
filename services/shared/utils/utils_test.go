@@ -11,7 +11,7 @@ func TestCalcPassword(t *testing.T) {
 
 	fmt.Println("> --- Test calc password ---")
 	fmt.Println("> password hash :", pwdHash)
-	fmt.Println("> final password:", CalcSHA256(pwdHash, "zdoZPfZxsT"))
+	fmt.Println("> final password:", CalcSHA256(pwdHash, "LTzWnUluPM"))
 }
 
 // TestJSONMarshalLevel 结论：使用匿名结构体嵌套，json marshal不会引入新的一层

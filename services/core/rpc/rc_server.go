@@ -32,7 +32,7 @@ func (r *registrationCenterServerImpl) Register(_ context.Context, req *rpc_impl
 		mlog.Logger().Error(mconst.Error_InvalidParams,
 			zap.String("service id", req.ServiceId),
 			zap.String("target", req.Target))
-		res.Err = utils.Error_InvalidParams.ToRPC()
+		res.Err = utils.Error_InvalidParams
 		return res, nil
 	}
 
@@ -58,7 +58,7 @@ func (r *registrationCenterServerImpl) ListServiceTarget(_ context.Context, req 
 
 	if len(req.ServiceId) < 1 {
 		mlog.Logger().Error(mconst.Error_InvalidParams, zap.String("service id", req.ServiceId))
-		res.Err = utils.Error_InvalidParams.ToRPC()
+		res.Err = utils.Error_InvalidParams
 		return res, nil
 	}
 

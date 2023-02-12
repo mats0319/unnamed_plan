@@ -1,7 +1,6 @@
 package http
 
 import (
-	"github.com/mats9693/unnamed_plan/services/gateway/http/handlers"
 	"github.com/mats9693/unnamed_plan/services/gateway/plugins/limit_multi_login"
 	"github.com/mats9693/unnamed_plan/services/shared/const"
 	"github.com/mats9693/unnamed_plan/services/shared/http"
@@ -17,28 +16,22 @@ func Init() error {
 	handlersIns = mhttp.NewHandlers()
 
 	// user
-	handlersIns.HandleFunc("/api/user/login", handlers.Login)
-	handlersIns.HandleFunc("/api/user/list", handlers.ListUser)
-	handlersIns.HandleFunc("/api/user/create", handlers.CreateUser)
-	handlersIns.HandleFunc("/api/user/lock", handlers.LockUser)
-	handlersIns.HandleFunc("/api/user/unlock", handlers.UnlockUser)
-	handlersIns.HandleFunc("/api/user/modifyInfo", handlers.ModifyUserInfo)
-	handlersIns.HandleFunc("/api/user/modifyPermission", handlers.ModifyUserPermission)
+	handlersIns.HandleFunc("/api/user/login", Login)
+	handlersIns.HandleFunc("/api/user/list", ListUser)
+	handlersIns.HandleFunc("/api/user/create", CreateUser)
+	handlersIns.HandleFunc("/api/user/lock", LockUser)
+	handlersIns.HandleFunc("/api/user/unlock", UnlockUser)
+	handlersIns.HandleFunc("/api/user/modifyInfo", ModifyUserInfo)
+	handlersIns.HandleFunc("/api/user/modifyPermission", ModifyUserPermission)
 
-	// cloud file
-	handlersIns.HandleFunc("/api/cloudFile/list", handlers.ListCloudFile)
-	handlersIns.HandleFunc("/api/cloudFile/upload", handlers.UploadCloudFile)
-	handlersIns.HandleFunc("/api/cloudFile/modify", handlers.ModifyCloudFile)
-	handlersIns.HandleFunc("/api/cloudFile/delete", handlers.DeleteCloudFile)
-
-	// note
-	handlersIns.HandleFunc("/api/note/list", handlers.ListNote)
-	handlersIns.HandleFunc("/api/note/create", handlers.CreateNote)
-	handlersIns.HandleFunc("/api/note/modify", handlers.ModifyNote)
-	handlersIns.HandleFunc("/api/note/delete", handlers.DeleteNote)
+	//cloud file
+	handlersIns.HandleFunc("/api/cloudFile/list", ListCloudFile)
+	handlersIns.HandleFunc("/api/cloudFile/upload", UploadCloudFile)
+	handlersIns.HandleFunc("/api/cloudFile/modify", ModifyCloudFile)
+	handlersIns.HandleFunc("/api/cloudFile/delete", DeleteCloudFile)
 
 	// plugins
-	limit_multi_login.HandleFunc("/api/login", mconst.HTTPMultiLogin_SkipLimit, mconst.HTTPMultiLogin_ReSetParams)
+	limit_multi_login.HandleFunc("/api/user/login", mconst.HTTPFlags_MultiLogin_SkipLimit, mconst.HTTPFlags_MultiLogin_ReSetParams)
 
 	return nil
 }

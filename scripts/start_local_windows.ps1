@@ -38,15 +38,6 @@ Set-Location $PSScriptRoot
 
     Set-Location $PSScriptRoot
 
-    # business service 3: note service
-    Set-Location "../services/3_note/"
-
-    go build -race -o service_3_note.exe
-
-    Start-Process ./service_3_note.exe
-
-    Set-Location $PSScriptRoot
-
 Set-Location $path
 
 # windows not allow run ps script:

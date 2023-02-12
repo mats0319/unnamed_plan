@@ -136,26 +136,3 @@ func GetIndex(slice []string, value string) int {
 
 	return index
 }
-
-// CompareOnStringSliceNotStrict compares two string slice, return if they have equal values ignore order
-func CompareOnStringSliceNotStrict(a, b []string) bool {
-	if len(a) != len(b) {
-		return false
-	}
-
-	valueMap := make(map[string]int, len(a)) // value - status 1: in 'a', 0: both in 'a' and 'b', -1: in 'b'
-	for i := range a {
-		valueMap[a[i]]++
-		valueMap[b[i]]--
-	}
-
-	isEqual := true
-	for _, v := range valueMap {
-		if v != 0 {
-			isEqual = false
-			break
-		}
-	}
-
-	return isEqual
-}

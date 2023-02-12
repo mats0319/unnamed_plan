@@ -64,26 +64,6 @@ var serviceConfig = []*model.ServiceConfig{
 		IsDelete: false,
 		Common:   model.NewCommon(),
 	}, // cloud file service, production
-	{
-		ServiceID:   "23d062e4-3c36-45f0-9e1c-3f339742903b",
-		Level:       mconst.ConfigLevel_Dev,
-		ServiceName: "note",
-		ConfigItemIDs: []string{
-			configItem[2].Common.ID,
-		},
-		IsDelete: false,
-		Common:   model.NewCommon(),
-	}, // note service, dev
-	{
-		ServiceID:   "23d062e4-3c36-45f0-9e1c-3f339742903b",
-		Level:       mconst.ConfigLevel_Production,
-		ServiceName: "note",
-		ConfigItemIDs: []string{
-			configItem[3].Common.ID,
-		},
-		IsDelete: false,
-		Common:   model.NewCommon(),
-	}, // note service, production
 }
 
 var configItem = []*model.ConfigItem{
@@ -92,8 +72,7 @@ var configItem = []*model.ConfigItem{
 		ConfigItemName: "gateway http",
 		ConfigSubItems: json.RawMessage(`{
 		  "port": "9693",
-		  "sources": ["public web", "admin web"],
-		  "unlimitedSources": ["public mobile"]
+		  "sources": ["web"]
 		}`),
 		Common: model.NewCommon(),
 	}, // gateway http
@@ -103,7 +82,7 @@ var configItem = []*model.ConfigItem{
 		ConfigSubItems: json.RawMessage(`{
 		  "limitMultiLoginConfig": {
 		    "limitMultiLogin": true,
-			"sources": ["public web", "admin web"],
+			"sources": ["web"],
 		    "keepTokenValid": 7200
 		  }
 		}`),

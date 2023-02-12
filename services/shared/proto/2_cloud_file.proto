@@ -52,6 +52,7 @@ message CloudFile {
     int64 file_size = 5;
     int64 last_modified_time = 6;
     bool is_public = 7;
+    string password = 8;
   }
 
   message UploadRes {
@@ -81,8 +82,8 @@ message CloudFile {
 
   message DeleteReq {
     string operator_id = 1;
-    string password = 2;
-    string file_id = 3;
+    string file_id = 2;
+    string password = 3;
   }
 
   message DeleteRes {

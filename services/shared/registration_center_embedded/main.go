@@ -10,7 +10,7 @@ import (
 )
 
 type rce struct {
-	instance *rceImpl
+	instance *rceImpl // rcc client, communicate with RC core
 
 	targetMap sync.Map // service id - *rpcTarget
 }
@@ -46,8 +46,8 @@ func GetClientConn(serviceID string) (*grpc.ClientConn, error) {
 	}
 
 	rpcTargetI, ok := rceIns.targetMap.Load(serviceID)
-	rpcTargetIns, _ := rpcTargetI.(*rpcTarget) // make sure value type of map is '*rpcTarget'
-	if !ok || len(rpcTargetIns.list) < 1 {     // key is not exist or value is empty
+	rpcTargetIns, _ := rpcTargetI.(*rpcTarget)
+	if !ok || len(rpcTargetIns.list) < 1 { // key is not exist or value is empty
 		targetList, err := rceIns.instance.ListServiceTarget(serviceID)
 		if err != nil {
 			mlog.Logger().Error("list service target failed", zap.Error(err))

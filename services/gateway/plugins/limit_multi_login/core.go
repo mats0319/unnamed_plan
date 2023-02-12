@@ -111,14 +111,23 @@ func (l *LimitMultiLogin) setLoginInfo(userID string, source string, token strin
 	return nil
 }
 
-func (l *LimitMultiLogin) getFlags(pattern string) *flags {
-	flagsI, ok := l.flags.Load(pattern)
+func (l *LimitMultiLogin) runHook(uri string, isBeforeHook bool) bool {
+	flagsI, ok := l.flags.Load(uri)
 	if !ok {
-		mlog.Logger().Info(mconst.Error_UnknownURI + pattern)
-		return nil
+		return false
 	}
 
 	flagsIns, _ := flagsI.(*flags)
+	if flagsIns == nil {
+		return false
+	}
 
-	return flagsIns
+	runHookFlag := false
+	if isBeforeHook {
+		runHookFlag = !flagsIns.skipMultiLoginLimit
+	} else {
+		runHookFlag = flagsIns.reSetMultiLoginParams
+	}
+
+	return runHookFlag
 }

@@ -20,8 +20,6 @@ Start-Transcript "build_linux_services.log" -Force
     mkdir "./build/service_gateway/"
     mkdir "./build/service_1_user/"
     mkdir "./build/service_2_cloud_file/"
-    mkdir "./build/service_3_note/"
-    mkdir "./build/service_4_task/"
 
     Copy-Item "config.json" -Destination "./build/config.json"
 
@@ -80,17 +78,6 @@ Start-Transcript "build_linux_services.log" -Force
         Set-Location $PSScriptRoot
 
         Write-Output "> build cloud file service finished"
-
-        # business service 3: note service
-        Set-Location "../services/3_note/"
-
-        go build -o "service_exec"
-
-        Move-Item "service_exec" -Destination "../build/service_3_note/unnamed_plan_service_3_note"
-
-        Set-Location $PSScriptRoot
-
-        Write-Output "> build note service finished"
 
     # reset path
     Set-Location $path

@@ -28,7 +28,7 @@ func (c *configCenterServerImpl) GetServiceConfig(_ context.Context, req *rpc_im
 		mlog.Logger().Error(mconst.Error_InvalidParams,
 			zap.String("service id", req.ServiceId),
 			zap.String("level", req.Level))
-		res.Err = utils.Error_InvalidParams.ToRPC()
+		res.Err = utils.Error_InvalidParams
 		return res, nil
 	}
 
@@ -37,14 +37,14 @@ func (c *configCenterServerImpl) GetServiceConfig(_ context.Context, req *rpc_im
 		mlog.Logger().Error("get service config failed",
 			zap.String("service id", req.ServiceId),
 			zap.String("level", req.Level))
-		res.Err = utils.NewExecError("get service config failed").ToRPC()
+		res.Err = utils.NewExecError("get service config failed")
 		return res, nil
 	}
 
 	configBytes, err := json.Marshal(config)
 	if err != nil {
 		mlog.Logger().Error("json marshal failed", zap.Error(err))
-		res.Err = utils.NewExecError("json marshal failed").ToRPC()
+		res.Err = utils.NewExecError("json marshal failed")
 		return res, nil
 	}
 

@@ -40,9 +40,9 @@ func HandleFunc(pattern string, params ...uint8) {
 
 	for i := range params {
 		switch params[i] {
-		case mconst.HTTPMultiLogin_SkipLimit:
+		case mconst.HTTPFlags_MultiLogin_SkipLimit:
 			flagsIns.skipMultiLoginLimit = true
-		case mconst.HTTPMultiLogin_ReSetParams:
+		case mconst.HTTPFlags_MultiLogin_ReSetParams:
 			flagsIns.reSetMultiLoginParams = true
 		}
 	}
@@ -50,47 +50,46 @@ func HandleFunc(pattern string, params ...uint8) {
 	limitMultiLoginIns.flags.Store(pattern, flagsIns)
 }
 
-func (l *LimitMultiLogin) BeforeInvokeHook(request *http.Request, timestamp int64) (int, error) {
+func (l *LimitMultiLogin) RunBeforeHook(uri string) bool {
+	return l.runHook(uri, true)
+}
+
+func (l *LimitMultiLogin) RunAfterHook(uri string) bool {
+	return l.runHook(uri, false)
+}
+
+func (l *LimitMultiLogin) BeforeHook(request *http.Request, timestamp int64) (int, error, bool) {
 	source := request.Header.Get(mconst.HTTP_SourceSign)
 	if !utils.Contains(l.config.Sources, source) { // ignore unlimited sources
-		return http.StatusOK, nil
+		return http.StatusOK, nil, false
 	}
 
-	flagsIns := l.getFlags(request.RequestURI)
-	if flagsIns == nil || flagsIns.skipMultiLoginLimit {
-		return http.StatusOK, nil
-	}
-
-	userID := request.Header.Get(mconst.HTTP_MultiLoginUserIDSign)
-	token := request.Header.Get(mconst.HTTP_MultiLoginTokenSign)
+	userID := request.Header.Get(mconst.HTTP_MultiLogin_UserIDReq)
+	token := request.Header.Get(mconst.HTTP_MultiLogin_TokenReq)
 
 	err := l.multiLoginVerify(userID, source, token, timestamp)
 	if err != nil {
-		return http.StatusUnauthorized, err
+		return http.StatusUnauthorized, err, true
 	}
 
-	return http.StatusOK, nil
+	return http.StatusOK, nil, false
 }
 
-func (l *LimitMultiLogin) AfterInvokeHook(response *mhttp.ResponseData, request *http.Request, timestamp int64) (int, error) {
+func (l *LimitMultiLogin) AfterHook(writer http.ResponseWriter, request *http.Request, timestamp int64, param string) (int, error, bool) {
 	source := request.Header.Get(mconst.HTTP_SourceSign)
 	if !utils.Contains(l.config.Sources, source) { // ignore unlimited sources
-		return http.StatusOK, nil
-	}
-
-	flagsIns := l.getFlags(request.RequestURI)
-	if flagsIns == nil || !flagsIns.reSetMultiLoginParams {
-		return http.StatusOK, nil
+		return http.StatusOK, nil, false
 	}
 
 	newToken := utils.RandomHexString(10)
 
-	err := l.setLoginInfo(response.UserID, source, newToken, timestamp)
+	err := l.setLoginInfo(param, source, newToken, timestamp)
 	if err != nil {
-		return http.StatusInternalServerError, err
+		return http.StatusInternalServerError, err, true
 	}
 
-	response.Token = newToken
+	writer.Header().Set(mconst.HTTP_MultiLogin_UserIDRes, param)
+	writer.Header().Set(mconst.HTTP_MultiLogin_TokenRes, newToken)
 
-	return http.StatusOK, nil
+	return http.StatusOK, nil, false
 }

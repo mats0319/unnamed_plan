@@ -28,7 +28,6 @@ func main() {
 		(*model.User)(nil),
 		(*model.CloudFile)(nil),
 		(*model.Note)(nil),
-		(*model.Task)(nil),
 
 		(*model.ServiceConfig)(nil),
 		(*model.ConfigItem)(nil),

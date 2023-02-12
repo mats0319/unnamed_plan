@@ -12,7 +12,6 @@ import (
 type httpConfig struct {
 	Port             string   `json:"port"`
 	Sources          []string `json:"sources"`
-	UnlimitedSources []string `json:"unlimitedSources"`
 }
 
 // StartServer is blocked

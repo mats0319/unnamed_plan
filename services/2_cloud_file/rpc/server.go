@@ -37,7 +37,7 @@ func (s *cloudFileServerImpl) List(_ context.Context, req *rpc_impl.CloudFile_Li
 			zap.String("operator", req.OperatorId),
 			zap.String("page info", req.Page.String()),
 			zap.Int32("query condition", int32(req.Rule)))
-		res.Err = utils.Error_InvalidParams.ToRPC()
+		res.Err = utils.Error_InvalidParams
 		return res, nil
 	}
 
@@ -57,7 +57,7 @@ func (s *cloudFileServerImpl) List(_ context.Context, req *rpc_impl.CloudFile_Li
 	}
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_DBError, zap.Error(err))
-		res.Err = utils.NewDBError(err.Error()).ToRPC()
+		res.Err = utils.NewDBError(err.Error())
 		return res, nil
 	}
 
@@ -67,18 +67,29 @@ func (s *cloudFileServerImpl) List(_ context.Context, req *rpc_impl.CloudFile_Li
 	return res, nil
 }
 
-func (s *cloudFileServerImpl) Upload(_ context.Context, req *rpc_impl.CloudFile_UploadReq) (*rpc_impl.CloudFile_UploadRes, error) {
+func (s *cloudFileServerImpl) Upload(ctx context.Context, req *rpc_impl.CloudFile_UploadReq) (*rpc_impl.CloudFile_UploadRes, error) {
 	res := &rpc_impl.CloudFile_UploadRes{}
 
 	if len(req.OperatorId) < 1 || len(req.FileName) < 1 || len(req.ExtensionName) < 1 ||
-		req.FileSize < 1 || req.LastModifiedTime < 1 {
+		req.FileSize < 1 || req.LastModifiedTime < 1 || len(req.Password) < 1 {
 		mlog.Logger().Error(mconst.Error_InvalidParams,
 			zap.String("operator", req.OperatorId),
 			zap.String("file name", req.FileName),
 			zap.String("extension name", req.ExtensionName),
 			zap.Int64("file size", req.FileSize),
-			zap.Int64("last modified time", req.LastModifiedTime))
-		res.Err = utils.Error_InvalidParams.ToRPC()
+			zap.Int64("last modified time", req.LastModifiedTime),
+			zap.String("password", req.Password))
+		res.Err = utils.Error_InvalidParams
+		return res, nil
+	}
+
+	rpcErr := rce_invoke.AuthUserInfo(ctx, &rpc_impl.User_AuthenticateReq{
+		UserId:   req.OperatorId,
+		Password: req.Password,
+	})
+	if rpcErr != nil {
+		mlog.Logger().Error("auth user info failed", zap.String("error", rpcErr.String()))
+		res.Err = rpcErr
 		return res, nil
 	}
 
@@ -88,7 +99,7 @@ func (s *cloudFileServerImpl) Upload(_ context.Context, req *rpc_impl.CloudFile_
 		err := os.MkdirAll(dir, 0755)
 		if err != nil {
 			mlog.Logger().Error(mconst.Error_ExecutionError, zap.Error(err))
-			res.Err = utils.NewExecError(err.Error()).ToRPC()
+			res.Err = utils.NewExecError(err.Error())
 			return res, nil
 		}
 	}
@@ -100,7 +111,7 @@ func (s *cloudFileServerImpl) Upload(_ context.Context, req *rpc_impl.CloudFile_
 	err := os.WriteFile(absolutePath, req.File, 0755)
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_ExecutionError, zap.Error(err))
-		res.Err = utils.NewExecError(err.Error()).ToRPC()
+		res.Err = utils.NewExecError(err.Error())
 		return res, nil
 	}
 
@@ -119,7 +130,7 @@ func (s *cloudFileServerImpl) Upload(_ context.Context, req *rpc_impl.CloudFile_
 		mlog.Logger().Error(mconst.Error_ExecutionError,
 			zap.NamedError(mconst.Error_DBError, err),
 			zap.NamedError(mconst.Error_ExecutionError, err2))
-		res.Err = utils.NewExecError(utils.ErrorsToString(err, err2)).ToRPC()
+		res.Err = utils.NewExecError(utils.ErrorsToString(err, err2))
 		return res, nil
 	}
 
@@ -134,11 +145,14 @@ func (s *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFil
 			zap.String("operator", req.OperatorId),
 			zap.String("file", req.FileId),
 			zap.String("password", req.Password))
-		res.Err = utils.Error_InvalidParams.ToRPC()
+		res.Err = utils.Error_InvalidParams
 		return res, nil
 	}
 
-	rpcErr := rce_invoke.AuthUserInfo(ctx, req.OperatorId, req.Password)
+	rpcErr := rce_invoke.AuthUserInfo(ctx, &rpc_impl.User_AuthenticateReq{
+		UserId:   req.OperatorId,
+		Password: req.Password,
+	})
 	if rpcErr != nil {
 		mlog.Logger().Error("auth user info failed", zap.String("error", rpcErr.String()))
 		res.Err = rpcErr
@@ -148,13 +162,13 @@ func (s *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFil
 	fileRecord, err := db.GetCloudFileDao().QueryOne(req.FileId)
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_DBError, zap.Error(err))
-		res.Err = utils.NewDBError(err.Error()).ToRPC()
+		res.Err = utils.NewDBError(err.Error())
 		return res, nil
 	}
 
 	if len(req.FileName)+len(req.ExtensionName) < 1 && fileRecord.IsPublic == req.IsPublic && len(req.File) < 1 {
 		mlog.Logger().Error(mconst.Error_NoValidModification)
-		res.Err = utils.Error_NoValidModification.ToRPC()
+		res.Err = utils.Error_NoValidModification
 		return res, nil
 	}
 
@@ -166,7 +180,7 @@ func (s *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFil
 		if fileRecord.IsPublic {
 			if err = os.MkdirAll(spliceFileDir(false, req.OperatorId), 0755); err != nil {
 				mlog.Logger().Error(mconst.Error_ExecutionError, zap.Error(err))
-				res.Err = utils.NewExecError(err.Error()).ToRPC()
+				res.Err = utils.NewExecError(err.Error())
 				return res, nil
 			}
 		}
@@ -178,7 +192,7 @@ func (s *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFil
 		err = os.Rename(oldPath, getValidBackupFileName(privPath))
 		if err != nil {
 			mlog.Logger().Error(mconst.Error_ExecutionError, zap.Error(err))
-			res.Err = utils.NewExecError(err.Error()).ToRPC()
+			res.Err = utils.NewExecError(err.Error())
 			return res, nil
 		}
 
@@ -187,7 +201,7 @@ func (s *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFil
 		err = os.WriteFile(absolutePath, req.File, 0755)
 		if err != nil {
 			mlog.Logger().Error(mconst.Error_ExecutionError, zap.Error(err))
-			res.Err = utils.NewExecError(err.Error()).ToRPC()
+			res.Err = utils.NewExecError(err.Error())
 			return res, nil
 		}
 
@@ -228,7 +242,7 @@ func (s *cloudFileServerImpl) Modify(ctx context.Context, req *rpc_impl.CloudFil
 
 		mlog.Logger().Error(mconst.Error_ExecutionError, zap.Error(err))
 
-		res.Err = utils.NewExecError(errMsg).ToRPC()
+		res.Err = utils.NewExecError(errMsg)
 		return res, nil
 	}
 
@@ -243,11 +257,14 @@ func (s *cloudFileServerImpl) Delete(ctx context.Context, req *rpc_impl.CloudFil
 			zap.String("operator", req.OperatorId),
 			zap.String("password", req.Password),
 			zap.String("file", req.FileId))
-		res.Err = utils.Error_InvalidParams.ToRPC()
+		res.Err = utils.Error_InvalidParams
 		return res, nil
 	}
 
-	rpcErr := rce_invoke.AuthUserInfo(ctx, req.OperatorId, req.Password)
+	rpcErr := rce_invoke.AuthUserInfo(ctx, &rpc_impl.User_AuthenticateReq{
+		UserId:   req.OperatorId,
+		Password: req.Password,
+	})
 	if rpcErr != nil {
 		mlog.Logger().Error("auth user info failed", zap.String("error", rpcErr.String()))
 		res.Err = rpcErr
@@ -257,7 +274,7 @@ func (s *cloudFileServerImpl) Delete(ctx context.Context, req *rpc_impl.CloudFil
 	fileRecord, err := db.GetCloudFileDao().QueryOne(req.FileId)
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_DBError, zap.Error(err))
-		res.Err = utils.NewDBError(err.Error()).ToRPC()
+		res.Err = utils.NewDBError(err.Error())
 		return res, nil
 	}
 
@@ -266,7 +283,7 @@ func (s *cloudFileServerImpl) Delete(ctx context.Context, req *rpc_impl.CloudFil
 	err = db.GetCloudFileDao().UpdateColumnsByFileID(fileRecord, model.CloudFile_IsDeleted)
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_DBError, zap.Error(err))
-		res.Err = utils.NewDBError(err.Error()).ToRPC()
+		res.Err = utils.NewDBError(err.Error())
 		return res, nil
 	}
 

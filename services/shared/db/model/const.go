@@ -1,10 +1,21 @@
 package model
 
+// config center
+
 const (
-	Common_ID             = "id"
-	Common_CreatedTime    = "created_time"
-	Common_UpdateTime     = "update_time"
-	Common_OptimisticLock = "optimistic_lock"
+	ServiceConfig_ServiceID     = "service_id"
+	ServiceConfig_Level         = "level"
+	ServiceConfig_ServiceName   = "service_name"
+	ServiceConfig_ConfigItemIDs = "config_item_ids"
+	ServiceConfig_IsDelete      = "is_delete"
+)
+
+const (
+	ConfigItem_ConfigItemID   = "config_item_id"
+	ConfigItem_ConfigItemName = "config_item_name"
+	ConfigItem_ConfigItemTag  = "config_item_tag"
+	ConfigItem_ConfigSubItems = "config_sub_items"
+	ConfigItem_BeUsed         = "be_used"
 )
 
 // services
@@ -30,36 +41,11 @@ const (
 	CloudFile_IsDeleted        = "is_deleted"
 )
 
-const (
-	Note_WriteBy   = "write_by"
-	Note_Topic     = "topic"
-	Note_Content   = "content"
-	Note_IsPublic  = "is_public"
-	Note_IsDeleted = "is_deleted"
-)
+// common
 
 const (
-	Task_TaskName    = "task_name"
-	Task_PostedBy    = "posted_by"
-	Task_Description = "description"
-	Task_PreTaskIDs  = "pre_task_ids"
-	Task_Status      = "status"
-)
-
-// config center
-
-const (
-	ServiceConfig_ServiceID     = "service_id"
-	ServiceConfig_Level         = "level"
-	ServiceConfig_ServiceName   = "service_name"
-	ServiceConfig_ConfigItemIDs = "config_item_ids"
-	ServiceConfig_IsDelete      = "is_delete"
-)
-
-const (
-	ConfigItem_ConfigItemID   = "config_item_id"
-	ConfigItem_ConfigItemName = "config_item_name"
-	ConfigItem_ConfigItemTag  = "config_item_tag"
-	ConfigItem_ConfigSubItems = "config_sub_items"
-	ConfigItem_BeUsed         = "be_used"
+	Common_ID             = "id"
+	Common_CreatedTime    = "created_time"
+	Common_UpdateTime     = "update_time"
+	Common_OptimisticLock = "optimistic_lock"
 )

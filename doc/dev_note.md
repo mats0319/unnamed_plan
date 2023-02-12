@@ -64,6 +64,8 @@
     2. 检测代码中的*可疑结构*(go vet)
 5. 引入核心服务，包含配置中心和服务注册中心功能
 6. 删除任务系统
+7. 重写前端页面，使用vue3，合并原admin_web与public_web，删除原public_mobile
+8. 删除笔记系统
 
 优化：
 
@@ -78,6 +80,10 @@
 6. nginx反向代理规则，统一各来源的请求url前缀为：`https://117.50.177.201/api`
 7. 优化项目部署流程，将服务升级过程编写成脚本`upgrade_services.sh`
 8. 前端退出登录时，清空登录信息
+9. 调整http请求结构与规则
+    1. 使用pb结构中的error
+    2. 多登限制信息从http response data移动到header(user id & token)，调整文档
+    3. http返回结构调整，暂时依旧使用data封装一层返回结构
 
 ## 计划开发内容
 
@@ -89,13 +95,7 @@
 2. 调用链追踪
 3. 限流、熔断、降级等功能
 
-前端：（暂不考虑升级到vue3）
-
-1. ts代码优化，例如note的修改功能，使用了很多变量，可以优化为使用一个object
-2. 后台界面，任务模块，为不同状态的任务添加不同样式（例如已完成的整行置灰、进行中的状态栏加粗），调整代码：按照任务状态排序
-3. review code，看了一圈下来，发现前端代码确实需要重构了...
-4. 尝试将开发环境和生产环境中的相同环境变量（VUE_APP_axios_source_sign）移除出环境变量，改用其他方式实现
-5. 查询函数合并，例如listByUploader/listPublic，它们的接口完全一致，实现也相差不大，所以考虑合并成一个接口，增加参数控制查询方式
+前端：
 
 后端：
 
@@ -107,9 +107,11 @@
     5. github.com/andydotxyz/chess go GUI开发
     6. go zero 一个微服务框架
     7. uber-go/fx 依赖注入框架
+2. pb生成的go代码，默认包含tag：json:"omitempty"，导致请求返回结果可能不包含指定字段
+    1. [x] 前端添加判断：字段是否存在
+    2. [ ] 修改pb生成go代码规则：不添加该tag
 
 其他：
 
 1. makefile添加前端build脚本（powershell），包含build、dist文件夹移动
 2. 想一想什么时候用`service`，什么时候用`server`，然后把命名过一遍
-3. 让protocol buffer生成go、ts两套代码，然后前端在axios请求中使用ts代码中的输入、输出结构——proto生成ts多是民间代码，需要甄别

@@ -31,20 +31,20 @@ func (s *userServerImpl) Login(_ context.Context, req *rpc_impl.User_LoginReq) (
 		mlog.Logger().Error(mconst.Error_InvalidParams,
 			zap.String("user name", req.UserName),
 			zap.String("password", req.Password))
-		res.Err = utils.Error_InvalidParams.ToRPC()
+		res.Err = utils.Error_InvalidParams
 		return res, nil
 	}
 
 	user, err := db.GetUserDao().QueryOneByUserName(req.UserName)
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_DBError, zap.Error(err))
-		res.Err = utils.NewDBError(err.Error()).ToRPC()
+		res.Err = utils.NewDBError(err.Error())
 		return res, nil
 	}
 
 	if user.Password != utils.CalcSHA256(req.Password, user.Salt) {
 		mlog.Logger().Error(mconst.Error_InvalidAccountOrPassword)
-		res.Err = utils.Error_InvalidAccountOrPassword.ToRPC()
+		res.Err = utils.Error_InvalidAccountOrPassword
 		return res, nil
 	}
 
@@ -62,7 +62,7 @@ func (s *userServerImpl) List(_ context.Context, req *rpc_impl.User_ListReq) (*r
 		mlog.Logger().Error(mconst.Error_InvalidParams,
 			zap.String("operator", req.OperatorId),
 			zap.String("page info", req.Page.String()))
-		res.Err = utils.Error_InvalidParams.ToRPC()
+		res.Err = utils.Error_InvalidParams
 		return res, nil
 	}
 
@@ -72,7 +72,7 @@ func (s *userServerImpl) List(_ context.Context, req *rpc_impl.User_ListReq) (*r
 	users, count, err := db.GetUserDao().QueryPageLEPermission(pageSize, pageNum, req.OperatorId)
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_DBError, zap.Error(err))
-		res.Err = utils.NewDBError(err.Error()).ToRPC()
+		res.Err = utils.NewDBError(err.Error())
 		return res, nil
 	}
 
@@ -85,26 +85,36 @@ func (s *userServerImpl) List(_ context.Context, req *rpc_impl.User_ListReq) (*r
 func (s *userServerImpl) Create(_ context.Context, req *rpc_impl.User_CreateReq) (*rpc_impl.User_CreateRes, error) {
 	res := &rpc_impl.User_CreateRes{}
 
-	if len(req.OperatorId) < 1 || len(req.UserName) < 1 || len(req.Password) < 1 {
+	if len(req.OperatorId) < 1 || len(req.UserName) < 1 || len(req.Password) < 1 || req.Permission < 1 ||
+		len(req.OperatorPassword) < 1 {
 		mlog.Logger().Error(mconst.Error_InvalidParams,
 			zap.String("operator", req.OperatorId),
 			zap.String("user name", req.UserName),
-			zap.String("password", req.Password))
-		res.Err = utils.Error_InvalidParams.ToRPC()
+			zap.String("password", req.Password),
+			zap.Uint32("permission", req.Permission),
+			zap.String("operator password", req.OperatorPassword))
+		res.Err = utils.Error_InvalidParams
+		return res, nil
+	}
+
+	_, err := verifyPwdByUserID(req.OperatorId, req.OperatorPassword)
+	if err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError)
+		res.Err = utils.NewExecError(err.Error())
 		return res, nil
 	}
 
 	operator, err := db.GetUserDao().QueryOne(req.OperatorId)
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_DBError, zap.Error(err))
-		res.Err = utils.NewDBError(err.Error()).ToRPC()
+		res.Err = utils.NewDBError(err.Error())
 		return res, nil
 	}
 
 	permission := uint8(req.Permission)
 	if operator.Permission < config.GetConfig().ARankAdminPermission || operator.Permission <= permission {
 		mlog.Logger().Error(mconst.Error_PermissionDenied)
-		res.Err = utils.Error_PermissionDenied.ToRPC()
+		res.Err = utils.Error_PermissionDenied
 		return res, nil
 	}
 
@@ -119,7 +129,7 @@ func (s *userServerImpl) Create(_ context.Context, req *rpc_impl.User_CreateReq)
 	})
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_DBError, zap.Error(err))
-		res.Err = utils.NewDBError(err.Error()).ToRPC()
+		res.Err = utils.NewDBError(err.Error())
 		return res, nil
 	}
 
@@ -129,36 +139,44 @@ func (s *userServerImpl) Create(_ context.Context, req *rpc_impl.User_CreateReq)
 func (s *userServerImpl) Lock(_ context.Context, req *rpc_impl.User_LockReq) (*rpc_impl.User_LockRes, error) {
 	res := &rpc_impl.User_LockRes{}
 
-	if len(req.OperatorId) < 1 || len(req.UserId) < 1 {
+	if len(req.OperatorId) < 1 || len(req.UserId) < 1 || len(req.Password) < 1 {
 		mlog.Logger().Error(mconst.Error_InvalidParams,
 			zap.String("operator", req.OperatorId),
-			zap.String("user", req.UserId))
-		res.Err = utils.Error_InvalidParams.ToRPC()
+			zap.String("user", req.UserId),
+			zap.String("password", req.Password))
+		res.Err = utils.Error_InvalidParams
+		return res, nil
+	}
+
+	_, err := verifyPwdByUserID(req.OperatorId, req.Password)
+	if err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError)
+		res.Err = utils.NewExecError(err.Error())
 		return res, nil
 	}
 
 	users, err := db.GetUserDao().Query([]string{req.OperatorId, req.UserId})
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_DBError, zap.Error(err))
-		res.Err = utils.NewDBError(err.Error()).ToRPC()
+		res.Err = utils.NewDBError(err.Error())
 		return res, nil
 	}
 
-	users, err = sortUsersByUserID(users, []string{req.OperatorId, req.UserId})
+	users, err = sortUsersByID(users, []string{req.OperatorId, req.UserId})
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_ExecutionError, zap.Error(err))
-		res.Err = utils.NewExecError(err.Error()).ToRPC()
+		res.Err = utils.NewExecError(err.Error())
 		return res, nil
 	}
 
 	if users[1].IsLocked {
 		mlog.Logger().Error(mconst.Error_UserAlreadyLocked)
-		res.Err = utils.NewExecError(mconst.Error_UserAlreadyLocked).ToRPC()
+		res.Err = utils.NewExecError(mconst.Error_UserAlreadyLocked)
 		return res, nil
 	}
 	if users[0].Permission < config.GetConfig().ARankAdminPermission || users[0].Permission <= users[1].Permission {
 		mlog.Logger().Error(mconst.Error_PermissionDenied)
-		res.Err = utils.NewExecError(mconst.Error_PermissionDenied).ToRPC()
+		res.Err = utils.NewExecError(mconst.Error_PermissionDenied)
 		return res, nil
 	}
 
@@ -167,7 +185,7 @@ func (s *userServerImpl) Lock(_ context.Context, req *rpc_impl.User_LockReq) (*r
 	err = db.GetUserDao().UpdateColumnsByUserID(users[1], model.User_IsLocked)
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_DBError, zap.Error(err))
-		res.Err = utils.NewDBError(err.Error()).ToRPC()
+		res.Err = utils.NewDBError(err.Error())
 		return res, nil
 	}
 
@@ -177,36 +195,44 @@ func (s *userServerImpl) Lock(_ context.Context, req *rpc_impl.User_LockReq) (*r
 func (s *userServerImpl) Unlock(_ context.Context, req *rpc_impl.User_UnlockReq) (*rpc_impl.User_UnlockRes, error) {
 	res := &rpc_impl.User_UnlockRes{}
 
-	if len(req.OperatorId) < 1 || len(req.UserId) < 1 {
+	if len(req.OperatorId) < 1 || len(req.UserId) < 1 || len(req.Password) < 1 {
 		mlog.Logger().Error(mconst.Error_InvalidParams,
 			zap.String("operator", req.OperatorId),
-			zap.String("user", req.UserId))
-		res.Err = utils.Error_InvalidParams.ToRPC()
+			zap.String("user", req.UserId),
+			zap.String("password", req.Password))
+		res.Err = utils.Error_InvalidParams
+		return res, nil
+	}
+
+	_, err := verifyPwdByUserID(req.OperatorId, req.Password)
+	if err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError)
+		res.Err = utils.NewExecError(err.Error())
 		return res, nil
 	}
 
 	users, err := db.GetUserDao().Query([]string{req.OperatorId, req.UserId})
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_DBError, zap.Error(err))
-		res.Err = utils.NewDBError(err.Error()).ToRPC()
+		res.Err = utils.NewDBError(err.Error())
 		return res, nil
 	}
 
-	users, err = sortUsersByUserID(users, []string{req.OperatorId, req.UserId})
+	users, err = sortUsersByID(users, []string{req.OperatorId, req.UserId})
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_ExecutionError, zap.Error(err))
-		res.Err = utils.NewExecError(err.Error()).ToRPC()
+		res.Err = utils.NewExecError(err.Error())
 		return res, nil
 	}
 
 	if !users[1].IsLocked {
 		mlog.Logger().Error(mconst.Error_UserAlreadyUnlocked)
-		res.Err = utils.NewExecError(mconst.Error_UserAlreadyUnlocked).ToRPC()
+		res.Err = utils.NewExecError(mconst.Error_UserAlreadyUnlocked)
 		return res, nil
 	}
 	if users[0].Permission < config.GetConfig().ARankAdminPermission || users[0].Permission <= users[1].Permission {
 		mlog.Logger().Error(mconst.Error_PermissionDenied)
-		res.Err = utils.NewExecError(mconst.Error_PermissionDenied).ToRPC()
+		res.Err = utils.NewExecError(mconst.Error_PermissionDenied)
 		return res, nil
 	}
 
@@ -215,7 +241,7 @@ func (s *userServerImpl) Unlock(_ context.Context, req *rpc_impl.User_UnlockReq)
 	err = db.GetUserDao().UpdateColumnsByUserID(users[1], model.User_IsLocked)
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_DBError, zap.Error(err))
-		res.Err = utils.NewDBError(err.Error()).ToRPC()
+		res.Err = utils.NewDBError(err.Error())
 		return res, nil
 	}
 
@@ -229,20 +255,20 @@ func (s *userServerImpl) ModifyInfo(_ context.Context, req *rpc_impl.User_Modify
 		mlog.Logger().Error(mconst.Error_InvalidParams,
 			zap.String("operator", req.OperatorId),
 			zap.String("user", req.UserId))
-		res.Err = utils.Error_InvalidParams.ToRPC()
+		res.Err = utils.Error_InvalidParams
 		return res, nil
 	}
 
 	if len(req.Nickname)+len(req.Password) < 1 {
 		mlog.Logger().Error(mconst.Error_NoValidModification)
-		res.Err = utils.Error_NoValidModification.ToRPC()
+		res.Err = utils.Error_NoValidModification
 		return res, nil
 	}
 
 	user, err := verifyPwdByUserID(req.UserId, req.CurrPwd)
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_ExecutionError)
-		res.Err = utils.NewExecError(err.Error()).ToRPC()
+		res.Err = utils.NewExecError(err.Error())
 		return res, nil
 	}
 
@@ -259,7 +285,7 @@ func (s *userServerImpl) ModifyInfo(_ context.Context, req *rpc_impl.User_Modify
 	err = db.GetUserDao().UpdateColumnsByUserID(user, updateColumns...)
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_DBError, zap.Error(err))
-		res.Err = utils.NewDBError(err.Error()).ToRPC()
+		res.Err = utils.NewDBError(err.Error())
 		return res, nil
 	}
 
@@ -269,25 +295,34 @@ func (s *userServerImpl) ModifyInfo(_ context.Context, req *rpc_impl.User_Modify
 func (s *userServerImpl) ModifyPermission(_ context.Context, req *rpc_impl.User_ModifyPermissionReq) (*rpc_impl.User_ModifyPermissionRes, error) {
 	res := &rpc_impl.User_ModifyPermissionRes{}
 
-	if len(req.OperatorId) < 1 || len(req.UserId) < 1 {
+	if len(req.OperatorId) < 1 || len(req.UserId) < 1 || req.Permission < 1 || len(req.Password) < 1 {
 		mlog.Logger().Error(mconst.Error_InvalidParams,
 			zap.String("operator", req.OperatorId),
-			zap.String("user", req.UserId))
-		res.Err = utils.Error_InvalidParams.ToRPC()
+			zap.String("user", req.UserId),
+			zap.Uint32("permission", req.Permission),
+			zap.String("password", req.Password))
+		res.Err = utils.Error_InvalidParams
+		return res, nil
+	}
+
+	_, err := verifyPwdByUserID(req.OperatorId, req.Password)
+	if err != nil {
+		mlog.Logger().Error(mconst.Error_ExecutionError)
+		res.Err = utils.NewExecError(err.Error())
 		return res, nil
 	}
 
 	users, err := db.GetUserDao().Query([]string{req.OperatorId, req.UserId})
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_DBError, zap.Error(err))
-		res.Err = utils.NewDBError(err.Error()).ToRPC()
+		res.Err = utils.NewDBError(err.Error())
 		return res, nil
 	}
 
-	users, err = sortUsersByUserID(users, []string{req.OperatorId, req.UserId})
+	users, err = sortUsersByID(users, []string{req.OperatorId, req.UserId})
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_ExecutionError, zap.Error(err))
-		res.Err = utils.NewExecError(err.Error()).ToRPC()
+		res.Err = utils.NewExecError(err.Error())
 		return res, nil
 	}
 
@@ -296,7 +331,7 @@ func (s *userServerImpl) ModifyPermission(_ context.Context, req *rpc_impl.User_
 		users[1].Permission >= config.GetConfig().SRankAdminPermission ||
 		permission >= config.GetConfig().SRankAdminPermission {
 		mlog.Logger().Error(mconst.Error_PermissionDenied)
-		res.Err = utils.NewExecError(mconst.Error_PermissionDenied).ToRPC()
+		res.Err = utils.NewExecError(mconst.Error_PermissionDenied)
 		return res, nil
 	}
 
@@ -305,7 +340,7 @@ func (s *userServerImpl) ModifyPermission(_ context.Context, req *rpc_impl.User_
 	err = db.GetUserDao().UpdateColumnsByUserID(users[1], model.User_Permission)
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_DBError, zap.Error(err))
-		res.Err = utils.NewDBError(err.Error()).ToRPC()
+		res.Err = utils.NewDBError(err.Error())
 		return res, nil
 	}
 
@@ -319,14 +354,14 @@ func (s *userServerImpl) Authenticate(_ context.Context, req *rpc_impl.User_Auth
 		mlog.Logger().Error(mconst.Error_InvalidParams,
 			zap.String("user", req.UserId),
 			zap.String("password", req.Password))
-		res.Err = utils.Error_InvalidParams.ToRPC()
+		res.Err = utils.Error_InvalidParams
 		return res, nil
 	}
 
 	_, err := verifyPwdByUserID(req.UserId, req.Password)
 	if err != nil {
 		mlog.Logger().Error(mconst.Error_InvalidAccountOrPassword)
-		res.Err = utils.Error_InvalidAccountOrPassword.ToRPC()
+		res.Err = utils.Error_InvalidAccountOrPassword
 		return res, nil
 	}
 
@@ -361,7 +396,7 @@ func verifyPwdByUserID(userID string, password string) (*model.User, error) {
 	return user, nil
 }
 
-func sortUsersByUserID(users []*model.User, order []string) ([]*model.User, error) {
+func sortUsersByID(users []*model.User, order []string) ([]*model.User, error) {
 	if len(users) != len(order) {
 		return nil, errors.New(fmt.Sprintf("unmatched users amount, users %d, orders %d", len(users), len(order)))
 	}

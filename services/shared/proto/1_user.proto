@@ -60,6 +60,7 @@ message User {
     string user_name = 2;
     string password = 3;
     uint32 permission = 4;
+    string operator_password = 5;
   }
 
   message CreateRes {
@@ -69,6 +70,7 @@ message User {
   message LockReq {
     string operator_id = 1;
     string user_id = 2;
+    string password = 3;
   }
 
   message LockRes {
@@ -78,6 +80,7 @@ message User {
   message UnlockReq {
     string operator_id = 1;
     string user_id = 2;
+    string password = 3;
   }
 
   message UnlockRes {
@@ -100,6 +103,7 @@ message User {
     string operator_id = 1;
     string user_id = 2;
     uint32 permission = 3;
+    string password = 4;
   }
 
   message ModifyPermissionRes {
