@@ -3,17 +3,17 @@ import { ElNotification } from "element-plus"
 // Log print to console and display in webpage
 class Log {
     success(behavior: string): void {
-        console.log("> " + behavior + " success.")
+        console.log("> " + behavior + " Success.")
         ElNotification({ title: behavior, type: "success", customClass: "color-bg-1" })
     }
 
     fail(behavior: string, errStr: string = ""): void {
-        console.log("> " + behavior + " failed.", errStr)
+        console.log("> " + behavior + " Failed.", errStr)
         ElNotification({ title: behavior, message: errStr, type: "error", customClass: "color-bg-1" })
     }
 
     httpError(code: number): void {
-        let str = "Unknown Http Status Code: " + code
+        let str = "Unknown HTTP Status Code: " + code
         if (code == 401) {
             str = "Unauthorized"
         } else if (code == 500) {

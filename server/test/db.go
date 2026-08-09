@@ -14,7 +14,8 @@ var db *gorm.DB
 func createTable() {
 	dropTable()
 
-	if err := db.Migrator().CreateTable(model.ModelList...); err != nil {
+	err := db.Migrator().CreateTable(model.ModelList...)
+	if err != nil {
 		log.Fatalln("create db table failed, error: ", err)
 	}
 
@@ -23,11 +24,11 @@ func createTable() {
 
 func dropTable() {
 	if db == nil {
-		dbConfig := mdb.DefaultConfig(true)
-		db = mdb.InitDB(dbConfig)
+		db = mdb.InitTestDB()
 	}
 
-	if err := db.Migrator().DropTable(model.ModelList...); err != nil {
+	err := db.Migrator().DropTable(model.ModelList...)
+	if err != nil {
 		log.Fatalln("drop db table failed, error: ", err)
 	}
 }

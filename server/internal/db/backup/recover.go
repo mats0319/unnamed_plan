@@ -3,7 +3,6 @@ package backup
 import (
 	"encoding/json"
 	"fmt"
-	"io/fs"
 	"log/slog"
 	"os"
 	"strings"
@@ -26,8 +25,8 @@ func Recover[T any](t doBackupRecover[T]) {
 			continue // ignore folder
 		}
 
-		var fileInfo fs.FileInfo
-		if fileInfo, err = entry[i].Info(); err != nil {
+		fileInfo, err := entry[i].Info()
+		if err != nil {
 			mlog.Error("get file info failed", slog.Any("error", err))
 			continue
 		}
@@ -36,7 +35,8 @@ func Recover[T any](t doBackupRecover[T]) {
 			continue // ignore not json files
 		}
 
-		if err := recoverFile(dir+fileInfo.Name(), t); err != nil {
+		err = recoverFile(dir+fileInfo.Name(), t)
+		if err != nil {
 			return
 		}
 	}
@@ -50,7 +50,8 @@ func recoverFile[T any](path string, t doBackupRecover[T]) error {
 	}
 
 	fileData := t.EmptySlice()
-	if err := json.Unmarshal(fileBytes, &fileData); err != nil {
+	err = json.Unmarshal(fileBytes, &fileData)
+	if err != nil {
 		mlog.Error("unmarshal file failed", slog.Any("error", err))
 		return err
 	}
@@ -63,7 +64,8 @@ func recoverFile[T any](path string, t doBackupRecover[T]) error {
 		DoUpdates: clause.AssignmentColumns(t.ColumnNames()), // all fields
 	}
 
-	if err := dal.DB().Model(t.Model()).Clauses(clauseSkipAutoTime).Create(fileData).Error; err != nil {
+	err = dal.DB().Model(t.Model()).Clauses(clauseSkipAutoTime).Create(fileData).Error
+	if err != nil {
 		mlog.Error("save file failed", slog.Any("error", err))
 		return err
 	}

@@ -1,18 +1,20 @@
 {
 	"name": "web",
-	"version": "0.1.0-2026.4.18",
+	"version": "0.1.0-2026.7",
 	"private": true,
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
+		"preview": "vite preview",
 		"build": "vue-tsc --noEmit && vite build",
 		"format": "eslint --fix --format html --output-file ./format_result.html"
 	},
 	"dependencies": {
 		"axios": "^1.15.0",
 		"crypto-js": "^4.2.0",
-		"element-plus": "^2.13.0",
+		"element-plus": "^2.14.1",
 		"pinia": "^3.0.4",
+		"qrcode": "^1.5.4",
 		"vue": "^3.5.26",
 		"vue-router": "^4.6.3"
 	},
@@ -21,6 +23,7 @@
 		"@tsconfig/node24": "^24.0.3",
 		"@types/crypto-js": "^4.2.2",
 		"@types/node": "^24.10.4",
+		"@types/qrcode": "^1.5.6",
 		"@vitejs/plugin-vue": "^6.0.2",
 		"@vue/tsconfig": "^0.8.1",
 		"eslint": "^9.39.2",
@@ -35,5 +38,5 @@
 		"vue-eslint-parser": "^10.2.0",
 		"vue-tsc": "^3.2.1"
 	},
-	"packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319"
+	"packageManager": "pnpm@11.15.1+sha512.81350b07e53c9538a02f1f2303b4290fa2d7be04e56e2a970c4cc4b417dc761de196edabd49d55c7dc9580db81007c44143e4e3d7e462b3000d23c255122d065"
 }

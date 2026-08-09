@@ -21,9 +21,9 @@ import { useGameScoreStore } from "@/pinia/game_score.ts"
 import { GameName } from "@/axios/ts/game.go.ts"
 import { isFlipResult } from "@/ts/data.ts"
 
-let gameScoreStore = useGameScoreStore()
+const gameScoreStore = useGameScoreStore()
 
-let gameUrl = ref<string>(import.meta.env.Vite_axios_flip_game_url)
+const gameUrl = ref<string>(import.meta.env.Vite_axios_flip_game_url)
 
 onMounted(() => {
     gameScoreStore.listGameScore(GameName.Flip, 10, 1)
@@ -33,14 +33,9 @@ function displayFlipResult(flipResult: string): string {
     try {
         const obj = JSON.parse(flipResult)
 
-        if (!isFlipResult(obj)) {
-            console.log("> Display Flip Result - Invalid Json Str: ", flipResult, obj)
-            return flipResult
-        }
-
-        return `Duration: ${obj.duration}, Step: ${obj.steps}.`
+        return isFlipResult(obj) ? `Duration: ${obj.duration}, Step: ${obj.steps}.` : flipResult
     } catch(error) {
-        console.error("> Json Parse Failed. ", error)
+        console.error("> Json Parse Failed. ", flipResult, error)
         return flipResult
     }
 }

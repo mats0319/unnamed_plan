@@ -16,6 +16,10 @@
   justify-content: center;
 }
 
+.color-red {
+  color: rgb(176, 8, 21);
+}
+
 /* 底层背景 */
 .color-bg-0 {
   background-color: rgb(210, 209, 186);
@@ -32,6 +36,15 @@
   .el-dialog__body {
     width: 60%;
     margin: 5% auto;
+  }
+
+  .el-dialog__footer {
+    display: flex;
+    justify-content: end;
+
+    .elevated-button {
+      padding-left: 2rem;
+    }
   }
 }
 

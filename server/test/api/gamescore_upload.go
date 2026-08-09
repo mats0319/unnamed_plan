@@ -1,6 +1,8 @@
 package api
 
 import (
+	"fmt"
+
 	api "github.com/mats0319/unnamed_plan/server/cmd/api/go"
 	"github.com/mats0319/unnamed_plan/server/internal/db/dal"
 	"github.com/mats0319/unnamed_plan/server/internal/utils"
@@ -12,8 +14,13 @@ func UploadGameScore() {
 	testCase("success - user", uploadGameScoreCase_SuccessUser)
 }
 
+func uploadGameScoreParams(gameName api.GameName, score int, result string, player string) string {
+	return fmt.Sprintf(`{"game_name":%d,"score":%d,"result":"%s","player":"%s"}`,
+		gameName, score, result, player)
+}
+
 func uploadGameScoreCase_InvalidGameName() string {
-	res := httpInvoke(api.URI_UploadGameScore, `{"game_name":-1,"score":100000,"result":"test game result","player":"Visotor001"}`, "")
+	res := httpInvoke(api.URI_UploadGameScore, uploadGameScoreParams(-1, 100000, "test game result", "Visotor001"), "")
 	if res.IsSuccess || !errorIs(res.Err, utils.ErrInvalidGameName()) {
 		return unknownError
 	}
@@ -22,7 +29,7 @@ func uploadGameScoreCase_InvalidGameName() string {
 }
 
 func uploadGameScoreCase_SuccessVisitor() string {
-	res := httpInvoke(api.URI_UploadGameScore, `{"game_name":1,"score":100000,"result":"test game result","player":"Visotor001"}`, "")
+	res := httpInvoke(api.URI_UploadGameScore, uploadGameScoreParams(api.GameName_Flip, 100000, "test game result", "Visotor001"), "")
 	if !res.IsSuccess {
 		return res.Err
 	}
@@ -36,7 +43,7 @@ func uploadGameScoreCase_SuccessVisitor() string {
 }
 
 func uploadGameScoreCase_SuccessUser() string {
-	res := httpInvoke(api.URI_UploadGameScore, `{"game_name":1,"score":100000,"result":"test game result","player":""}`, accessToken_User)
+	res := httpInvoke(api.URI_UploadGameScore, uploadGameScoreParams(api.GameName_Flip, 100000, "test game result", ""), accessToken_User)
 	if !res.IsSuccess {
 		return res.Err
 	}

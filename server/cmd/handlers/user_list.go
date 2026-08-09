@@ -30,8 +30,8 @@ func ListUser(ctx *mhttp.Context) {
 
 	if !operator.IsAdmin {
 		e := utils.ErrPermissionDenied().WithParam("need admin", operator.UserName)
-		ctx.ResData = e
 		mlog.Error(e.String())
+		ctx.ResData = e
 		return
 	}
 
@@ -51,12 +51,13 @@ func usersDBToHTTP(users []*model.User) []*api.User {
 	res := make([]*api.User, len(users))
 	for i, v := range users {
 		res[i] = &api.User{
-			UserName:  v.UserName,
-			Nickname:  v.Nickname,
-			CreatedAt: v.CreatedAt,
-			IsAdmin:   v.IsAdmin,
-			EnableMFA: v.EnableMFA,
-			LastLogin: v.UpdatedAt,
+			UserName:   v.UserName,
+			Nickname:   v.Nickname,
+			CreatedAt:  v.CreatedAt,
+			IsAdmin:    v.IsAdmin,
+			EnableMFA:  v.EnableMFA,
+			HasTOTPKey: len(v.TOTPKey) > 0,
+			LastLogin:  v.UpdatedAt,
 		}
 	}
 

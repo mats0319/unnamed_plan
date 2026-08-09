@@ -17,7 +17,7 @@ import (
 // 这样再执行本程序，就可以区分一条数据是预设的还是恢复的了。
 // 我们做了什么：恢复功能执行到写数据库之前，我们调用了修改方法修改数据（具体修改内容见接口方法的实现）
 func TestBackupRecover(t *testing.T) {
-	mlog.Initialize(true)
+	mlog.InitializeTest()
 	defer mlog.Close()
 
 	initDB()
@@ -30,7 +30,8 @@ func TestBackupRecover(t *testing.T) {
 	mlog.Info("> Backup done.")
 
 	// prepare recover data
-	if err := prepareRecoverData(); err != nil {
+	err := prepareRecoverData()
+	if err != nil {
 		os.Exit(1)
 	}
 
@@ -41,12 +42,14 @@ func TestBackupRecover(t *testing.T) {
 }
 
 func prepareRecoverData() error {
-	if err := os.RemoveAll("./recover/"); err != nil {
+	err := os.RemoveAll("./recover/")
+	if err != nil {
 		mlog.Error("remove dir failed", slog.Any("error", err))
 		return err
 	}
 
-	if err := os.Rename("./backup/", "./recover/"); err != nil {
+	err = os.Rename("./backup/", "./recover/")
+	if err != nil {
 		mlog.Error("rename folder failed", slog.Any("error", err))
 		return err
 	}
@@ -55,14 +58,15 @@ func prepareRecoverData() error {
 }
 
 func initDB() {
-	dbConfig := mdb.DefaultConfig(true)
-	db := mdb.InitDB(dbConfig)
+	db := mdb.InitTestDB()
 
-	if err := db.Migrator().DropTable(model.ModelList...); err != nil {
+	err := db.Migrator().DropTable(model.ModelList...)
+	if err != nil {
 		log.Fatalln("drop db table failed, error: ", err)
 	}
 
-	if err := db.Migrator().CreateTable(model.ModelList...); err != nil {
+	err = db.Migrator().CreateTable(model.ModelList...)
+	if err != nil {
 		log.Fatalln("create db table failed, error: ", err)
 	}
 

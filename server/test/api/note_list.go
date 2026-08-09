@@ -1,6 +1,8 @@
 package api
 
 import (
+	"fmt"
+
 	"github.com/mats0319/unnamed_plan/server/cmd/api/go"
 	"github.com/mats0319/unnamed_plan/server/internal/db/dal"
 )
@@ -10,8 +12,12 @@ func ListNote() {
 	testCase("success - list only operator", listNoteCase_SuccessListOnlyOperator)
 }
 
+func listNoteParams(onlyOperator bool) string {
+	return fmt.Sprintf(`{"page":{"size":10,"num":1},"only_operator":%t}`, onlyOperator)
+}
+
 func listNoteCase_SuccessListAll() string {
-	res := httpInvoke(api.URI_ListNote, `{"page":{"size":10,"num":1},"only_operator":false}`, accessToken_User)
+	res := httpInvoke(api.URI_ListNote, listNoteParams(false), accessToken_User)
 	if !res.IsSuccess {
 		return res.Err
 	}
@@ -25,7 +31,7 @@ func listNoteCase_SuccessListAll() string {
 }
 
 func listNoteCase_SuccessListOnlyOperator() string {
-	res := httpInvoke(api.URI_ListNote, `{"page":{"size":10,"num":1},"only_operator":true}`, accessToken_User)
+	res := httpInvoke(api.URI_ListNote, listNoteParams(true), accessToken_User)
 	if !res.IsSuccess {
 		return res.Err
 	}

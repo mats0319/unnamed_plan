@@ -14,10 +14,13 @@ func main() {
 
 	api.GetAccessToken()
 
+	// todo: 编写更多异常用例
 	testApi("Register", api.Register)
-	testApi("Login", api.Login)
+	testApi("Login", api.Login) // include enable/disable MFA
 	testApi("List User", api.ListUser)
 	testApi("Modify User", api.ModifyUser)
+	testApi("New TOTP Key", api.NewTOTPKey)
+	testApi("Set MFA Status", api.SetMFAStatus)
 
 	testApi("Create Note", api.CreateNote)
 	testApi("List Note", api.ListNote)

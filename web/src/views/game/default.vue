@@ -3,5 +3,5 @@
 </template>
 
 <script setup lang="ts">
-import SubpageDefault from "@/components/subpage_default.vue"
+import SubpageDefault from "@/views/components/subpage_default.vue"
 </script>

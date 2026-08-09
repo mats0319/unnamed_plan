@@ -1,14 +1,13 @@
 package mlog
 
 import (
-	"errors"
 	"log/slog"
 	"testing"
 	"time"
 )
 
 func TestCustomLog(t *testing.T) {
-	Initialize(true)
+	InitializeTest()
 	defer Close()
 
 	logger := slog.Default().WithGroup("group1").WithGroup("group2")
@@ -18,31 +17,32 @@ func TestCustomLog(t *testing.T) {
 }
 
 func TestLogLevel(t *testing.T) {
-	Initialize(true)
+	InitializeTest()
 	defer Close()
 
-	Debug("debug level log", slog.Any("error", errors.New("debug error")))
+	Debug("debug level log")
 	Info("info level log")
 	Warn("warn level log")
-	Error("error level log", slog.Any("error", errors.New("error")))
+	Error("error level log")
 }
 
 func TestLogSplitFile(t *testing.T) {
-	Initialize(true)
+	InitializeTest()
 	defer Close()
 
 	lastSize := handler.Size
 	currentSize := handler.Size
-	for lastSize <= currentSize { // emit log split
+	for lastSize <= currentSize { // exit loop when emit log split
 		lastSize = currentSize
 
 		slog.SetDefault(slog.New(handler.WithGroup("groupName")))
-		Debug("test log message",
-			slog.String("Key1", "Value1"),
-			slog.String("Key2", "Value2"))
+		Log(nil, 100, "this is a long long test log message",
+			slog.String("key1", "value1"),
+			slog.String("key2", "value2"),
+		)
 
 		currentSize = handler.Size
 	}
 
-	time.Sleep(time.Second) // 阻塞，避免异步压缩goroutine因主程序退出而停止执行
+	time.Sleep(time.Second * 3) // 阻塞，避免异步压缩goroutine因主程序退出而停止执行
 }

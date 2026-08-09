@@ -2,7 +2,6 @@ package model
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/mats0319/unnamed_plan/server/internal/utils"
 	"gorm.io/gorm"
@@ -23,7 +22,7 @@ func (n *Note) BeforeCreate(_ *gorm.DB) error {
 		payload := fmt.Sprintf(`"writer":%s,"is anonymous":%t,"title":%s,"content":%s`,
 			n.Writer, n.IsAnonymous, n.Title, n.Content)
 
-		n.NoteID = strings.ToUpper(utils.CalcSHA256(payload)) // 保证新增接口幂等性
+		n.NoteID = utils.UUIDv5(payload) // 保证新增接口幂等性
 	}
 
 	return nil

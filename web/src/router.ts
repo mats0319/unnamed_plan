@@ -34,6 +34,11 @@ const routes: Array<RouteRecordRaw> = [
                 component: () => import("@/views/personal_center/modify_user.vue"),
             },
             {
+                path: "set-mfa-status",
+                name: "pSetMFAStatus",
+                component: () => import("@/views/personal_center/set_mfa_status.vue"),
+            },
+            {
                 path: "note",
                 name: "pNote",
                 component: () => import("@/views/personal_center/my_note.vue"),
@@ -73,11 +78,30 @@ export const router = createRouter({
     routes: routes,
 })
 
+
+if (__IsDev__) {
+    router.addRoute({
+        path: "/test",
+        name: "test",
+        meta: { hideTop: true },
+        component: () => import("@/views/components/test_page.vue"),
+        children: [{
+            path: "lock-button",
+            name: "TLockButton",
+            component: () => import("@/components/lock_button_test.vue")
+        }, {
+            path: "lock-screen",
+            name: "TLockScreen",
+            component: () => import("@/components/lock_screen_test.vue")
+        }]
+    })
+}
+
 router.beforeEach((to, _from, next) => {
     const userStore = useUserStore()
 
-    if (!(to.meta && to.meta.requireLogin) || userStore.isLogin()) {
     // 页面不需要登录，或者已经登录
+    if (!(to.meta && to.meta.requireLogin) || userStore.isLogin()) {
         next()
         return
     }

@@ -7,9 +7,9 @@ import (
 )
 
 type Error struct {
-	HttpCode int
+	HTTPCode int
 	Code     int
-	Detail   string
+	Message  string
 
 	Cause  error
 	Params map[string]any
@@ -18,14 +18,14 @@ type Error struct {
 
 var _ error = (*Error)(nil)
 
-func NewError(httpCode int, code int, detail string) *Error {
+func NewError(httpCode int, code int, message string) *Error {
 	var stack [32]uintptr
 	n := runtime.Callers(2, stack[:]) // skip 'runtime.caller' and 'NewError'
 
 	return &Error{
-		HttpCode: httpCode,
+		HTTPCode: httpCode,
 		Code:     code,
-		Detail:   detail,
+		Message:  message,
 		Params:   make(map[string]any),
 		Stack:    stack[:n],
 	}
@@ -37,17 +37,17 @@ func (e *Error) Error() string {
 		return ""
 	}
 
-	return fmt.Sprintf("error code: %d, detail: %s", e.Code, e.Detail)
+	return fmt.Sprintf("error code: %d", e.Code)
 }
 
-// String print all details, use in server
+// String print all details, use in server log
 func (e *Error) String() string {
 	if e == nil {
 		return ""
 	}
 
-	return fmt.Sprintf("error code: %d, detail: %s\nerr: %v\nparams: %#v\nstack trace: \n%s\n",
-		e.Code, e.Detail, e.Cause, e.Params, e.stackTrace())
+	return fmt.Sprintf("error code: %d, message: %s\nerr: %v\nparams: %#v\nstack trace: \n%s\n",
+		e.Code, e.Message, e.Cause, e.Params, e.stackTrace())
 }
 
 func (e *Error) WithCause(err error) *Error {

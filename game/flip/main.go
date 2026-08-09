@@ -16,7 +16,8 @@ func main() {
 	ebiten.SetWindowSize(flip.ScreenWidth, flip.ScreenHeight)
 	ebiten.SetWindowTitle("Flip")
 
-	if err := ebiten.RunGame(flipGame); err != nil {
+	err = ebiten.RunGame(flipGame)
+	if err != nil {
 		log.Fatal(err)
 	}
 }

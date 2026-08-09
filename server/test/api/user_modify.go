@@ -10,13 +10,16 @@ import (
 
 func ModifyUser() {
 	testCase("no changes", modifyUserCase_NoChanges)
-	testCase("invalid totp key", modifyUserCase_InvalidTotpKey)
 	testCase("same pwd", modifyUserCase_SamePwd)
 	testCase("success", modifyUserCase_Success)
 }
 
+func modifyUserParams(nickname string, password string) string {
+	return fmt.Sprintf(`{"nickname":"%s","password":"%s"}`, nickname, password)
+}
+
 func modifyUserCase_NoChanges() string {
-	res := httpInvoke(api.URI_ModifyUser, `{"nickname":"","password":"","enable_2fa":false,"totp_key":""}`, accessToken_User)
+	res := httpInvoke(api.URI_ModifyUser, modifyUserParams("", ""), accessToken_User)
 	if res.IsSuccess || !errorIs(res.Err, utils.ErrNoChanges()) {
 		return unknownError
 	}
@@ -24,17 +27,8 @@ func modifyUserCase_NoChanges() string {
 	return ""
 }
 
-func modifyUserCase_InvalidTotpKey() string {
-	res := httpInvoke(api.URI_ModifyUser, `{"nickname":"","password":"","enable_2fa":true,"totp_key":"123"}`, accessToken_User)
-	if res.IsSuccess || !errorIs(res.Err, utils.ErrInvalidTOTPKey()) {
-		return unknownError
-	}
-
-	return ""
-}
-
 func modifyUserCase_SamePwd() string {
-	res := httpInvoke(api.URI_ModifyUser, fmt.Sprintf(`{"nickname":"","password":"%s","enable_2fa":false,"totp_key":""}`, pwdSHA256), accessToken_User)
+	res := httpInvoke(api.URI_ModifyUser, modifyUserParams("", pwdSHA256), accessToken_User)
 	if res.IsSuccess || !errorIs(res.Err, utils.ErrSamePassword()) {
 		return unknownError
 	}
@@ -43,13 +37,13 @@ func modifyUserCase_SamePwd() string {
 }
 
 func modifyUserCase_Success() string {
-	res := httpInvoke(api.URI_ModifyUser, `{"nickname":"123","password":"","enable_2fa":false,"totp_key":""}`, accessToken_User)
+	res := httpInvoke(api.URI_ModifyUser, modifyUserParams("new nickname", ""), accessToken_User)
 	if !res.IsSuccess {
 		return res.Err
 	}
 
 	user, err := dal.GetUser("user")
-	if (user != nil && user.Nickname != "123") || err != nil {
+	if (user != nil && user.Nickname != "new nickname") || err != nil {
 		return unknownError
 	}
 

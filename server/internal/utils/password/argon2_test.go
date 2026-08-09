@@ -13,7 +13,8 @@ func TestPassword(t *testing.T) {
 	pwdArgon2 := GeneratePassword(pwdSHA256)
 	t.Log("> Password To DB: ", pwdArgon2)
 
-	if err := VerifyPassword(pwdSHA256, pwdArgon2); err != nil {
+	err := VerifyPassword(pwdSHA256, pwdArgon2)
+	if err != nil {
 		t.Fatal(err.String())
 	}
 	t.Log("> Verified.")

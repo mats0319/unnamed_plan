@@ -13,7 +13,7 @@
         </div>
 
         <div class="tc-item center-hv">
-          <outlined-button v-show="!userStore.isLogin()" @click="beforeOpenLoginDialog()">
+          <outlined-button v-show="!userStore.isLogin()" :onClick="beforeOpenLoginDialog">
             登录
           </outlined-button>
 
@@ -48,66 +48,60 @@
       </el-form-item>
 
       <el-form-item>
-        <outlined-button :details="tips_RegisterUser" :disabled="!canLoginFlag" @click="register">
-          注册新用户
-        </outlined-button>
+        <outlined-button :disabled="!canLoginFlag" :onClick="register">注册新用户</outlined-button>
       </el-form-item>
     </el-form>
 
     <el-dialog v-model="showLoginMFADialog" title="MFA" append-to-body>
       <el-form v-model="loginMFAReq" labelWidth="20%">
         <el-form-item label="TOTP Code">
-          <el-input v-model="loginMFAReq.totp_code" />
+          <el-input-otp v-model="loginMFAReq.totp_code" type="filled" />
         </el-form-item>
       </el-form>
 
       <template #footer>
-        <el-button @click="showLoginMFADialog = false">取消</el-button>
-        <el-button type="primary" :disabled="!canLoginMFAFlag" @click="loginMFA()">确认</el-button>
+        <elevated-button bg="white" :onClick="()=>{showLoginMFADialog=false}">取消</elevated-button>
+        <elevated-button bg="lightgray" :disabled="!canLoginMFAFlag" :onClick="loginMFA">确认</elevated-button>
       </template>
     </el-dialog>
 
     <template #footer>
-      <el-button @click="showLoginDialog = false">取消</el-button>
-      <el-button type="primary" :disabled="!canLoginFlag" @click="login()">登录</el-button>
+      <elevated-button bg="white" :onClick="()=>{showLoginDialog=false}">取消</elevated-button>
+      <elevated-button bg="lightgray" :disabled="!canLoginFlag" :onClick="login">登录</elevated-button>
     </template>
   </el-dialog>
 </template>
 
 <script lang="ts" setup>
-import { useUserStore } from "@/pinia/user.ts"
+import { useUserStore } from "@/pinia/user.js"
 import { ref, watch } from "vue"
-import { useFlagStore } from "@/pinia/flag.ts"
+import { useFlagStore } from "@/pinia/flag.js"
 import OutlinedButton from "@/components/outlined_button.vue"
-import { routerLink } from "@/ts/util.ts"
-import { LoginReq, LoginMFAReq } from "@/axios/ts/user.go.ts"
-import { tips_RegisterUser } from "@/ts/data.ts"
+import { routerLink } from "@/ts/util.js"
+import { LoginReq, LoginMFAReq } from "@/axios/ts/user.go.js"
+import ElevatedButton from "@/components/elevated_button.vue"
 
-let flags = useFlagStore()
-let userStore = useUserStore()
+const flags = useFlagStore()
+const userStore = useUserStore()
 
-let showLoginDialog = ref<boolean>(false)
-let canLoginFlag = ref<boolean>(false)
-let loginReq = ref<LoginReq>(new LoginReq())
+const showLoginDialog = ref<boolean>(false)
+const canLoginFlag = ref<boolean>(false) // also 'can register flag'
+const loginReq = ref<LoginReq>(new LoginReq())
 
-let showLoginMFADialog = ref<boolean>(false)
-let canLoginMFAFlag = ref<boolean>(false)
-let loginMFAReq = ref<LoginMFAReq>(new LoginMFAReq())
+const showLoginMFADialog = ref<boolean>(false)
+const canLoginMFAFlag = ref<boolean>(false)
+const loginMFAReq = ref<LoginMFAReq>(new LoginMFAReq())
 
 function beforeOpenLoginDialog(): void {
     loginReq.value = new LoginReq()
+
     showLoginDialog.value = true
 }
 
-function login(): void {
-    userStore.login(loginReq.value.user_name, loginReq.value.password, (mfaToken: string) => {
-        if (mfaToken.length < 1) {
-            showLoginDialog.value = false
-            return
-        }
+async function login(): Promise<void> {
+    const res = await userStore.login(loginReq.value.user_name, loginReq.value.password)
 
-        beforeOpenLoginMFADialog(mfaToken)
-    })
+    res.enable_mfa ? beforeOpenLoginMFADialog(res.mfa_token) : showLoginDialog.value = false
 }
 
 function beforeOpenLoginMFADialog(mfaToken: string): void {
@@ -117,17 +111,17 @@ function beforeOpenLoginMFADialog(mfaToken: string): void {
     showLoginMFADialog.value = true
 }
 
-function loginMFA(): void {
-    userStore.loginMFA(loginMFAReq.value.mfa_token, loginMFAReq.value.totp_code, () => {
-        showLoginMFADialog.value = false
-        showLoginDialog.value = false
-    })
+async function loginMFA(): Promise<void> {
+    await userStore.loginMFA(loginMFAReq.value.mfa_token, loginMFAReq.value.totp_code)
+
+    showLoginMFADialog.value = false
+    showLoginDialog.value = false
 }
 
-function register(): void {
-    userStore.register(loginReq.value.user_name, loginReq.value.password, () => {
-        showLoginDialog.value = false
-    })
+async function register(): Promise<void> {
+    await userStore.register(loginReq.value.user_name, loginReq.value.password)
+
+    showLoginDialog.value = false
 }
 
 function exitLogin(): void {
@@ -135,21 +129,13 @@ function exitLogin(): void {
     routerLink("home")
 }
 
-watch(
-    loginReq,
-    (newValue, _) => {
-        canLoginFlag.value = newValue.user_name.length > 0 && newValue.password.length > 0
-    },
-    { deep: true }
-)
+watch(loginReq, (newValue) => {
+    canLoginFlag.value = newValue.user_name.length > 0 && newValue.password.length > 0
+}, { deep: true })
 
-watch(
-    loginMFAReq,
-    (newValue, _) => {
-        canLoginMFAFlag.value = newValue.mfa_token.length > 0 && newValue.totp_code.length > 0
-    },
-    { deep: true }
-)
+watch(loginMFAReq, (newValue) => {
+    canLoginMFAFlag.value = newValue.mfa_token.length > 0 && newValue.totp_code.length > 0
+}, { deep: true })
 </script>
 
 <style lang="less" scoped>

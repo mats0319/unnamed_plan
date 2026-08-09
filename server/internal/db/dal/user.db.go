@@ -12,8 +12,10 @@ import (
 )
 
 func CreateUser(user *model.User) (e *utils.Error) {
-	if err := User.WithContext(context.TODO()).Create(user); err != nil {
-		if pge, ok := errors.AsType[*pgconn.PgError](err); ok && pge.Code == "23505" {
+	err := User.WithContext(context.TODO()).Create(user)
+	if err != nil {
+		pge, ok := errors.AsType[*pgconn.PgError](err)
+		if ok && pge.Code == "23505" {
 			e = utils.ErrUserExist().WithCause(err)
 		} else {
 			e = utils.ErrDBError().WithCause(err)
@@ -27,7 +29,8 @@ func CreateUser(user *model.User) (e *utils.Error) {
 }
 
 func UpdateUser(user *model.User) *utils.Error {
-	if err := User.WithContext(context.TODO()).Where(User.ID.Eq(user.ID)).Save(user); err != nil {
+	err := User.WithContext(context.TODO()).Where(User.ID.Eq(user.ID)).Save(user)
+	if err != nil {
 		e := utils.ErrDBError().WithCause(err)
 		mlog.Error(e.String())
 		return e

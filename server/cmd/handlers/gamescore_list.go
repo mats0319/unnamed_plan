@@ -16,9 +16,9 @@ func ListGameScore(ctx *mhttp.Context) {
 	}
 
 	if req.Page.Size <= 0 || req.Page.Num <= 0 {
-		e := utils.ErrInvalidParams().WithParam("page size", req.Page.Size).WithParam("page num", req.Page.Num)
-		ctx.ResData = e
+		e := utils.ErrInvalidParams().WithParam("pagination", req.Page)
 		mlog.Error(e.String())
+		ctx.ResData = e
 		return
 	}
 
@@ -38,8 +38,8 @@ func ListGameScore(ctx *mhttp.Context) {
 		gameScoreHTTP = flipGameScoresDBToHTTP(records)
 	default:
 		e = utils.ErrInvalidGameName().WithParam("game name", req.GameName)
-		ctx.ResData = e
 		mlog.Error(e.String())
+		ctx.ResData = e
 		return
 	}
 

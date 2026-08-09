@@ -1,13 +1,12 @@
-export const tips_ModifyUser = "昵称、密码和TOTP密钥字段为空表示不修改"
-
-export const tips_RegisterUser = "请输入用户名和密码后点击注册"
+export const pageSize = 20
 
 interface FlipResult {
     duration: number;
     steps: number;
 }
 
-export function isFlipResult(obj: any):obj is FlipResult {
+// 根据判断结果返回true/false，如果判断通过，则在调用函数以后、一直到该作用域结束，obj将被视为`FlipResult`类型
+export function isFlipResult(obj: any): obj is FlipResult {
     return (
         typeof obj === "object" &&
         obj !== null &&

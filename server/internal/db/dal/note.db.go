@@ -12,8 +12,10 @@ import (
 )
 
 func CreateNote(note *model.Note) (e *utils.Error) {
-	if err := Note.WithContext(context.TODO()).Create(note); err != nil {
-		if pge, ok := errors.AsType[*pgconn.PgError](err); ok && pge.Code == "23505" {
+	err := Note.WithContext(context.TODO()).Create(note)
+	if err != nil {
+		pge, ok := errors.AsType[*pgconn.PgError](err)
+		if ok && pge.Code == "23505" {
 			e = utils.ErrNoteExist().WithCause(err)
 		} else {
 			e = utils.ErrDBError().WithCause(err)
@@ -27,7 +29,8 @@ func CreateNote(note *model.Note) (e *utils.Error) {
 }
 
 func UpdateNote(note *model.Note) *utils.Error {
-	if err := Note.WithContext(context.TODO()).Where(Note.ID.Eq(note.ID)).Save(note); err != nil {
+	err := Note.WithContext(context.TODO()).Where(Note.ID.Eq(note.ID)).Save(note)
+	if err != nil {
 		e := utils.ErrDBError().WithCause(err)
 		mlog.Error(e.String())
 		return e
@@ -37,7 +40,8 @@ func UpdateNote(note *model.Note) *utils.Error {
 }
 
 func DeleteNote(noteID string) *utils.Error {
-	if _, err := Note.WithContext(context.TODO()).Where(Note.NoteID.Eq(noteID)).Delete(); err != nil {
+	_, err := Note.WithContext(context.TODO()).Where(Note.NoteID.Eq(noteID)).Delete()
+	if err != nil {
 		e := utils.ErrDBError().WithCause(err)
 		mlog.Error(e.String())
 		return e

@@ -16,8 +16,8 @@ func DeleteNote(ctx *mhttp.Context) {
 
 	if len(ctx.UserName) < 1 || len(req.NoteID) < 1 {
 		e := utils.ErrInvalidParams().WithParam("operator", ctx.UserName).WithParam("note id", req.NoteID)
-		ctx.ResData = e
 		mlog.Error(e.String())
+		ctx.ResData = e
 		return
 	}
 
@@ -29,12 +29,13 @@ func DeleteNote(ctx *mhttp.Context) {
 
 	if ctx.UserName != note.Writer {
 		e := utils.ErrPermissionDenied().WithParam("need owner but get", ctx.UserName)
-		ctx.ResData = e
 		mlog.Error(e.String())
+		ctx.ResData = e
 		return
 	}
 
-	if e := dal.DeleteNote(req.NoteID); e != nil {
+	e = dal.DeleteNote(req.NoteID)
+	if e != nil {
 		ctx.ResData = e
 		return
 	}

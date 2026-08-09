@@ -28,7 +28,8 @@ func (ins *Input) Update(state GameState) {
 				ins.clickOn = ClickOn_Button
 			}
 		case GameState_Playing:
-			if index := getClickCardIndex(clickX, clickY); index >= 0 {
+			index := getClickCardIndex(clickX, clickY)
+			if index >= 0 {
 				ins.clickOn = ClickOn_Card
 				ins.clickCardIndex = index
 			}

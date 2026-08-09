@@ -11,8 +11,12 @@ func ListUser() {
 	testCase("success", listUserCase_Success)
 }
 
+func listUserParams() string {
+	return `{"page":{"size":10,"num":1}}`
+}
+
 func listUserCase_NotAdmin() string {
-	res := httpInvoke(api.URI_ListUser, `{"page":{"size":10,"num":1}}`, accessToken_User)
+	res := httpInvoke(api.URI_ListUser, listUserParams(), accessToken_User)
 	if res.IsSuccess || !errorIs(res.Err, utils.ErrPermissionDenied()) {
 		return unknownError
 	}
@@ -21,7 +25,7 @@ func listUserCase_NotAdmin() string {
 }
 
 func listUserCase_Success() string {
-	res := httpInvoke(api.URI_ListUser, `{"page":{"size":10,"num":1}}`, accessToken_Admin)
+	res := httpInvoke(api.URI_ListUser, listUserParams(), accessToken_Admin)
 	if !res.IsSuccess {
 		return res.Err
 	}

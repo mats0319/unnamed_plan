@@ -36,7 +36,8 @@ func CreateNote(ctx *mhttp.Context) {
 		Content:     req.Content,
 	}
 
-	if e := dal.CreateNote(note); e != nil {
+	e = dal.CreateNote(note)
+	if e != nil {
 		ctx.ResData = e
 		return
 	}

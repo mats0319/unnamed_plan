@@ -11,8 +11,14 @@ import (
 	"time"
 )
 
+const (
+	w_Stdout uint8 = 1 << iota
+	w_File
+)
+
 type HandlerWriter struct { // only one instance
-	Writer io.Writer
+	Writer     io.Writer
+	writerFlag uint8 // write to logfile and/or Stdout
 
 	File     *os.File
 	FileName string
@@ -23,11 +29,16 @@ type HandlerWriter struct { // only one instance
 }
 
 func (hw *HandlerWriter) New(fileName string, maxSize int64) (err error) {
-	if hw == nil {
+	if hw == nil || hw.writerFlag == 0 {
 		err = errors.New("nil HandlerWriter")
 		return
 	}
+	if hw.writerFlag == w_Stdout {
+		hw.Writer = os.Stdout
+		return
+	}
 
+	// 检查：此处的文件句柄应在程序退出前关闭（调用mlog.Close()），参考测试代码
 	fileIns, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
 		log.Println("open log file failed, error:", err)
@@ -40,7 +51,19 @@ func (hw *HandlerWriter) New(fileName string, maxSize int64) (err error) {
 		return
 	}
 
-	hw.Writer = io.MultiWriter(fileIns, os.Stdout)
+	writers := make([]io.Writer, 0)
+	if hw.writerFlag&w_File > 0 {
+		writers = append(writers, fileIns)
+	}
+	if hw.writerFlag&w_Stdout > 0 {
+		writers = append(writers, os.Stdout)
+	}
+
+	if len(writers) == 1 {
+		hw.Writer = writers[0]
+	} else { // > 1
+		hw.Writer = io.MultiWriter(writers...)
+	}
 	hw.File = fileIns
 	hw.FileName = fileName
 	hw.Size = fileInfo.Size()
@@ -53,7 +76,8 @@ func (hw *HandlerWriter) Write(logBytes []byte) (err error) {
 	hw.mu.Lock()
 	defer hw.mu.Unlock()
 
-	if _, err = hw.Writer.Write(logBytes); err != nil {
+	_, err = hw.Writer.Write(logBytes)
+	if err != nil {
 		return
 	}
 
@@ -81,7 +105,7 @@ func (hw *HandlerWriter) rotate() {
 }
 
 func (hw *HandlerWriter) close() {
-	if hw != nil {
+	if hw != nil && hw.File != nil {
 		_ = hw.File.Close()
 	}
 }
@@ -102,7 +126,8 @@ func compressFile(fileName string) {
 	}
 	defer srcFile.Close()
 
-	if _, err := io.Copy(gzWriter, srcFile); err != nil {
+	_, err = io.Copy(gzWriter, srcFile)
+	if err != nil {
 		return
 	}
 

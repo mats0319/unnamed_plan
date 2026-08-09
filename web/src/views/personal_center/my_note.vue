@@ -1,9 +1,13 @@
 <template>
   <div class="pnote-tools">
-    <elevated-button class="pt-item" @click="beforeCreate()">写小纸条</elevated-button>
+    <elevated-button class="pt-item" :disabled="loading" :onClick="beforeCreate">写小纸条</elevated-button>
   </div>
 
-  <el-table :data="notes" height="60%">
+  <el-table
+    v-loading="loading"
+    :data="noteStore.noteType == NoteType.MyNotes ? noteStore.notes : new Array<Note>()"
+    height="60%"
+  >
     <el-table-column type="expand">
       <template #default="scope">
         <el-descriptions class="pnote-table-description" title="小纸条详情" border column="1" label-width="15%">
@@ -24,14 +28,21 @@
     <el-table-column label="操作" :min-width="3">
       <template #default="scope">
         <div class="buttons-box">
-          <outlined-button class="button-item" @click="beforeModify(scope.row)">编辑</outlined-button>
-          <outlined-button @click="beforeDelete(scope.row)">删除</outlined-button>
+          <outlined-button class="button-item" :onClick="()=>{beforeModify(scope.row)}">编辑</outlined-button>
+          <outlined-button class="button-item" :onClick="()=>{beforeDelete(scope.row)}">删除</outlined-button>
         </div>
       </template>
     </el-table-column>
   </el-table>
 
-  <el-pagination layout="prev,pager,next,->,total" :total="count" background @current-change="listNote" />
+  <el-pagination
+    layout="prev,pager,next,->,total"
+    :total="noteStore.count"
+    :page-size="pageSize"
+    :disabled="loading"
+    background
+    @current-change="listMyNote"
+  />
 
   <el-dialog v-model="showCreateDialog" title="写小纸条">
     <el-form v-model="createNoteReq" label-width="20%">
@@ -50,8 +61,8 @@
     </el-form>
 
     <template #footer>
-      <el-button @click="showCreateDialog = false">取消</el-button>
-      <el-button type="primary" :disabled="!canCreateFlag" @click="create()">提交</el-button>
+      <elevated-button bg="white" :onClick="()=>{showCreateDialog=false}">取消</elevated-button>
+      <elevated-button bg="lightgray" :disabled="!canCreateFlag" :onClick="create">提交</elevated-button>
     </template>
   </el-dialog>
 
@@ -69,70 +80,71 @@
 
       <el-form-item label="是否匿名发布">
         <el-switch v-model="modifyNoteReq.is_anonymous" />
-        &emsp;{{ createNoteReq.is_anonymous ? "匿名" : "不匿名" }}
+        &emsp;{{ modifyNoteReq.is_anonymous ? "匿名" : "不匿名" }}
       </el-form-item>
     </el-form>
 
     <template #footer>
-      <el-button @click="showModifyDialog = false">取消</el-button>
-      <el-button type="primary" :disabled="!canModifyFlag" @click="modify()">提交</el-button>
+      <elevated-button bg="white" :onClick="()=>{showModifyDialog=false}">取消</elevated-button>
+      <elevated-button bg="lightgray" :disabled="!canModifyFlag" :onClick="modify">提交</elevated-button>
     </template>
   </el-dialog>
 
   <el-dialog v-model="showDeleteDialog" title="删除小纸条">
     <el-form label-width="20%">
-      <el-form-item><b>是否确认删除下方小纸条?</b></el-form-item>
+      <el-form-item><b>是否确认删除以下小纸条?</b></el-form-item>
       <el-form-item label="小纸条ID">{{ originData.note_id }}</el-form-item>
       <el-form-item label="主题">{{ originData.title }}</el-form-item>
       <el-form-item label="内容">{{ originData.content }}</el-form-item>
     </el-form>
 
     <template #footer>
-      <el-button @click="showDeleteDialog = false">取消</el-button>
-      <el-button type="primary" @click="del()">删除</el-button>
+      <elevated-button bg="white" :onClick="()=>{showDeleteDialog=false}">取消</elevated-button>
+      <elevated-button bg="lightgray" :onClick="del">删除</elevated-button>
     </template>
   </el-dialog>
 </template>
 
 <script lang="ts" setup>
-import ElevatedButton from "@/components/elevated_button.vue"
 import { onMounted, ref, watch } from "vue"
 import { CreateNoteReq, DeleteNoteReq, ModifyNoteReq, Note } from "@/axios/ts/note.go.ts"
 import { deepCopy, displayTimestamp } from "@/ts/util.ts"
-import { useNoteStore } from "@/pinia/note.ts"
+import { NoteType, useNoteStore } from "@/pinia/note.ts"
 import OutlinedButton from "@/components/outlined_button.vue"
+import ElevatedButton from "@/components/elevated_button.vue"
+import { pageSize } from "@/ts/data.ts"
 
-let noteStore = useNoteStore()
+const noteStore = useNoteStore()
+const loading = ref<boolean>(false)
 
-let count = ref<number>(0)
-let notes = ref<Array<Note>>(new Array<Note>())
+const showCreateDialog = ref<boolean>(false)
+const canCreateFlag = ref<boolean>(false)
+const createNoteReq = ref<CreateNoteReq>(new CreateNoteReq())
 
-let showCreateDialog = ref<boolean>(false)
-let canCreateFlag = ref<boolean>(false)
-let createNoteReq = ref<CreateNoteReq>(new CreateNoteReq())
+const showModifyDialog = ref<boolean>(false)
+const canModifyFlag = ref<boolean>(false)
+const originData = ref<Note>(new Note()) // use for modify and delete
+const modifyNoteReq = ref<ModifyNoteReq>(new ModifyNoteReq())
 
-let showModifyDialog = ref<boolean>(false)
-let canModifyFlag = ref<boolean>(false)
-let originData = ref<Note>(new Note()) // use for modify and delete
-let modifyNoteReq = ref<ModifyNoteReq>(new ModifyNoteReq())
-
-let showDeleteDialog = ref<boolean>(false)
-let deleteNoteReq = ref<DeleteNoteReq>(new DeleteNoteReq())
+const showDeleteDialog = ref<boolean>(false)
+const deleteNoteReq = ref<DeleteNoteReq>(new DeleteNoteReq())
 
 onMounted(() => {
-    listNote()
+    listMyNote()
 })
 
 function beforeCreate(): void {
     createNoteReq.value = new CreateNoteReq()
+
     showCreateDialog.value = true
 }
 
-function create(): void {
-    noteStore.create(createNoteReq.value.is_anonymous, createNoteReq.value.title, createNoteReq.value.content, () => {
-        listNote()
-        showCreateDialog.value = false
-    })
+async function create(): Promise<void> {
+    loading.value = true
+    await noteStore.create(createNoteReq.value.is_anonymous, createNoteReq.value.title, createNoteReq.value.content)
+
+    showCreateDialog.value = false
+    loading.value = false
 }
 
 function beforeModify(note: Note): void {
@@ -147,17 +159,17 @@ function beforeModify(note: Note): void {
     showModifyDialog.value = true
 }
 
-function modify(): void {
-    noteStore.modify(
+async function modify(): Promise<void> {
+    loading.value = true
+    await noteStore.modify(
         modifyNoteReq.value.note_id,
         modifyNoteReq.value.is_anonymous,
         modifyNoteReq.value.title,
         modifyNoteReq.value.content,
-        () => {
-            listNote()
-            showModifyDialog.value = false
-        },
     )
+
+    showModifyDialog.value = false
+    loading.value = false
 }
 
 function beforeDelete(note: Note): void {
@@ -167,38 +179,28 @@ function beforeDelete(note: Note): void {
     showDeleteDialog.value = true
 }
 
-function del(): void {
-    noteStore.del(deleteNoteReq.value.note_id, () => {
-        listNote()
-        showDeleteDialog.value = false
-    })
+async function del(): Promise<void> {
+    loading.value = true
+    await noteStore.del(deleteNoteReq.value.note_id)
+
+    showDeleteDialog.value = false
+    loading.value = false
 }
 
-function listNote(pageNum: number = 1): void {
-    noteStore.list(true, 10, pageNum, (a: number, n: Array<Note>) => {
-        count.value = a
-        notes.value = n
-    })
+function listMyNote(pageNum: number = 1): void {
+    noteStore.list(true, pageNum)
 }
 
-watch(
-    createNoteReq,
-    (newValue, _) => {
-        canCreateFlag.value = newValue.content.length > 0
-    },
-    { deep: true },
-)
+watch(createNoteReq, (newValue) => {
+    canCreateFlag.value = newValue.content.length > 0
+}, { deep: true })
 
-watch(
-    modifyNoteReq,
-    (newValue, _) => {
-        canModifyFlag.value =
-            newValue.is_anonymous != originData.value.is_anonymous ||
-            newValue.title != originData.value.title ||
-            newValue.content != originData.value.content
-    },
-    { deep: true },
-)
+watch(modifyNoteReq, (newValue) => {
+    canModifyFlag.value =
+        newValue.is_anonymous != originData.value.is_anonymous ||
+        newValue.title != originData.value.title ||
+        newValue.content != originData.value.content
+}, { deep: true })
 </script>
 
 <style lang="less" scoped>
@@ -224,6 +226,7 @@ watch(
 
 	.button-item {
 		margin-right: 0.5rem;
+    height: 2rem;
 	}
 }
 </style>

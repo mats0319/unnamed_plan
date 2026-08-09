@@ -1,7 +1,7 @@
 <template>
   <div class="game color-bg-0">
     <div class="g-left">
-      <elevated-button class="gl-item" @click="routerLink('gFlip')">Flip</elevated-button>
+      <elevated-button class="gl-item" :onClick="routerToFlip">Flip</elevated-button>
     </div>
 
     <el-divider direction="vertical" />
@@ -20,8 +20,8 @@ import { GameName } from "@/axios/ts/game.go.ts"
 import { useUserStore } from "@/pinia/user.ts"
 import { useGameScoreStore } from "@/pinia/game_score.ts"
 
-let userStore = useUserStore()
-let gameScoreStore = useGameScoreStore()
+const userStore = useUserStore()
+const gameScoreStore = useGameScoreStore()
 
 onMounted(() => {
     window.addEventListener("message", handleMessage)
@@ -44,7 +44,7 @@ function handleMessage(event: any) {
 
     switch (game_name) {
         case GameName.Flip:
-            let player = userStore.isLogin() ? "" : randomVisitorName()
+            const player = userStore.isLogin() ? "" : randomVisitorName()
 
             gameScoreStore.uploadGameScore(game_name, score, result, player)
 
@@ -56,11 +56,13 @@ function handleMessage(event: any) {
 }
 
 function getBaseUrl(): string {
-    let url = import.meta.env.Vite_axios_base_url
-    let localIP = window.location.hostname
+    const url = import.meta.env.Vite_axios_base_url
+    const localIP = window.location.hostname
 
     return import.meta.env.DEV ? url.replace("127.0.0.1", localIP) : url
 }
+
+function routerToFlip(): void { routerLink('gFlip') }
 </script>
 
 <style lang="less" scoped>
@@ -71,11 +73,15 @@ function getBaseUrl(): string {
 	.g-left {
 		width: calc(20vw - 1px);
 		margin: 6rem 2vw;
-		font-size: 1.4rem;
 
 		.gl-item {
 			margin: 2rem auto;
+      width: 80%;
+      height: 4rem;
 		}
+    .gl-item:deep(button) {
+      font-size: 1.4rem;
+    }
 	}
 
 	.g-right {

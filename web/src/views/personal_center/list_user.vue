@@ -1,5 +1,5 @@
 <template>
-  <el-table :data="users" height="80%">
+  <el-table v-loading="loading" :data="userStore.users" height="80%">
     <el-table-column label="用户名" prop="user_name" />
 
     <el-table-column label="昵称" prop="nickname" />
@@ -17,29 +17,34 @@
     </el-table-column>
   </el-table>
 
-  <el-pagination layout="prev,pager,next,->,total" :total="count" background @current-change="listUser" />
+  <el-pagination
+    layout="prev,pager,next,->,total"
+    :total="userStore.count"
+    :page-size="pageSize"
+    :disabled="loading"
+    background
+    @current-change="listUser"
+  />
 </template>
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue"
-import { User } from "@/axios/ts/user.go.ts"
 import { useUserStore } from "@/pinia/user.ts"
 import { displayTimestamp } from "@/ts/util.ts"
+import { pageSize } from "@/ts/data.ts"
 
-let userStore = useUserStore()
+const userStore = useUserStore()
 
-let count = ref<number>(0)
-let users = ref<Array<User>>(new Array<User>())
+const loading = ref<boolean>(false)
 
 onMounted(() => {
     listUser()
 })
 
-function listUser(pageNum: number = 1): void {
-    userStore.list(10, pageNum, (c: number, u: Array<User>) => {
-        count.value = c
-        users.value = u
-    })
+async function listUser(pageNum: number = 1): Promise<void> {
+    loading.value = true
+    await userStore.list(10, pageNum)
+    loading.value = false
 }
 </script>
 

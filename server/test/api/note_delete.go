@@ -14,8 +14,12 @@ func DeleteNote() {
 	testCase("success", deleteNoteCase_Success)
 }
 
+func deleteNoteParams(noteID string) string {
+	return fmt.Sprintf(`{"note_id":"%s"}`, noteID)
+}
+
 func deleteNoteCase_NoteNotExist() string {
-	res := httpInvoke(api.URI_DeleteNote, `{"note_id":"not exist"}`, accessToken_User)
+	res := httpInvoke(api.URI_DeleteNote, deleteNoteParams("not exist"), accessToken_User)
 	if res.IsSuccess || !errorIs(res.Err, utils.ErrNoteNotFound()) {
 		return unknownError
 	}
@@ -24,7 +28,7 @@ func deleteNoteCase_NoteNotExist() string {
 }
 
 func deleteNoteCase_NotWriter() string {
-	res := httpInvoke(api.URI_DeleteNote, fmt.Sprintf(`{"note_id":"%s"}`, noteID), accessToken_User)
+	res := httpInvoke(api.URI_DeleteNote, deleteNoteParams(noteID), accessToken_User)
 	if res.IsSuccess || !errorIs(res.Err, utils.ErrPermissionDenied()) {
 		return unknownError
 	}
@@ -33,7 +37,7 @@ func deleteNoteCase_NotWriter() string {
 }
 
 func deleteNoteCase_Success() string {
-	res := httpInvoke(api.URI_DeleteNote, fmt.Sprintf(`{"note_id":"%s"}`, noteID), accessToken_Admin)
+	res := httpInvoke(api.URI_DeleteNote, deleteNoteParams(noteID), accessToken_Admin)
 	if !res.IsSuccess {
 		return res.Err
 	}

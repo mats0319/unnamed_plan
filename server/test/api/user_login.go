@@ -3,6 +3,7 @@ package api
 import (
 	"crypto/hmac"
 	"crypto/sha1"
+	"encoding/base32"
 	"fmt"
 	"math"
 	"time"
@@ -19,8 +20,16 @@ func Login() {
 	testCase("success - enable 2fa", loginCase_SuccessEnable2fa)
 }
 
+func loginParams(userName string, password string) string {
+	return fmt.Sprintf(`{"user_name":"%s","password":"%s"}`, userName, password)
+}
+
+func loginMFAParams(mfaToken string, totpKey string) string {
+	return fmt.Sprintf(`{"mfa_token":"%s","totp_code":"%s"}`, mfaToken, calcTotpCode(totpKey))
+}
+
 func loginCase_UserNotExist() string {
-	res := httpInvoke(api.URI_Login, `{"user_name":"not exist","password":"123"}`, "")
+	res := httpInvoke(api.URI_Login, loginParams("not exist", "123"), "")
 	if res.IsSuccess || !errorIs(res.Err, utils.ErrUserNotFound()) {
 		return unknownError
 	}
@@ -29,7 +38,7 @@ func loginCase_UserNotExist() string {
 }
 
 func loginCase_WrongPwd() string {
-	res := httpInvoke(api.URI_Login, `{"user_name":"admin","password":"wrong pwd"}`, "")
+	res := httpInvoke(api.URI_Login, loginParams("admin", "wrong pwd"), "")
 	if res.IsSuccess || !errorIs(res.Err, utils.ErrWrongPassword()) {
 		return unknownError
 	}
@@ -38,7 +47,7 @@ func loginCase_WrongPwd() string {
 }
 
 func loginCase_SuccessDisable2fa() string {
-	res := httpInvoke(api.URI_Login, fmt.Sprintf(`{"user_name":"user","password":"%s"}`, pwdSHA256), "")
+	res := httpInvoke(api.URI_Login, loginParams("user", pwdSHA256), "")
 	if !res.IsSuccess {
 		return res.Err
 	}
@@ -47,7 +56,7 @@ func loginCase_SuccessDisable2fa() string {
 }
 
 func loginCase_WrongTOTPCode() string {
-	res := httpInvoke(api.URI_Login, fmt.Sprintf(`{"user_name":"user_with_totp","password":"%s"}`, pwdSHA256), "")
+	res := httpInvoke(api.URI_Login, loginParams("user_with_totp", pwdSHA256), "")
 	if !res.IsSuccess {
 		return res.Err
 	}
@@ -57,7 +66,7 @@ func loginCase_WrongTOTPCode() string {
 		return unknownError
 	}
 
-	res = httpInvoke(api.URI_LoginMFA, fmt.Sprintf(`{"mfa_token":"%s","totp_code":"000000"}`, mfaToken), "")
+	res = httpInvoke(api.URI_LoginMFA, loginMFAParams(mfaToken, ""), "")
 	if res.IsSuccess || !errorIs(res.Err, utils.ErrWrongTOTPCode()) {
 		return unknownError
 	}
@@ -66,7 +75,7 @@ func loginCase_WrongTOTPCode() string {
 }
 
 func loginCase_SuccessEnable2fa() string {
-	res := httpInvoke(api.URI_Login, fmt.Sprintf(`{"user_name":"user_with_totp","password":"%s"}`, pwdSHA256), "")
+	res := httpInvoke(api.URI_Login, loginParams("user_with_totp", pwdSHA256), "")
 	if !res.IsSuccess {
 		return res.Err
 	}
@@ -76,8 +85,7 @@ func loginCase_SuccessEnable2fa() string {
 		return unknownError
 	}
 
-	totpCode := calcTotpCode([]byte("mario"), iTob(time.Now().Unix()/30))
-	res = httpInvoke(api.URI_LoginMFA, fmt.Sprintf(`{"mfa_token":"%s","totp_code":"%s"}`, mfaToken, totpCode), "")
+	res = httpInvoke(api.URI_LoginMFA, loginMFAParams(mfaToken, "NVQXE2LP"), "")
 	if !res.IsSuccess {
 		return res.Err
 	}
@@ -85,10 +93,20 @@ func loginCase_SuccessEnable2fa() string {
 	return ""
 }
 
-// copy from handler
-func calcTotpCode(key []byte, content []byte) string {
+func calcTotpCode(keyBase32 string) string {
+	if keyBase32 == "" {
+		return "000000"
+	}
+
+	key := make([]byte, 10)
+	n, err := base32.StdEncoding.Decode(key, []byte(keyBase32))
+	if err != nil {
+		return ""
+	}
+	key = key[:n]
+
 	hasher := hmac.New(sha1.New, key)
-	hasher.Write(content)
+	hasher.Write(iTob(time.Now().Unix() / 30))
 	hmacHash := hasher.Sum(nil)
 
 	offset := int(hmacHash[len(hmacHash)-1] & 0x0f)

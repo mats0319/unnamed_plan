@@ -14,14 +14,16 @@ import (
 
 func Backup[T any](t doBackupRecover[T]) {
 	dir := "./backup/" + t.Dir()
-	if err := os.MkdirAll(dir, 0644); err != nil {
+	err := os.MkdirAll(dir, 0644)
+	if err != nil {
 		mlog.Error("mkdir failed", slog.Any("error", err))
 		return
 	}
 
 	// if it has data need backup
 	var count int64
-	if err := dal.DB().Unscoped().Model(t.Model()).Where(t.Condition()).Count(&count).Error; err != nil {
+	err = dal.DB().Unscoped().Model(t.Model()).Where(t.Condition()).Count(&count).Error
+	if err != nil {
 		mlog.Error("db count failed", slog.Any("error", err))
 		return
 	}
@@ -34,7 +36,8 @@ func Backup[T any](t doBackupRecover[T]) {
 	timestamp := time.Now().UnixMilli()
 	for range int(count)/pageSize + 1 {
 		dbRecords := t.EmptySlice()
-		if err := dal.DB().Unscoped().Model(t.Model()).Where(t.Condition()).Limit(pageSize).Find(&dbRecords).Error; err != nil {
+		err := dal.DB().Unscoped().Model(t.Model()).Where(t.Condition()).Limit(pageSize).Find(&dbRecords).Error
+		if err != nil {
 			mlog.Error("get data need to backup failed", slog.Any("error", err))
 			return
 		}
@@ -48,7 +51,8 @@ func Backup[T any](t doBackupRecover[T]) {
 			fileData := t.EmptySlice()
 			fileBytes, err := os.ReadFile(filePath) // error if file not exist
 			if err == nil {
-				if err = json.Unmarshal(fileBytes, &fileData); err != nil {
+				err = json.Unmarshal(fileBytes, &fileData)
+				if err != nil {
 					mlog.Error("unmarshal file failed", slog.Any("error", err))
 					return
 				}
@@ -78,12 +82,14 @@ func Backup[T any](t doBackupRecover[T]) {
 				return
 			}
 
-			if err := os.WriteFile(filePath, fileBytes, 0644); err != nil { // implicit create file at first time
+			err = os.WriteFile(filePath, fileBytes, 0644)
+			if err != nil { // implicit create file at first time
 				mlog.Error("write file failed", slog.Any("error", err))
 				return
 			}
 
-			if err := dal.DB().Unscoped().Model(record).UpdateColumns(record).Error; err != nil { // UpdateColumns skip hooks and auto-updateTime
+			err = dal.DB().Unscoped().Model(record).UpdateColumns(record).Error
+			if err != nil { // UpdateColumns skip hooks and auto-updateTime
 				mlog.Error("update db data failed", slog.Any("error", err))
 				return
 			}

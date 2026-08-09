@@ -3,6 +3,7 @@ package mhttp
 import (
 	"encoding/json"
 	"io"
+	"log/slog"
 	"net/http"
 
 	mlog "github.com/mats0319/unnamed_plan/server/internal/log"
@@ -33,15 +34,16 @@ func (ctx *Context) ParseParams(obj any) bool {
 	bodyBytes, err := io.ReadAll(ctx.request.Body)
 	if err != nil {
 		e := utils.ErrServerInternalError().WithCause(err)
-		ctx.ResData = e
 		mlog.Error(e.String())
+		ctx.ResData = e
 		return false
 	}
 
-	if err := json.Unmarshal(bodyBytes, obj); err != nil {
-		e := utils.ErrDeserializeHTTPReqParam().WithCause(err)
-		ctx.ResData = e
+	err = json.Unmarshal(bodyBytes, obj)
+	if err != nil {
+		e := utils.ErrDeserializeReqParam().WithCause(err)
 		mlog.Error(e.String())
+		ctx.ResData = e
 		return false
 	}
 
@@ -50,4 +52,40 @@ func (ctx *Context) ParseParams(obj any) bool {
 
 func (ctx *Context) SetHeader(key string, value string) {
 	ctx.writer.Header().Set(key, value)
+}
+
+type Response struct {
+	IsSuccess bool   `json:"is_success"`
+	Code      int    `json:"code"`
+	Err       string `json:"err"`
+	Data      any    `json:"data"`
+}
+
+// response 该函数不应该中途返回，一定要执行到write
+func (ctx *Context) response() {
+	httpCode := http.StatusOK
+
+	var obj any
+	switch v := ctx.ResData.(type) {
+	case *utils.Error:
+		obj = &Response{Code: v.Code, Err: v.Error()}
+
+		httpCode = v.HTTPCode
+	default: // *api.resStruct(s)
+		obj = &Response{IsSuccess: true, Data: v}
+	}
+
+	resBytes, err := json.Marshal(obj)
+	if err != nil {
+		mlog.Error("serialize res to json failed", slog.Any("error", err))
+	}
+
+	// write res
+	ctx.writer.WriteHeader(httpCode)
+
+	_, err = ctx.writer.Write(resBytes)
+	if err != nil {
+		mlog.Error("response failed", slog.Any("error", err))
+		return
+	}
 }

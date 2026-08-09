@@ -5,8 +5,8 @@
 
 import { axiosWrapper } from "./config"
 import { AxiosResponse } from "axios"
+import { RegisterRes, RegisterReq, LoginRes, LoginReq, LoginMFARes, LoginMFAReq, ListUserRes, ListUserReq, ModifyUserRes, ModifyUserReq, NewTOTPKeyRes, SetMFAStatusRes, SetMFAStatusReq } from "./user.go"
 import { Pagination } from "./common.go"
-import { RegisterRes, RegisterReq, LoginRes, LoginReq, LoginMFARes, LoginMFAReq, ListUserRes, ListUserReq, ModifyUserRes, ModifyUserReq } from "./user.go"
 
 class UserAxios {
     public register(user_name: string, password: string): Promise<AxiosResponse<RegisterRes>> {
@@ -44,15 +44,27 @@ class UserAxios {
         return axiosWrapper.post("/user/list", req)
     }
 
-    public modifyUser(nickname: string, password: string, enable_mfa: boolean, totp_key: string): Promise<AxiosResponse<ModifyUserRes>> {
+    public modifyUser(nickname: string, password: string): Promise<AxiosResponse<ModifyUserRes>> {
         let req: ModifyUserReq = {
             nickname: nickname,
             password: password,
-            enable_mfa: enable_mfa,
-            totp_key: totp_key,
         }
 
         return axiosWrapper.post("/user/modify", req)
+    }
+
+    public newTOTPKey(): Promise<AxiosResponse<NewTOTPKeyRes>> {
+        return axiosWrapper.post("/totp-key/new")
+    }
+
+    public setMFAStatus(enable_mfa: boolean, apply_new_key_flag: boolean, totp_code: string): Promise<AxiosResponse<SetMFAStatusRes>> {
+        let req: SetMFAStatusReq = {
+            enable_mfa: enable_mfa,
+            apply_new_key_flag: apply_new_key_flag,
+            totp_code: totp_code,
+        }
+
+        return axiosWrapper.post("/mfa/set-status", req)
     }
 }
 

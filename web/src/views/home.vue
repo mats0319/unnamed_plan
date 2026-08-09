@@ -24,7 +24,17 @@
 </template>
 
 <script lang="ts" setup>
-import Bottom from "@/components/bottom.vue"
+import Bottom from "@/views/components/bottom.vue"
+import { onMounted } from "vue"
+import { UserStatus, useUserStore } from "@/pinia/user.ts"
+
+const userStore = useUserStore()
+
+onMounted(() => {
+    if (userStore.userStatus == UserStatus.exit) {
+        userStore.exitLogin() // 配合http拦截器，如果是401错误，则退出登录
+    }
+})
 </script>
 
 <style scoped lang="less">

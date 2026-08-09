@@ -10,7 +10,7 @@ import { Pagination } from "./common.go"
 
 class GameAxios {
     public uploadGameScore(game_name: GameName, score: number, result: string, player: string): Promise<AxiosResponse<UploadGameScoreRes>> {
-        let req: UploadGameScoreReq = {
+        const req: UploadGameScoreReq = {
             game_name: game_name,
             score: score,
             result: result,
@@ -21,7 +21,7 @@ class GameAxios {
     }
 
     public listGameScore(game_name: GameName, page: Pagination): Promise<AxiosResponse<ListGameScoreRes>> {
-        let req: ListGameScoreReq = {
+        const req: ListGameScoreReq = {
             game_name: game_name,
             page: page,
         }

@@ -1,56 +1,40 @@
 <template>
   <div class="outlined-button">
-    <div class="ob-box center-hv" :class="{ 'ob-disabled': props.disabled }">
-			&emsp;<span class="obb-text"><slot /></span>&emsp;
-    </div>
-
-    <div v-if="props.details.length > 0" class="ob-details">
-      <el-tooltip :content="props.details" placement="top" raw-content>&nbsp;?&nbsp;</el-tooltip>
-    </div>
+    <lock-button :disabled="props.disabled" :on-click="props.onClick"><slot /></lock-button>
   </div>
 </template>
 
 <script setup lang="ts">
-let props = defineProps({
-    details: {
-        type: String,
-        default: ""
-    },
+import LockButton from "@/components/lock_button.vue"
+
+const props = defineProps({
     disabled: {
         type: Boolean,
-        default: false
-    }
+        default: false,
+    },
+    onClick: {
+        type: Function,
+        required: true,
+    },
 })
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .outlined-button {
-	display: flex;
+  width: fit-content;
+  height: fit-content;
 
-	.ob-box {
-		border: 1px solid darkgrey;
-	}
-
-	.ob-box:hover {
-		cursor: pointer;
-
-		.obb-text {
-			text-decoration-line: underline;
-		}
-	}
-
-	.ob-disabled {
-		pointer-events: none;
-		opacity: 0.6;
-	}
-
-	.ob-details {
-		margin-left: 1rem;
-
-		.el-tooltip__trigger {
-			border-radius: 50%;
-			border: 1px solid darkgray;
-		}
-	}
+  button {
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    border: 1px solid black;
+  }
+  button:hover {
+    opacity: 0.8;
+  }
+  button:disabled {
+    border-color: darkgray;
+  }
 }
 </style>

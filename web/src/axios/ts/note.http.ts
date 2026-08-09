@@ -5,12 +5,12 @@
 
 import { axiosWrapper } from "./config"
 import { AxiosResponse } from "axios"
-import { CreateNoteRes, CreateNoteReq, ListNoteRes, ListNoteReq, ModifyNoteRes, ModifyNoteReq, DeleteNoteRes, DeleteNoteReq } from "./note.go"
 import { Pagination } from "./common.go"
+import { CreateNoteRes, CreateNoteReq, ListNoteRes, ListNoteReq, ModifyNoteRes, ModifyNoteReq, DeleteNoteRes, DeleteNoteReq } from "./note.go"
 
 class NoteAxios {
     public createNote(is_anonymous: boolean, title: string, content: string): Promise<AxiosResponse<CreateNoteRes>> {
-        let req: CreateNoteReq = {
+        const req: CreateNoteReq = {
             is_anonymous: is_anonymous,
             title: title,
             content: content,
@@ -20,7 +20,7 @@ class NoteAxios {
     }
 
     public listNote(only_operator: boolean, page: Pagination): Promise<AxiosResponse<ListNoteRes>> {
-        let req: ListNoteReq = {
+        const req: ListNoteReq = {
             only_operator: only_operator,
             page: page,
         }
@@ -29,7 +29,7 @@ class NoteAxios {
     }
 
     public modifyNote(note_id: string, is_anonymous: boolean, title: string, content: string): Promise<AxiosResponse<ModifyNoteRes>> {
-        let req: ModifyNoteReq = {
+        const req: ModifyNoteReq = {
             note_id: note_id,
             is_anonymous: is_anonymous,
             title: title,
@@ -40,7 +40,7 @@ class NoteAxios {
     }
 
     public deleteNote(note_id: string): Promise<AxiosResponse<DeleteNoteRes>> {
-        let req: DeleteNoteReq = {
+        const req: DeleteNoteReq = {
             note_id: note_id,
         }
 

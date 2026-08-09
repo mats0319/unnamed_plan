@@ -11,6 +11,7 @@ export class Pagination {
 // Response 写给ts使用，等gocts支持导入其他包的数据后，这里改成*mhttp.Response
 export class Response {
     is_success: boolean = false
+    code: number = 0
     err: string = ""
     data: Object = {}
 }

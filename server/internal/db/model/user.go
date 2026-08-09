@@ -8,7 +8,7 @@ type User struct {
 	IsAdmin  bool
 
 	EnableMFA bool
-	TOTPKey   string `gorm:"size:16"`
+	TOTPKey   string
 
 	// last login, use 'user.UpdateAt'
 }

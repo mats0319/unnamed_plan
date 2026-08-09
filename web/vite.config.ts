@@ -15,8 +15,12 @@ import { ElementPlusResolver } from "unplugin-vue-components/resolvers"
 import packageJson from "./package.json"
 
 // https://vite.dev/config/
+// noinspection JSUnusedGlobalSymbols
 export default defineConfig({
-    define: { "import.meta.env.Vite_package_version": JSON.stringify(packageJson.version) },
+    define: {
+        __PackageVersion__: JSON.stringify(packageJson.version),
+        __IsDev__: process.env.NODE_ENV === "development", // 想要在router里使用，不将测试路由打包进生成文件，失败了
+    },
     envPrefix: "Vite_",
     plugins: [
         vue(),
@@ -47,7 +51,7 @@ export default defineConfig({
     server: {
         host: getLocalIP(),
         port: 20319,
-        open: true
+        open: "/#/test"
     }
 })
 

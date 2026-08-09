@@ -35,6 +35,7 @@ type TestResponse struct {
 	AccessToken string `json:"access_token"`
 	Data        struct {
 		MFAToken string `json:"mfa_token"`
+		TOTPKey  string `json:"totp_key"`
 	} `json:"data"`
 }
 
@@ -58,7 +59,8 @@ func httpInvoke(uri string, payload string, token string) *TestResponse {
 	}
 
 	r := &TestResponse{}
-	if err := json.Unmarshal(bodyBytes, r); err != nil {
+	err = json.Unmarshal(bodyBytes, r)
+	if err != nil {
 		log.Fatal(err)
 	}
 	if r.IsSuccess {
@@ -76,7 +78,8 @@ func httpInvoke(uri string, payload string, token string) *TestResponse {
 const unknownError = "unknown error"
 
 func testCase(name string, f func() string) {
-	if errStr := f(); len(errStr) < 1 {
+	errStr := f()
+	if len(errStr) < 1 {
 		log.Printf("- case: %s. Test Passed.\n", name)
 	} else {
 		log.Printf("- case: %s. Test Failed, error: %s\n", name, errStr)

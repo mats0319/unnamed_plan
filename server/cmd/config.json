@@ -1,20 +1,19 @@
 {
   "level": "dev",
+  "internal": {
+    "http_server_port": 10319,
+    "db_dsn": "host=115.190.167.134 user=mario password=123456 dbname=test_cloud port=5432 sslmode=disable"
+  },
   "items": [
     {
-      "id": "658e06f7-71d5-4ada-b715-8c1a4489e5d2",
-      "name": "db",
+      "id": "3e6fe66d-32bb-46b7-9597-8de23a969706",
+      "name": "server",
       "json": {
-        "dsn": "host=115.190.167.134 user=mario password=123456 dbname=test_cloud port=5432 sslmode=disable",
-        "max_idle_conns": 10,
-        "max_open_conns": 100
-      }
-    },
-    {
-      "id": "22c4db2e-06d3-4d6a-b43f-c42aa6f57d15",
-      "name": "http",
-      "json": {
-        "port": "10319"
+        "hmac_key": "LQUlVE8aN8ecfiVevJuP",
+        "access_token_expire_hour": 12,
+        "mfa_token_expire_minute": 5,
+        "totp_key_expire_minute": 5,
+        "encrypt_key": "cBsnYH1yDvFfW4q84wAz7FhrzWHiUjQk"
       }
     }
   ]

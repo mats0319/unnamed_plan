@@ -24,14 +24,15 @@ var bufferPool = sync.Pool{New: func() any { return new(bytes.Buffer) }} // ÂáèÂ
 
 func newHandler(fileName string, maxSize int64, level slog.Level) (*Handler, error) {
 	h := &Handler{
-		HandlerWriter: &HandlerWriter{},
+		HandlerWriter: &HandlerWriter{writerFlag: w_File | w_Stdout},
 		Level:         level,
 		Attrs:         []slog.Attr{},
 		Groups:        []string{},
 	}
 
 	maxSize = maxSize << 20 // unit: MB
-	if err := h.HandlerWriter.New(fileName, maxSize); err != nil {
+	err := h.HandlerWriter.New(fileName, maxSize)
+	if err != nil {
 		return nil, err
 	}
 
