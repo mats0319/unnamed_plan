@@ -1,6 +1,7 @@
 package token
 
 import (
+	"crypto/hmac"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -44,7 +45,7 @@ func DeserializeToken(token string, typ TokenType) (t *Token, e *utils.Error) {
 		return
 	}
 
-	if utils.HMACSHA256(tokenSplit[0], tm.HMACKey) != tokenSplit[1] { // check token hash
+	if hmac.Equal([]byte(utils.HMACSHA256(tokenSplit[0], tm.HMACKey)), []byte(tokenSplit[1])) { // check token hash
 		e = utils.ErrWrongTokenHash().WithParam("payload", tokenSplit[0])
 		return
 	}

@@ -3,7 +3,6 @@ package backup
 import (
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"os"
 	"time"
 
@@ -16,7 +15,7 @@ func Backup[T any](t doBackupRecover[T]) {
 	dir := "./backup/" + t.Dir()
 	err := os.MkdirAll(dir, 0644)
 	if err != nil {
-		mlog.Error("mkdir failed", slog.Any("error", err))
+		mlog.Error("mkdir failed" + err.Error())
 		return
 	}
 
@@ -24,7 +23,7 @@ func Backup[T any](t doBackupRecover[T]) {
 	var count int64
 	err = dal.DB().Unscoped().Model(t.Model()).Where(t.Condition()).Count(&count).Error
 	if err != nil {
-		mlog.Error("db count failed", slog.Any("error", err))
+		mlog.Error("db count failed" + err.Error())
 		return
 	}
 	if count < 1 { // no data need backup
@@ -38,7 +37,7 @@ func Backup[T any](t doBackupRecover[T]) {
 		dbRecords := t.EmptySlice()
 		err := dal.DB().Unscoped().Model(t.Model()).Where(t.Condition()).Limit(pageSize).Find(&dbRecords).Error
 		if err != nil {
-			mlog.Error("get data need to backup failed", slog.Any("error", err))
+			mlog.Error("get data need to backup failed" + err.Error())
 			return
 		}
 
@@ -53,7 +52,7 @@ func Backup[T any](t doBackupRecover[T]) {
 			if err == nil {
 				err = json.Unmarshal(fileBytes, &fileData)
 				if err != nil {
-					mlog.Error("unmarshal file failed", slog.Any("error", err))
+					mlog.Error("unmarshal file failed" + err.Error())
 					return
 				}
 			}
@@ -78,19 +77,19 @@ func Backup[T any](t doBackupRecover[T]) {
 			// 检查：写文件成功但是写数据库失败，下一次会重新尝试备份，而备份函数具有幂等性，所以可以不写在一个事务里
 			fileBytes, err = json.Marshal(fileData)
 			if err != nil {
-				mlog.Error("marshal file failed", slog.Any("error", err))
+				mlog.Error("marshal file failed" + err.Error())
 				return
 			}
 
 			err = os.WriteFile(filePath, fileBytes, 0644)
 			if err != nil { // implicit create file at first time
-				mlog.Error("write file failed", slog.Any("error", err))
+				mlog.Error("write file failed" + err.Error())
 				return
 			}
 
 			err = dal.DB().Unscoped().Model(record).UpdateColumns(record).Error
 			if err != nil { // UpdateColumns skip hooks and auto-updateTime
-				mlog.Error("update db data failed", slog.Any("error", err))
+				mlog.Error("update db data failed" + err.Error())
 				return
 			}
 		}

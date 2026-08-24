@@ -1,5 +1,5 @@
 {
-  "level": "dev",
+  "level": "info",
   "internal": {
     "http_server_port": 10319,
     "db_dsn": "host=127.0.0.1 user=mario password=123456 dbname=cloud port=5432 sslmode=disable"

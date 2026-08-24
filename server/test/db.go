@@ -24,7 +24,7 @@ func createTable() {
 
 func dropTable() {
 	if db == nil {
-		db = mdb.InitTestDB()
+		db = mdb.Default(true)
 	}
 
 	err := db.Migrator().DropTable(model.ModelList...)
