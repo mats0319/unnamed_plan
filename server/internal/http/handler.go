@@ -1,8 +1,8 @@
 package mhttp
 
 import (
+	"errors"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"time"
 
@@ -32,7 +32,7 @@ func (h *Handler) StartServer() {
 
 	err := http.ListenAndServe(addr, h)
 	if err != nil {
-		mlog.Error("handlers listen and serve failed", slog.Any("error", err))
+		mlog.Error("handlers listen and serve failed, error: " + err.Error())
 	}
 }
 
@@ -53,28 +53,29 @@ func (h *Handler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	// log req
-	{
-		mlog.Info(fmt.Sprintf("> Receive Request: %s .", request.URL.String()))
-		startTime := time.Now()
-		defer func() {
-			mlog.Info(fmt.Sprintf("> Process Request: %s , in %d ms", request.URL.String(), time.Since(startTime).Milliseconds()))
-
-			err := recover()
-			if err != nil {
-				mlog.Error("recover panic", slog.Any("", err))
-			}
-		}()
-	}
-
 	ctx := NewContext(writer, request)
 	defer ctx.response()
 
+	// log req
+	mlog.Info(fmt.Sprintf("> Receive Request: %s .", request.URL.String()))
+	startTime := time.Now()
+	defer func() {
+		mlog.Info(fmt.Sprintf("> Process Request: %s , in %d ms", request.URL.String(), time.Since(startTime).Milliseconds()))
+
+		r := recover()
+		if r != nil {
+			err := errors.New(fmt.Sprintf("recover panic： %v", r))
+			e := utils.ErrServerInternalError().WithCause(err)
+			mlog.Error(e.String())
+			ctx.ResData = e
+		}
+	}()
+
 	// middlewares
 	for i := range handlerItemIns.Middlewares {
-		err := handlerItemIns.Middlewares[i](ctx)
-		if err != nil { // log in middleware
-			ctx.ResData = err
+		e := handlerItemIns.Middlewares[i](ctx)
+		if e != nil { // log in middleware
+			ctx.ResData = e
 			return
 		}
 	}

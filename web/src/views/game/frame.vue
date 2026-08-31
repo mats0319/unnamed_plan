@@ -32,8 +32,6 @@ onUnmounted(() => {
 })
 
 function handleMessage(event: any) {
-    console.log("> Node: test post-message event. ", event)
-
     const trustedOrigins = Array<string>(getBaseUrl())
     if (!trustedOrigins.includes(event.origin)) {
         console.log("> PostMessage - Invalid Event Origin: ", event)

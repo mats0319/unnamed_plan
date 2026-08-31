@@ -17,7 +17,8 @@ func Register(ctx *mhttp.Context) {
 	}
 
 	if len(req.UserName) < 1 || len(req.Password) < 1 {
-		e := utils.ErrInvalidParams().WithParam("user name", req.UserName).WithParam("password", req.Password)
+		e := utils.ErrInvalidParams().WithParam("user name", req.UserName).
+			WithParam("password length", len(req.Password))
 		mlog.Error(e.String())
 		ctx.ResData = e
 		return

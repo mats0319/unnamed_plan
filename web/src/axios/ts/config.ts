@@ -7,7 +7,7 @@ import axios, { AxiosInstance } from "axios"
 
 export const axiosWrapper: AxiosInstance = axios.create({
     baseURL: getBaseUrl(),
-    timeout: 3000,
+    timeout: 5000,
 })
 
 // getBaseUrl according to dev/product env & local ipv4 addr, set 'baseURL'

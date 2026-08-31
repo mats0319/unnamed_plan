@@ -8,13 +8,19 @@ package utils
 var (
 	ErrForTest = newError(0, -1, "test error string")
 
-	// change http code error
+	/* change http code error */
+
 	ErrInvalidAccessToken  = newError(401, 40101, "Invalid Access Token")
 	ErrServerInternalError = newError(500, 50001, "Sever Internal Error")
 	ErrDBError             = newError(500, 50002, "Sever Internal Error")
 
-	// params error (1)
-	// general (00) / db (01) / middleware (02)
+	/*
+	   params error (1)
+	   - general (00)
+	   - db (01)
+	   - middleware (02)
+	*/
+
 	ErrDeserializeReqParam = newBusinessError(10001, "Deserialize HTTP Request Params Failed")
 	ErrInvalidParams       = newBusinessError(10002, "Invalid Params")
 	ErrEncrypt             = newBusinessError(10003, "Encrypt Failed")
@@ -32,8 +38,14 @@ var (
 	ErrInvalidTokenType = newBusinessError(10205, "Invalid Token Type")
 	ErrTokenExpired     = newBusinessError(10206, "Token Expired")
 
-	// business error (2)
-	// general (00) / user (01) / note (02) / game score (03)
+	/*
+	   business error (2)
+	   - general (00)
+	   - user (01)
+	   - note (02)
+	   - game score (03)
+	*/
+
 	ErrNoChanges        = newBusinessError(20001, "No Changes")
 	ErrPermissionDenied = newBusinessError(20002, "Permission Denied")
 
