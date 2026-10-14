@@ -9,7 +9,7 @@ import (
 )
 
 func GenerateTOTPKey(userName string, expireMinute int, encryptKey string) (key string, e *utils.Error) {
-	keyBytes := utils.GenerateRandomBytes[[]byte](10)
+	keyBytes := utils.GenerateRandomBytes(10)
 	keyBase32 := base32.StdEncoding.EncodeToString(keyBytes)
 	keyEncrypted, err := utils.Encrypt(keyBase32, encryptKey)
 	if err != nil {

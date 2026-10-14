@@ -18,17 +18,17 @@ import (
 func HMACSHA256[T string | []byte](content string, key T) string {
 	hasher := hmac.New(sha256.New, []byte(key)) // k default nil is ok
 	hasher.Write([]byte(content))
-	bytes := hasher.Sum(nil)
+	hashBytes := hasher.Sum(nil)
 
-	return hex.EncodeToString(bytes)
+	return hex.EncodeToString(hashBytes)
 }
 
 func CalcSHA256(password string) string {
 	hasher := sha256.New()
 	hasher.Write([]byte(password))
-	bytes := hasher.Sum(nil)
+	hashBytes := hasher.Sum(nil)
 
-	return hex.EncodeToString(bytes)
+	return hex.EncodeToString(hashBytes)
 }
 
 func UUIDv5[T string | []byte](data T) string {
@@ -89,13 +89,12 @@ func Decrypt[T string | []byte](cipherHex string, key T) (message []byte, e *Err
 }
 
 func GenerateRandomBytes(length int) []byte {
-	bytesBuilder := bytes.NewBuffer(nil)
+	bytesBuffer := bytes.NewBuffer(nil)
 
-	l := length
-	for l > 0 {
-		_, _ = bytesBuilder.WriteString(rand.Text()) // err always nil
-		l -= 26
+	for l := 0; l < length; {
+		n, _ := bytesBuffer.WriteString(rand.Text()) // err always nil
+		l += n
 	}
 
-	return []byte(bytesBuilder.String())[:length]
+	return bytesBuffer.Bytes()[:length]
 }
