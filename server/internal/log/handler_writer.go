@@ -92,6 +92,9 @@ func (hw *HandlerWriter) Write(logBytes []byte) (err error) {
 
 func (hw *HandlerWriter) rotate() {
 	hw.close()
+	defer func() {
+		_ = hw.New(hw.FileName, hw.MaxSize) // 日志文件轮换，不管结果如何，首先要保证后面的日志有地方写
+	}()
 
 	timeStr := time.Now().Format("20060102-150405.000")
 	newName := fmt.Sprintf("%s.log", timeStr)
@@ -100,8 +103,6 @@ func (hw *HandlerWriter) rotate() {
 	}
 
 	go compressFile(newName)
-
-	_ = hw.New(hw.FileName, hw.MaxSize)
 }
 
 func (hw *HandlerWriter) close() {

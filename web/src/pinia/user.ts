@@ -90,8 +90,8 @@ export const useUserStore = defineStore("user", () => {
 
         log.success("Set MFA Status")
 
-        user.value.enable_mfa = true
-        user.value.has_totp_key = true
+        user.value.enable_mfa = enableMFA
+        user.value.has_totp_key = true // 禁用MFA不删除totp key
     }
 
     function isLogin(): boolean { return user.value.user_name.length > 0 }

@@ -19,7 +19,8 @@ func Login(ctx *mhttp.Context) {
 	}
 
 	if len(req.UserName) < 1 || len(req.Password) < 1 {
-		e := utils.ErrInvalidParams().WithParam("user name", req.UserName).WithParam("password", req.Password)
+		e := utils.ErrInvalidParams().WithParam("user name", req.UserName).
+			WithParam("password length", len(req.Password))
 		mlog.Error(e.String())
 		ctx.ResData = e
 		return
@@ -27,6 +28,8 @@ func Login(ctx *mhttp.Context) {
 
 	user, e := dal.GetUser(req.UserName)
 	if e != nil {
+		// 包装错误，使[用户名不存在]和[密码错误]返回相同内容
+		e = utils.ErrWrongPassword().WithCause(e.Cause)
 		ctx.ResData = e
 		return
 	}

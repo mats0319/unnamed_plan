@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	db := mdb.InitDB(mdb.DefaultDSN, 10, 100)
+	db := mdb.Default(false)
 
 	err := db.Migrator().DropTable(model.ModelList...)
 	if err != nil {

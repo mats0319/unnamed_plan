@@ -3,7 +3,6 @@ package mhttp
 import (
 	"encoding/json"
 	"io"
-	"log/slog"
 	"net/http"
 
 	mlog "github.com/mats0319/unnamed_plan/server/internal/log"
@@ -21,6 +20,8 @@ type Context struct {
 }
 
 func NewContext(w http.ResponseWriter, r *http.Request) *Context {
+	r.Body = http.MaxBytesReader(w, r.Body, 1<<20) // 限制请求体最大1M，避免读取超大请求体使内存不足
+
 	return &Context{
 		writer:      w,
 		request:     r,
@@ -77,7 +78,7 @@ func (ctx *Context) response() {
 
 	resBytes, err := json.Marshal(obj)
 	if err != nil {
-		mlog.Error("serialize res to json failed", slog.Any("error", err))
+		mlog.Error("serialize res to json failed" + err.Error())
 	}
 
 	// write res
@@ -85,7 +86,7 @@ func (ctx *Context) response() {
 
 	_, err = ctx.writer.Write(resBytes)
 	if err != nil {
-		mlog.Error("response failed", slog.Any("error", err))
+		mlog.Error("response failed" + err.Error())
 		return
 	}
 }

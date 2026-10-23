@@ -6,9 +6,9 @@ import (
 	"github.com/google/uuid"
 )
 
-func TestGenerateRandomStr(t *testing.T) {
+func TestGenerateRandomBytes(t *testing.T) {
 	for range 5 {
-		t.Log(GenerateRandomBytes[string](32))
+		t.Log(string(GenerateRandomBytes(32)))
 	}
 }
 

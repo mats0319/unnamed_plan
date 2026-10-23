@@ -2,7 +2,7 @@ public/flip.html
 public/flip.wasm
 public/wasm_exec.js
 
-pnpm-lock.yaml
+#pnpm-lock.yaml
 pnpm-workspace.yaml
 
 format_result.html

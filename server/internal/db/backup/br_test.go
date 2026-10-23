@@ -2,7 +2,6 @@ package backup
 
 import (
 	"log"
-	"log/slog"
 	"os"
 	"testing"
 
@@ -44,13 +43,13 @@ func TestBackupRecover(t *testing.T) {
 func prepareRecoverData() error {
 	err := os.RemoveAll("./recover/")
 	if err != nil {
-		mlog.Error("remove dir failed", slog.Any("error", err))
+		mlog.Error("remove dir failed" + err.Error())
 		return err
 	}
 
 	err = os.Rename("./backup/", "./recover/")
 	if err != nil {
-		mlog.Error("rename folder failed", slog.Any("error", err))
+		mlog.Error("rename folder failed" + err.Error())
 		return err
 	}
 
@@ -58,7 +57,7 @@ func prepareRecoverData() error {
 }
 
 func initDB() {
-	db := mdb.InitTestDB()
+	db := mdb.Default(true)
 
 	err := db.Migrator().DropTable(model.ModelList...)
 	if err != nil {

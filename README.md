@@ -39,7 +39,7 @@ todo
 - build：生成的部署用内容
 - doc：文档
     - deploy：部署文档，介绍把程序发布到公网的主要步骤（含nginx反向代理配置）
-    - doc/dev：设计，记录一些系统模块的设计思路与要点
+    - doc.md/dev.md：设计，记录一些系统模块的设计思路与要点
 - game：小游戏，使用ebiten引擎
 - scripts：脚本
     - build.sh：在本地使用，生成可以部署到云服务器的内容（包括服务端程序、UI和其他资源）
@@ -56,8 +56,8 @@ todo
 
 - go 1.26
 - gorm
-    - ORM: Object Relation Mapping，对象关系映射，将数据库的行、列甚至数据库本身，映射成编程语言的对象或字段。
-      使用ORM，可以通过形如`db.create(user)`的方式操作数据库，而不需要编写形如`insert into user values (...)`的sql
+    - ORM: Object Relation Mapping，对象关系映射，将数据库的行、列甚至数据库本身，映射成编程语言的对象或字段。 使用ORM，可以通过形如
+      `db.create(user)`的方式操作数据库，而不需要编写形如`insert into user values (...)`的sql
     - DAO: Data Access Object，数据访问对象，将数据库操作包装在一起，与业务代码分离。
       主要应用场景有：需要接多个数据库（pg、mysql、sqlite）、数据操作复杂（例如复杂查询，sql写出来上KB的）
 - gocts：自研工具，可以根据go定义的接口结构，生成对应的ts结构（class）和axios client代码。

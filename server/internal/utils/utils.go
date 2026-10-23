@@ -1,12 +1,13 @@
 package utils
 
 import (
+	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/hmac"
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
-	"math/rand/v2"
 	"strings"
 
 	"github.com/google/uuid"
@@ -17,17 +18,17 @@ import (
 func HMACSHA256[T string | []byte](content string, key T) string {
 	hasher := hmac.New(sha256.New, []byte(key)) // k default nil is ok
 	hasher.Write([]byte(content))
-	bytes := hasher.Sum(nil)
+	hashBytes := hasher.Sum(nil)
 
-	return hex.EncodeToString(bytes)
+	return hex.EncodeToString(hashBytes)
 }
 
 func CalcSHA256(password string) string {
 	hasher := sha256.New()
 	hasher.Write([]byte(password))
-	bytes := hasher.Sum(nil)
+	hashBytes := hasher.Sum(nil)
 
-	return hex.EncodeToString(bytes)
+	return hex.EncodeToString(hashBytes)
 }
 
 func UUIDv5[T string | []byte](data T) string {
@@ -87,31 +88,13 @@ func Decrypt[T string | []byte](cipherHex string, key T) (message []byte, e *Err
 	return
 }
 
-const charactersLibrary = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-const useBits = 6 // 6个bit位可以表示字符库中的全部字符
+func GenerateRandomBytes(length int) []byte {
+	bytesBuffer := bytes.NewBuffer(nil)
 
-// GenerateRandomBytes generate random readable Bytes
-func GenerateRandomBytes[T string | []byte](length int) T {
-	b := make([]byte, length)
-
-	randomNum, remainBits := rand.Int64(), 64
-	for i := 0; i < len(b); {
-		if remainBits < useBits {
-			randomNum, remainBits = rand.Int64(), 64
-		}
-
-		index := int(randomNum & (1<<useBits - 1)) // 0b0011 1111
-		if index < len(charactersLibrary) {
-			randomNum >>= useBits
-			remainBits -= useBits
-
-			b[i] = charactersLibrary[index]
-			i++
-		} else {
-			randomNum >>= 1
-			remainBits -= 1
-		}
+	for l := 0; l < length; {
+		n, _ := bytesBuffer.WriteString(rand.Text()) // err always nil
+		l += n
 	}
 
-	return T(b)
+	return bytesBuffer.Bytes()[:length]
 }

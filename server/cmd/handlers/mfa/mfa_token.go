@@ -22,6 +22,6 @@ func VerifyMFAToken(tokenStr string) (t *token.Token, e *utils.Error) {
 		mlog.Error(e.String())
 		return
 	}
-	
+
 	return
 }

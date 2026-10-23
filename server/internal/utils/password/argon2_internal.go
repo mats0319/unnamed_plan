@@ -24,7 +24,7 @@ func defaultAlgorithmParams() *AlgorithmParams {
 		Memory:    64 * 1024, // 64 MB
 		Threads:   1,
 		KeyLength: 32,
-		Salt:      utils.GenerateRandomBytes[[]byte](32),
+		Salt:      utils.GenerateRandomBytes(32),
 	}
 }
 

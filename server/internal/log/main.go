@@ -14,7 +14,7 @@ var handler *Handler
 // 例如测试备份/恢复功能、测试日志结构、分文件等
 func InitializeTest() {
 	var err error
-	handler, err = newHandler("log.log", 1, slog.LevelDebug)
+	handler, err = newHandler(slog.LevelDebug)
 	if err != nil {
 		log.Fatalln("open log file failed, error:", err)
 	}
@@ -24,7 +24,7 @@ func InitializeTest() {
 
 func Initialize() {
 	var err error
-	handler, err = newHandler("log.log", 1, getLogLevel())
+	handler, err = newHandler(getLogLevel())
 	if err != nil {
 		log.Fatalln("open log file failed, error:", err)
 	}

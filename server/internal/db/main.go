@@ -23,14 +23,12 @@ func Initialize() {
 	mlog.Info(logStr)
 }
 
-// DefaultDSN same as dsn in config file
-var DefaultDSN = "host=115.190.167.134 user=mario password=123456 dbname=test_cloud port=5432 sslmode=disable"
+var defaultDSN = "host=115.190.167.134 user=mario password=123456 dbname=test_cloud port=5432 sslmode=disable"
 
-// InitTestDB 使用场景：不启动服务端程序，又需要数据库功能。例如备份/恢复功能的单元测试、集成测试
-func InitTestDB() *gorm.DB {
-	flag.IsTestMode = true
+func Default(isTestMode bool) *gorm.DB {
+	flag.IsTestMode = isTestMode
 
-	return InitDB(DefaultDSN, 10, 100)
+	return InitDB(defaultDSN, 10, 100)
 }
 
 func InitDB(dsn string, maxIdleConns int, maxOpenConns int) *gorm.DB {
